@@ -9,6 +9,7 @@
     define('TRADEPATH', '/home/vmaya/trade/');
     define('MAINDIR', dirname(__FILE__).'/');
 
+    include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'include/utils.php');
     include_once(MAINDIR.'data/exmo_pairs.php');
     include_once(INCLUDE_PATH.'fdbg.php');

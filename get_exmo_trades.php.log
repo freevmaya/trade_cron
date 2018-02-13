@@ -2,4 +2,5 @@ array('time'=>'02.02.18 07.15', 'file'=>'/home/cron/currency_dev/get_exmo_trades
 array('time'=>'05.02.18 12.26', 'file'=>'/home/cron/currency_dev/get_exmo_trades.php', 'line'=>'40', 'message'=>'START get_exmo_trades.php'),
 array('time'=>'05.02.18 12.30', 'file'=>'/home/cron/currency_dev/get_exmo_trades.php', 'line'=>'40', 'message'=>'START get_exmo_trades.php'),
 array('time'=>'05.02.18 12.30', 'file'=>'/home/cron/currency_dev/get_exmo_trades.php', 'line'=>'87', 'message'=>'STOP get_exmo_trades.php'),
-array('time'=>'05.02.18 12.40', 'file'=>'/home/cron/currency_dev/get_exmo_trades.php', 'line'=>'87', 'message'=>'STOP get_exmo_trades.php')
+array('time'=>'05.02.18 12.40', 'file'=>'/home/cron/currency_dev/get_exmo_trades.php', 'line'=>'87', 'message'=>'STOP get_exmo_trades.php'),
+array('time'=>'13.02.18 07.45', 'file'=>'/home/cron/currency_dev/get_exmo_trades.php', 'line'=>'41', 'message'=>'START get_exmo_trades.php')

@@ -10,6 +10,7 @@
     define('TRADEPATH', '/home/vmaya/trade/');
     define('MAINDIR', dirname(__FILE__).'/');
 
+    include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'include/utils.php');
     include_once(MAINDIR.'modules/cur_watch.php');
     include_once(MAINDIR.'modules/volumes.php');
