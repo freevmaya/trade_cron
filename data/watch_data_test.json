@@ -1,0 +1,19 @@
+[
+    {
+        "pair": "BTC_USD",
+        "state": "active",
+        "period": 30,
+        "action": {
+            "type": "buy",
+            "volume": "1/USD",
+            "state": "active"
+        },
+        "triggers": [
+            {
+                "type": "candle",
+                "delta": {"min": "-2.5%", "max": "-100%"},
+                "time": "`time` >= %TIME% - INTERVAL 15 MINUTE AND `time` <= %TIME%"
+            }
+        ]
+    }
+]

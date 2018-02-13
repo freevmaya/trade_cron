@@ -1,0 +1,176 @@
+templates
+
+-----XRP_USD
+
+Габелла
+
+"triggers": [
+    {
+        "type": "below",
+        "value": 2.2
+    },
+    {
+        "type": "candle",
+        "delta": {
+            "min": "-0.5%",
+            "max": "1%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 15 MINUTE AND `time` <= %TIME%"
+    },
+    {
+        "type": "candle",
+        "delta": {
+            "min": "-15%",
+            "max": "-5%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 1 HOUR AND `time` <= %TIME% - INTERVAL 15 MINUTE"
+    }
+]
+
+Габелла помягче
+"triggers": [
+	{
+        "type": "below",
+        "value": 2.2
+    },{
+        "type": "candle",
+        "delta": {
+            "min": "-0.1%",
+            "max": "5%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 5 MINUTE AND `time` <= %TIME%"
+    },
+    {
+        "type": "candle",
+        "delta": {
+            "min": "-20%",
+            "max": "-4%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 65 MINUTE AND `time` <= %TIME% - INTERVAL 5 MINUTE"
+    }
+]
+
+Площадка после подъема, продажа
+
+{
+        "pair": "XRP_USD",
+        "state": "active",
+        "action": {
+            "type": "sell",
+            "volume": "50%",
+            "state": "inactive",
+            "min": 100,
+            "max": 200
+        },
+        "triggers": [
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "-1%",
+                    "max": "0.01%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 5 MINUTE AND `time` <= %TIME%"
+            },
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "3%",
+                    "max": "10%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 1 HOUR AND `time` <= %TIME%"
+            }
+        ]
+    }
+
+
+---BTC_USD
+Габелла
+
+"triggers": [
+	{
+        "type": "below",
+        "value": 14000
+    },{
+        "type": "candle",
+        "delta": {
+            "min": "-0.1%",
+            "max": "5%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 5 MINUTE AND `time` <= %TIME%"
+    },
+    {
+        "type": "candle",
+        "delta": {
+            "min": "-20%",
+            "max": "-6%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 95 MINUTE AND `time` <= %TIME% - INTERVAL 5 MINUTE"
+    }
+]    
+
+
+----ETH
+
+Продать
+{
+    "pair": "ETH_USD",
+    "state": "active",
+    "action": {
+        "type": "sell",
+        "volume": "100%",
+        "state": "active",
+        "min": 0.01,
+        "max": 1
+    },
+    "triggers": [
+        {
+            "type": "higner",
+            "value": 1390
+        }
+    ]
+}
+
+
+----ETC---------
+
+
+Мягкая Габелла
+"triggers": [
+    {
+        "type": "candle",
+        "delta": {
+            "min": "-0.5%",
+            "max": "1%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 10 MINUTE AND `time` <= %TIME%"
+    },
+    {
+        "type": "candle",
+        "delta": {
+            "min": "-15%",
+            "max": "-2%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 1 HOUR AND `time` <= %TIME% - INTERVAL 10 MINUTE"
+    }
+]
+
+Небольшая вертикальная свечка на один час
+
+"triggers": [
+    {
+        "type": "candle",
+        "delta": {
+            "min": "-2%",
+            "max": "0.2%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 5 MINUTE AND `time` <= %TIME%"
+    },
+    {
+        "type": "candle",
+        "delta": {
+            "min": "3%",
+            "max": "15%"
+        },
+        "time": "`time` >= %TIME% - INTERVAL 1 HOUR AND `time` <= %TIME% - INTERVAL 5 MINUTE"
+    }
+]

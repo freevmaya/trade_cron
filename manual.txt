@@ -1,0 +1,19 @@
+Документация
+
+Поля JSON данных
+	pair - валютная пара, например XRP_USD
+	state - состояние, варианты - active, inactive, success
+	period - периодчиность в сек. если состояние success
+	action - активность при наступлении события
+	triggers - список триггеров отслеживающих наступление события
+
+Объект - triggers
+
+Атрибуты
+	type - candle, below, higner
+	state - active, inactive, snapshot 
+		Если тип candle
+			time
+			delta
+		Если тип below, higner
+			value

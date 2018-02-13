@@ -1,0 +1,713 @@
+,
+array('time'=>'03.02.18 19.59', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'74', 'message'=>'XRP_USD SUCCESS IN 2018-02-03 19:59:51 PRICE: 1.014499995'),
+array('time'=>'03.02.18 20.11', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'74', 'message'=>'XRP_USD SUCCESS IN 2018-02-03 20:11:31 PRICE: 1.01895'),
+array('time'=>'03.02.18 20.14', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'74', 'message'=>'XRP_USD SUCCESS IN 2018-02-03 20:14:32 PRICE: 1.012505495'),
+array('time'=>'03.02.18 20.26', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'74', 'message'=>'XRP_USD SUCCESS IN 2018-02-03 20:26:03 PRICE: 1.01002125'),
+array('time'=>'03.02.18 20.35', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'74', 'message'=>'XRP_USD SUCCESS IN 2018-02-03 20:35:03 PRICE: 1.00955'),
+array('time'=>'03.02.18 20.47', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'74', 'message'=>'XRP_USD SUCCESS IN 2018-02-03 20:47:34 PRICE: 1.003999995'),
+array('time'=>'04.02.18 18.54', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'74', 'message'=>'BTC_USD SUCCESS IN 2018-02-04 18:54:41 PRICE: 9287.45'),
+array('time'=>'04.02.18 20.21', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:21:12 PRICE: 0.9314111'),
+array('time'=>'04.02.18 20.22', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:22:14 PRICE: 0.9275'),
+array('time'=>'04.02.18 20.23', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:23:14 PRICE: 0.928'),
+array('time'=>'04.02.18 20.24', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:24:29 PRICE: 0.927486505'),
+array('time'=>'04.02.18 20.33', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:33:30 PRICE: 0.9217'),
+array('time'=>'04.02.18 20.39', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:39:31 PRICE: 0.92445'),
+array('time'=>'04.02.18 20.41', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:41:32 PRICE: 0.92225'),
+array('time'=>'04.02.18 20.44', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'BTC_USD SUCCESS IN 2018-02-04 20:44:23 PRICE: 9258.775'),
+array('time'=>'04.02.18 20.44', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:44:53 PRICE: 0.9245'),
+array('time'=>'04.02.18 20.45', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'BTC_USD SUCCESS IN 2018-02-04 20:45:23 PRICE: 9245.201980465'),
+array('time'=>'04.02.18 20.45', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'BTC_USD SUCCESS IN 2018-02-04 20:45:53 PRICE: 9259'),
+array('time'=>'04.02.18 20.55', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'BTC_USD SUCCESS IN 2018-02-04 20:55:35 PRICE: 0.923491085'),
+array('time'=>'04.02.18 20.56', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'BTC_USD SUCCESS IN 2018-02-04 20:56:25 PRICE: 0.923491085'),
+array('time'=>'04.02.18 20.57', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-04 20:57:15 PRICE: 0.923491545'),
+array('time'=>'05.02.18 10.54', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'45', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 10.55', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'80', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 11.03', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'45', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 11.03', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'80', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 11.04', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'45', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 11.04', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'80', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 11.04', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'45', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 11.04', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'80', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 11.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'45', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 11.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'45', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 11.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'80', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 11.07', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'45', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 11.07', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'80', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 12.03', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'155', 'message'=>'ACTION_BUY XRP_USD 05 12:03:41'),
+array('time'=>'05.02.18 12.03', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'ERROR received: {"result":false,"error":"Error 40005: Authorization error, Incorrect signature"}'),
+array('time'=>'05.02.18 12.03', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 12.03', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'Array
+(
+    [nonce] => 1517821422014649
+)
+'),
+array('time'=>'05.02.18 12.03', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'98', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 12.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'51', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 12.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'87', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 12.09', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 12.10', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'82', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 12.10', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 12.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'82', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 12.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 12.33', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'82', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 12.33', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 13.13', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 13.14', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-05 13:14:36 PRICE: 0.8379495'),
+array('time'=>'05.02.18 13.16', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-05 13:16:56 PRICE: 0.8385'),
+array('time'=>'05.02.18 13.17', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 13.18', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'XRP_USD SUCCESS IN 2018-02-05 13:18:07 PRICE: 0.84254385'),
+array('time'=>'05.02.18 13.20', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 13.20', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.846576815'),
+array('time'=>'05.02.18 13.23', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.8455'),
+array('time'=>'05.02.18 13.27', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 13.27', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'76', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.8441'),
+array('time'=>'05.02.18 13.30', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'82', 'message'=>'STOP watch_dev.php'),
+array('time'=>'05.02.18 13.30', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 13.32', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'76', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.838'),
+array('time'=>'05.02.18 13.34', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'76', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.837004995'),
+array('time'=>'05.02.18 13.51', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'76', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.82837026'),
+array('time'=>'05.02.18 13.51', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'76', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.830396815'),
+array('time'=>'05.02.18 13.53', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'76', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.82749991'),
+array('time'=>'05.02.18 14.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 14.06', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.82455'),
+array('time'=>'05.02.18 14.08', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 14.09', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.8272'),
+array('time'=>'05.02.18 14.11', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.82455'),
+array('time'=>'05.02.18 14.15', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.15', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.15', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.15', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.15', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.15', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.20', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.8201'),
+array('time'=>'05.02.18 14.22', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.22', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.22', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.23', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.24', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.24', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.24', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.25', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.25', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.25', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.26', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.26', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.26', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.29', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.8105175'),
+array('time'=>'05.02.18 14.29', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.29', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.29', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.30', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.30', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.30', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.30', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.30', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.30', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.31', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.817770395'),
+array('time'=>'05.02.18 14.32', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.32', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.32', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.34', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.34', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.34', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.35', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'154', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.35', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.35', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'97', 'message'=>'Not enough balance USD, require: 100%'),
+array('time'=>'05.02.18 14.37', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 14.40', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.80835'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info'),
+array('time'=>'05.02.18 14.42', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.44', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 14.44', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.44', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.44', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.44', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.44', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.44', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.49', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.50', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.51', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.52', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.53', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'153', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'43', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 14.54', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'96', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 15.00', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 15.00', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'155', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 15.00', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'44', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 15.00', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.802611'),
+array('time'=>'05.02.18 15.02', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 15.02', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'157', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 15.02', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'46', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 15.02', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.82129992'),
+array('time'=>'05.02.18 16.15', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 16.16', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'156', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 16.16', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 16.16', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.100718805'),
+array('time'=>'05.02.18 16.24', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'156', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 16.24', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 16.24', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.100877045'),
+array('time'=>'05.02.18 16.25', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 16.25', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'157', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 16.25', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'46', 'message'=>'api_name: user_info, response error: Error 40005: Authorization error, Incorrect signature'),
+array('time'=>'05.02.18 16.25', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.10088787'),
+array('time'=>'05.02.18 16.26', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 16.29', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 16.29', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'157', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 16.29', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'77', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.82066944'),
+array('time'=>'05.02.18 16.38', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 16.39', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'157', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 16.39', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.826194'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'Array
+(
+    [ETH_BTC] => Array
+        (
+            [ask_quantity] => 831.50636029
+            [ask_amount] => 105.17585959
+            [ask_top] => 0.10111275
+            [bid_quantity] => 3241.20634638
+            [bid_amount] => 111.9546979
+            [bid_top] => 0.10052046
+            [ask] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10111275
+                            [1] => 0.16174008
+                            [2] => 0.01635398
+                        )
+
+                )
+
+            [bid] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10052046
+                            [1] => 0.96942255
+                            [2] => 0.0974468
+                        )
+
+                )
+
+        )
+
+)
+'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'Array
+(
+    [ETH_BTC] => Array
+        (
+            [ask_quantity] => 831.54353155
+            [ask_amount] => 105.17961751
+            [ask_top] => 0.10111273
+            [bid_quantity] => 3239.01871685
+            [bid_amount] => 111.73621872
+            [bid_top] => 0.10052036
+            [ask] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10111273
+                            [1] => 0.22908625
+                            [2] => 0.02316353
+                        )
+
+                )
+
+            [bid] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10052036
+                            [1] => 0.96942352
+                            [2] => 0.0974468
+                        )
+
+                )
+
+        )
+
+)
+'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'Array
+(
+    [ETH_BTC] => Array
+        (
+            [ask_quantity] => 831.99968974
+            [ask_amount] => 105.2257015
+            [ask_top] => 0.10111264
+            [bid_quantity] => 3236.25058074
+            [bid_amount] => 111.45643436
+            [bid_top] => 0.10051812
+            [ask] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10111264
+                            [1] => 0.28546258
+                            [2] => 0.02886387
+                        )
+
+                )
+
+            [bid] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10051812
+                            [1] => 0.46767
+                            [2] => 0.0470093
+                        )
+
+                )
+
+        )
+
+)
+'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'Array
+(
+    [ETH_BTC] => Array
+        (
+            [ask_quantity] => 832.03721262
+            [ask_amount] => 105.22949553
+            [ask_top] => 0.10111264
+            [bid_quantity] => 3236.25058074
+            [bid_amount] => 111.45643436
+            [bid_top] => 0.10051812
+            [ask] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10111264
+                            [1] => 0.32298546
+                            [2] => 0.03265791
+                        )
+
+                )
+
+            [bid] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10051812
+                            [1] => 0.46767
+                            [2] => 0.0470093
+                        )
+
+                )
+
+        )
+
+)
+'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'159', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'Array
+(
+    [uid] => 951827
+    [server_date] => 1517838108
+    [balances] => Array
+        (
+            [USD] => 0.00007228
+            [EUR] => 0
+            [RUB] => 0.00070577
+            [PLN] => 0
+            [UAH] => 0
+            [BTC] => 0.00298648
+            [LTC] => 0
+            [DOGE] => 0.592
+            [DASH] => 0
+            [ETH] => 0
+            [WAVES] => 0
+            [ZEC] => 0
+            [USDT] => 0
+            [XMR] => 0
+            [XRP] => 24.95
+            [KICK] => 0
+            [ETC] => 0
+            [BCH] => 0
+        )
+
+    [reserved] => Array
+        (
+            [USD] => 0
+            [EUR] => 0
+            [RUB] => 0
+            [PLN] => 0
+            [UAH] => 0
+            [BTC] => 0
+            [LTC] => 0
+            [DOGE] => 0
+            [DASH] => 0
+            [ETH] => 0
+            [WAVES] => 0
+            [ZEC] => 0
+            [USDT] => 0
+            [XMR] => 0
+            [XRP] => 0
+            [KICK] => 0
+            [ETC] => 0
+            [BCH] => 0
+        )
+
+)
+'),
+array('time'=>'05.02.18 16.41', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.10081538'),
+array('time'=>'05.02.18 17.07', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 17.07', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'45', 'message'=>'Array
+(
+    [ETH_BTC] => Array
+        (
+            [ask_quantity] => 843.17098385
+            [ask_amount] => 106.31973223
+            [ask_top] => 0.10040058
+            [bid_quantity] => 3250.86036762
+            [bid_amount] => 112.63384367
+            [bid_top] => 0.10023977
+            [ask] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10040058
+                            [1] => 0.05702985
+                            [2] => 0.00572583
+                        )
+
+                )
+
+            [bid] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => 0.10023977
+                            [1] => 0.04801638
+                            [2] => 0.00481315
+                        )
+
+                )
+
+        )
+
+)
+'),
+array('time'=>'05.02.18 17.09', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 17.09', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'179', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 17.09', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'103', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 17.09', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 18.57', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 18.57', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'179', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 18.57', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.80165'),
+array('time'=>'05.02.18 19.02', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 19.02', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'179', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.02', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.809'),
+array('time'=>'05.02.18 19.07', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 19.07', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'179', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.07', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.802'),
+array('time'=>'05.02.18 19.09', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 19.09', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'170', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.09', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'48', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 19.09', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 19.11', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'170', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.11', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'48', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 19.11', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 19.20', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'170', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.20', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'48', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 19.20', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 19.21', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 19.21', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'171', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.21', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'49', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 19.21', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 19.28', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 19.28', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'181', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.28', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'47', 'message'=>'api_name: order_create, response error: '),
+array('time'=>'05.02.18 19.28', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 19.29', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 19.29', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'181', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.29', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'47', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 19.29', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 19.33', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 19.33', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'169', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 19.33', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'47', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 19.33', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 20.00', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'169', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 20.00', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'47', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 20.00', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 20.04', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.04', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'145', 'message'=>'ACTION_SELL XRP_USD'),
+array('time'=>'05.02.18 20.04', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'93', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 20.04', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 20.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.06', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'145', 'message'=>'ACTION_SELL XRP_USD'),
+array('time'=>'05.02.18 20.06', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'93', 'message'=>'Not enough balance XRP, require: 1'),
+array('time'=>'05.02.18 20.06', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 20.12', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.098358535'),
+array('time'=>'05.02.18 20.13', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.098358525'),
+array('time'=>'05.02.18 20.15', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.17', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.17', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.780055'),
+array('time'=>'05.02.18 20.17', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.18', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.18', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.77975'),
+array('time'=>'05.02.18 20.18', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.20', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.20', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.7780547'),
+array('time'=>'05.02.18 20.21', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.26', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.27', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.28', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.32', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.33', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 53 XRP_USD SUCCESS PRICE: 0.78285'),
+array('time'=>'05.02.18 20.35', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'169', 'message'=>'ACTION_BUY BTC_USD'),
+array('time'=>'05.02.18 20.35', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'93', 'message'=>'Not enough balance BTC, require: 1'),
+array('time'=>'05.02.18 20.35', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 63 BTC_USD FAIL '),
+array('time'=>'05.02.18 20.39', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 63 BTC_USD SUCCESS PRICE: 8077.12095448'),
+array('time'=>'05.02.18 20.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'169', 'message'=>'ACTION_BUY BTC_USD'),
+array('time'=>'05.02.18 20.41', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'93', 'message'=>'Not enough balance BTC, require: 1'),
+array('time'=>'05.02.18 20.41', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 63 BTC_USD FAIL '),
+array('time'=>'05.02.18 20.43', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'169', 'message'=>'ACTION_BUY XRP_USD'),
+array('time'=>'05.02.18 20.43', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'47', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 20.43', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 53 XRP_USD FAIL '),
+array('time'=>'05.02.18 20.47', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'05.02.18 20.47', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'163', 'message'=>'ACTION_BUY BTC_USD'),
+array('time'=>'05.02.18 20.47', 'file'=>'/home/cron/currency_dev/modules/exmo_sender.php', 'line'=>'47', 'message'=>'api_name: order_create, response error: Error 50277: Quantity by order is less than permissible minimum for this pair'),
+array('time'=>'05.02.18 20.47', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'78', 'message'=>'ORDER 63 BTC_USD FAIL '),
+array('time'=>'06.02.18 12.53', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 13.42', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 13.43', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 13.44', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 13.56', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 13.58', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 13.58', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 13.59', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.00', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.01', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.02', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.03', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.06', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.07', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.08', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.08', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.09', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.09', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.10', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.10', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 68 ETH_BTC SUCCESS buy, PRICE: 0.097019535'),
+array('time'=>'06.02.18 14.10', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'06.02.18 14.10', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 68 ETH_BTC SUCCESS buy, PRICE: 0.09702483'),
+array('time'=>'06.02.18 14.11', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'84', 'message'=>'ORDER 68 ETH_BTC SUCCESS buy, PRICE: 0.097033705'),
+array('time'=>'07.02.18 13.46', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'07.02.18 13.48', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'85', 'message'=>'ORDER 72 BTC_USD SUCCESS buy, PRICE: 8412.055'),
+array('time'=>'08.02.18 09.43', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 09.43', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'97', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.78375'),
+array('time'=>'08.02.18 09.45', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 09.45', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'97', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.7821'),
+array('time'=>'08.02.18 10.07', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.10', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.10', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.12', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.14', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.14', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.14', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'104', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.79865'),
+array('time'=>'08.02.18 10.16', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.16', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.16', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.17', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'104', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.799408405'),
+array('time'=>'08.02.18 10.17', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'104', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.798308475'),
+array('time'=>'08.02.18 10.20', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'104', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.796398005'),
+array('time'=>'08.02.18 10.26', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.27', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.27', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'113', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.7971505'),
+array('time'=>'08.02.18 10.30', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.31', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.31', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.34', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.36', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.37', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.39', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.42', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.44', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.44', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.45', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.48', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.48', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.49', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.54', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.55', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.56', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.57', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.57', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.58', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 10.59', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.00', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.00', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.01', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.02', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.02', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.02', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.03', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.03', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.04', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.09', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'112', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.79925'),
+array('time'=>'08.02.18 11.10', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.13', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.21', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.21', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'116', 'message'=>'ORDER 79 XRP_USD SUCCESS EXTENDS, PRICE: '),
+array('time'=>'08.02.18 11.22', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.23', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'121', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.799123345'),
+array('time'=>'08.02.18 11.23', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'121', 'message'=>'ORDER 79 XRP_USD SUCCESS EXTENDS, PRICE: 0.7991'),
+array('time'=>'08.02.18 11.24', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.24', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'110', 'message'=>'EXTENDS, PRICE: 0.797'),
+array('time'=>'08.02.18 11.26', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.26', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'08.02.18 11.26', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'112', 'message'=>'EXTENDS, PRICE: 0.799'),
+array('time'=>'08.02.18 11.54', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'129', 'message'=>'ORDER 75 BTC_USD SUCCESS sell, PRICE: 8552'),
+array('time'=>'08.02.18 12.29', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'129', 'message'=>'ORDER 79 XRP_USD SUCCESS buy, PRICE: 0.790070005'),
+array('time'=>'08.02.18 13.16', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'129', 'message'=>'ORDER 83 BTC_USD SUCCESS sell, PRICE: 8757.49'),
+array('time'=>'08.02.18 13.17', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'129', 'message'=>'ORDER 82 BTC_USD SUCCESS sell, PRICE: 8756.5'),
+array('time'=>'08.02.18 18.02', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'46', 'message'=>'START watch_dev.php'),
+array('time'=>'10.02.18 20.46', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'44', 'message'=>'START watch_dev.php'),
+array('time'=>'10.02.18 20.46', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'151', 'message'=>'ORDER 86 XRP_USD SUCCESS sell, PRICE: 1.04922877'),
+array('time'=>'11.02.18 20.11', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'44', 'message'=>'START watch_dev.php'),
+array('time'=>'11.02.18 20.12', 'file'=>'/home/cron/currency_dev/modules/cur_watch.php', 'line'=>'151', 'message'=>'ORDER 86 XRP_USD SUCCESS buy, PRICE: 1.0117'),
+array('time'=>'13.02.18 06.19', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'44', 'message'=>'START watch_dev.php'),
+array('time'=>'13.02.18 06.33', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'44', 'message'=>'START watch_dev.php'),
+array('time'=>'13.02.18 06.35', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'47', 'message'=>'START watch_dev.php'),
+array('time'=>'13.02.18 06.41', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'47', 'message'=>'START watch_dev.php'),
+array('time'=>'13.02.18 06.42', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'47', 'message'=>'START watch_dev.php'),
+array('time'=>'13.02.18 06.43', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'47', 'message'=>'START watch_dev.php'),
+array('time'=>'13.02.18 06.46', 'file'=>'/home/cron/currency_dev/watch_dev.php', 'line'=>'47', 'message'=>'START watch_dev.php')

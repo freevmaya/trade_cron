@@ -1,0 +1,16 @@
+[
+    {
+        "pair": "BTC_USD",
+        "state": "active",
+        "period": 30,
+        "action": {
+            "type": "buy",
+            "volume": "0/USD",
+            "state": "inactive"
+        },
+        "triggers": [
+            "below,10000",
+            "candle,1%,,1 MINUTE"
+        ]
+    }
+]

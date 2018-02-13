@@ -1,0 +1,12 @@
+{
+	"buy": {
+        "type": "buy",
+        "volume": 0,
+        "state": "active"
+    },
+    "sell": {
+        "type": "sell",
+        "volume": 0,
+        "state": "active"
+    }
+}

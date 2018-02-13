@@ -1,0 +1,84 @@
+[
+    {
+        "pair": "XRP_USD",
+        "state": "inactive",
+        "action": {
+            "type": "buy",
+            "volume": "50%"
+        },
+        "triggers": [
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "-60%",
+                    "max": "-11%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 3 HOUR AND `time` <= %TIME%"
+            },
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "1.5%",
+                    "max": "10%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 5 MINUTE AND `time` <= %TIME%"
+            }
+        ]
+    },
+    {
+        "pair": "BTC_USD",
+        "state": "active",
+        "action": {
+            "type": "buy",
+            "volume": "50%"
+        },
+        "triggers": [
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "-60%",
+                    "max": "-7%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 4 HOUR AND `time` <= %TIME% - INTERVAL 20 MINUTE"
+            },
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "1%",
+                    "max": "10%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 20 MINUTE AND `time` <= %TIME%"
+            },
+            {
+                "type": "below",
+                "value": 15500
+            }
+        ]
+    },
+    {
+        "pair": "ETC_USD",
+        "state": "inactive",
+        "action": {
+            "type": "buy",
+            "volume": "50%"
+        },
+        "triggers": [
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "-60%",
+                    "max": "-7%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 2 HOUR AND `time` <= %TIME% - INTERVAL 10 MINUTE"
+            },
+            {
+                "type": "candle",
+                "delta": {
+                    "min": "1%",
+                    "max": "10%"
+                },
+                "time": "`time` >= %TIME% - INTERVAL 10 MINUTE AND `time` <= %TIME%"
+            }
+        ]
+    }
+]

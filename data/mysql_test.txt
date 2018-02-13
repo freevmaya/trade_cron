@@ -1,0 +1,3 @@
+EXPLAIN SELECT id, ask_top, UNIX_TIMESTAMP(`time`) AS `unix_time`, `time` FROM _orders WHERE `cur_in`=1 AND `cur_out`=2 AND `time` >= '2018-01-17 07:51:00' - INTERVAL 15 MINUTE AND `time` <= '2018-01-17 07:51:00'
+
+SIMPLE	_orders	range	cur_in,time	time	4		333	Using index condition; Using where	
