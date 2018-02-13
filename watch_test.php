@@ -34,7 +34,7 @@
     startScript($scriptID, $scriptCode, WAITTIME);
 
     new console($is_dev);
-    console::log('START '.$scriptID);
+    console::log('START '.$scriptID.' '.date('H:i:s'));
 
     while (true) {
         if ($test = DB::line("SELECT * FROM _test WHERE `state`='active'")) {

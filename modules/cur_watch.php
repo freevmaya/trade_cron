@@ -39,14 +39,16 @@ class cur_watch extends baseTrigger {
                     $avgPrice = $this->avg($corder);
                     if ($state == 'active') {
                         $this->sender->setUser($user);
-                    	if ($this->sender->$action($this->data['pair'], $this->data['action'], $this->time, $avgPrice))
-                    		$this->onComplete('PRICE: '.$avgPrice);
-                        else $this->onFail('');
+                        $send_result = $this->sender->$action($this->data['pair'], $this->data['action'], $this->time, $corder);
                     } else if ($state == 'test') {
-                        if ($options['testComplete'])
-                            $this->onComplete($action.', PRICE: '.$avgPrice);
+                        $taction = $action.'_test';
+                        $send_result = $this->sender->$taction($this->data['pair'], $this->data['action'], $this->time, $corder);
                     }
-                    $this->sendUserEvent('ORDERSUCCESS', ['cur_avgprice'=>$avgPrice, 'ask_top'=>$corder['ask_top'], 'bid_top'=>$corder['bid_top'], 'action'=>$action]);
+                    if ($send_result) {
+                        $this->onComplete('PRICE: '.$send_result['price']);
+                        $this->sendUserEvent('ORDERSUCCESS', array_merge(['pair'=>$this->data['pair'],
+                                'cur_avgprice'=>$avgPrice, 'price'=>$result['price'], 'action'=>$action], $send_result));
+                    } else $this->onFail('');
                     $result = 1;             
                 }
             }
@@ -145,9 +147,11 @@ class cur_watch extends baseTrigger {
     }
 
 	protected function onComplete($info) {
-        $isprocess = ($this->data['state'] != 'process') && ($this->data['take_profit'] > 0) && ($this->data['stop_loss'] > 0);
-		$this->data['state'] = $isprocess?'process':'success';
-        $this->dm->setOrderState($this->data['id'], $this->data['state'], $this->time);
+        if ($this->data['state'] != 'test') {
+            $isprocess = ($this->data['state'] != 'process') && ($this->data['take_profit'] > 0) && ($this->data['stop_loss'] > 0);
+            $this->data['state'] = $isprocess?'process':'success';
+            $this->dm->setOrderState($this->data['id'], $this->data['state'], $this->time);
+        }
 		console::log('ORDER '.$this->data['id'].' '.$this->data['pair'].' SUCCESS '.$info);
 	}
 }

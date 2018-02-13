@@ -65,7 +65,7 @@ class exmoSender extends Sender {
 	protected function order_create_tester($params) {
 		console::log('CREATE ORDER TO TESTER:', 'msg');
 		console::log($params, 'info');
-		return true;
+		return $params;
 	}
 
 	protected function isTester() {
@@ -82,7 +82,7 @@ class exmoSender extends Sender {
 		else $result = $this->api_query('order_create', $params);
 		//console::log($result);		
 
-		return $result;
+		return !$this->isErrorResponse($result)?$params:null;
 	} 
 
 	protected function refreshUserInfo() {
@@ -131,8 +131,7 @@ class exmoSender extends Sender {
 		return 0;
 	}
 
-	public function sell($pair, $data, $time, $curPrice=0) {
-		$resbool = false;
+	public function sell($pair, $data, $time, $top_order) {
 		$result = null;
 		$currency = explode('_', $pair);
 		$time = date('d H:i:s', $time);
@@ -140,7 +139,7 @@ class exmoSender extends Sender {
 
 		if ($this->checkApiKey()) {
 			if ($this->refreshUserInfo()) {
-				if ($volume = $this->checkBalanceForSell($currency, $data, $curPrice)) {
+				if ($volume = $this->checkBalanceForSell($currency, $data, $top_order['bid_top'])) {
 					$result = $this->order_create($pair, $volume, "market_sell");
 				}
 			}
@@ -150,13 +149,10 @@ class exmoSender extends Sender {
 			console::log("NOAPIKEY user: {$this->user['uid']}", 'error');
 		}
 
-		$resbool = !$this->isErrorResponse($result);
-
-		return $resbool;
+		return $result;
 	}
 
-	public function buy($pair, $data, $time, $curPrice=0) {
-		$resbool = false;
+	public function buy($pair, $data, $time, $top_order) {
 		$result = null;
 		$currency = explode('_', $pair);
 		$time = date('d H:i:s', $time);
@@ -164,7 +160,7 @@ class exmoSender extends Sender {
 
 		if ($this->checkApiKey()) {
 			if ($this->refreshUserInfo()) {
-				if ($volume = $this->checkBalanceForBuy($currency, $data, $curPrice)) {
+				if ($volume = $this->checkBalanceForBuy($currency, $data, $top_order['ask_top'])) {
 					$result = $this->order_create($pair, $volume, "market_buy");
 				}
 			}
@@ -174,10 +170,22 @@ class exmoSender extends Sender {
 			console::log("NOAPIKEY user: {$this->user['uid']}", 'error');
 		}
 
-		$resbool = !$this->isErrorResponse($result);
+		return $result;
+	} 
 
-		return $resbool;
-	}    
+	public function sell_test($pair, $data, $time, $top_order) {   
+		return array(
+				'pair'=>$pair,
+				"price"=>$top_order['bid_top'],
+				"quantity"=>$data['volume']);
+	}
+
+	public function buy_test($pair, $data, $time, $top_order) {
+		return array(
+				'pair'=>$pair,
+				"price"=>$top_order['ask_top'],
+				"quantity"=>$data['volume']);
+	}
 }
 
 ?>

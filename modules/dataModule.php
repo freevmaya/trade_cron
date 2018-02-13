@@ -34,7 +34,7 @@ class dataModule extends timeObject {
         $end_time 	= $fullData['end_time'];
 
 		$where = "`cur_in`={$cur_in} AND `cur_out`={$cur_out} AND `time`>='{$start_time}' AND  `time`<='{$end_time}'";
-		$query = "SELECT * FROM _orders WHERE {$where}";
+		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time` FROM _orders WHERE {$where}";
 		$list = DB::asArray($query);
 		foreach ($list as $order) {
 			$cache_index = $cur_in.'_'.$cur_out.'_od_'.strtotime($order['time']);
@@ -46,9 +46,14 @@ class dataModule extends timeObject {
 		return new Events();
 	}
 
-	public function candle_data($cur_in_id, $cur_out_id, $time_inverval, $field='ask_top') {
-		$query = "SELECT id, {$field}, UNIX_TIMESTAMP(`time`) AS `unix_time`, `time` FROM _orders WHERE `cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id} AND {$time_inverval}";
+	public function candle_data($cur_in_id, $cur_out_id, $start_time, $end_time, $field='ask_top') {
+		//if (!($list = $this->candleInCache($cur_in_id, $cur_out_id, $start_time, $end_time))) {
+		$sstart_time = date(DATEFORMAT, $start_time);
+		$send_time = date(DATEFORMAT, $end_time);
+		$where = "(`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}) AND (`time`>='{$sstart_time}' AND `time`<='{$send_time}')";
+		$query = "SELECT id, {$field}, UNIX_TIMESTAMP(`time`) AS `unix_time`, `time` FROM _orders WHERE {$where}";
 		$list = DB::asArray($query);
+		//}
 		$result = null;
 
 		if (($count = count($list)) > 1) {
@@ -64,6 +69,20 @@ class dataModule extends timeObject {
 			}
 		}
 		return $result;
+	}
+
+	protected function candleInCache($cur_in_id, $cur_out_id, $start_time, $end_time) {
+		$start_cache_index = $cur_in_id.'_'.$cur_out_id.'_od_'.$start_time;
+		$end_cache_index = $cur_in_id.'_'.$cur_out_id.'_od_'.$end_time;
+		$list = null;
+
+		if (isset($this->recCache[$start_cache_index]) && isset($this->recCache[$end_cache_index])) {
+			$list = [];
+			for ($i = $start_time; $i<=$end_time; $i += WAITTIME) 
+				$list[] = $this->recCache[$cur_in_id.'_'.$cur_out_id.'_od_'.$i];
+		}
+
+		return $list;
 	}
 
 	public function getCurrentOrder($cur_in_id, $cur_out_id) {

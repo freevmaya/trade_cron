@@ -1,6 +1,6 @@
 <?
 class candleTrigger extends baseTrigger {
-
+/*
     public function setData($a_data) {
         if (is_string($a_data)) {
         	$a = explode(',', $a_data);
@@ -11,15 +11,12 @@ class candleTrigger extends baseTrigger {
         } else $a_data['qtime'] = '`time` >= %TIME% - INTERVAL '.$a_data['time'].' SECOND AND `time` <= %TIME%';
         parent::setData($a_data);
     }
+*/    
 
 	public function check($cur_in_id, $cur_out_id) {
 		$field = isset($this->data['field'])?$this->data['field']:'ask_top';
 
-		if (isset($this->data['back']))
-			$time = "`time` >= '{$this->stime}' - INTERVAL {$this->data['back']} AND `time` <= '{$this->stime}'";
-		else $time = str_replace('%TIME%', "'{$this->stime}'", $this->data['qtime']);
-
-		if ($candle = $this->dm->candle_data($cur_in_id, $cur_out_id, $time, $field)) {
+		if ($candle = $this->dm->candle_data($cur_in_id, $cur_out_id, $this->time - $this->data['time'], $this->time, $field)) {
 
 			$max = max($candle['close'], $candle['open']);
 			$min = min($candle['close'], $candle['open']);

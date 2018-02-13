@@ -21,18 +21,30 @@ class Sender {
 		return ($this->user != null) && (@$this->user['secretApi']) && (@$this->user['keyApi']);
 	}
 
-	public function sell($pair, $data, $time) {
+	public function sell($pair, $data, $time, $top_order) {
 		$time = date('d H:i:s', $time);
 		console::log("ACTION_SELL {$pair}");
-		//print_r($data);
-		return true;
+		return array(
+				'pair'=>$pair,
+				"price"=>$top_order['bid_top'],
+				"quantity"=>$data['volume']);
 	}
 
-	public function buy($pair, $data, $time) {
+	public function buy($pair, $data, $time, $top_order) {
 		$time = date('d H:i:s', $time);
 		console::log("ACTION_BUY {$pair}");
-		//print_r($data);
-		return true;
+		return array(
+				'pair'=>$pair,
+				"price"=>$top_order['ask_top'],
+				"quantity"=>$data['volume']);
+	} 
+
+	public function sell_test($pair, $data, $time, $top_order) {   
+		return $this->sell($pair, $data, $time, $top_order);
+	}
+
+	public function buy_test($pair, $data, $time, $top_order) {
+		return $this->buy($pair, $data, $time, $top_order);
 	}
 }
 
