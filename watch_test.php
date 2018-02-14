@@ -48,18 +48,22 @@
             $sender = new Sender();
             $dm = new dataModule($test);
 
-            $wData = $dm->getWatchOrders($test['uid'], $test['market_id'], ['test'], [$test['pair']]);
-            if (($count = count($wData))>0) {
+            $dm->resetWOTriggerStates($test['uid'], $test['market_id'], ['test'], [$test['pair']]);
+            $orders = $dm->getWatchOrderIds($test['uid'], $test['market_id'], ['test'], [$test['pair']]);
+
+            if (($count = count($orders))>0) {
                 DB::query("UPDATE _test SET `state`='process' WHERE {$twhere}");
 
                 $dm->addUserEvent($test['uid'], 'TESTEVENT', ['state'=>'START', 'time'=>$cur_time]);
 
                 while ($cur_time < $end_time) {
                     $abort = false;
-                    if ($is_dev) echo date('d.m H:i:s', $cur_time).", COUNT ORDERS: {$count}\n";
+                    //if ($is_dev) echo date('d.m H:i:s', $cur_time).", COUNT ORDERS: {$count}\n";
 
                     $dm->addUserEvent($test['uid'], 'TESTEVENT', ['state'=>'PROCESS', 'time'=>$cur_time]);
-                    foreach ($wData as $key=>$adata) {
+                    foreach ($orders as $key=>$order) {
+                        $adata = $dm->getOrder($order['id']);
+                        
                         $dm->setTime($cur_time);
                         $watcher = new cur_watch($dm, $adata, $cur_time);
                         if ($watcher->watch($sender, ['testComplete'=>false]) == 1) {
