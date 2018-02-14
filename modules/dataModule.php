@@ -105,6 +105,14 @@ class dataModule extends timeObject {
 		return $result;
 	}
 
+	public function resetWOTriggerStates($uid, $market_id, $states=null, $pairs=null) {
+		$stateFilter = '';
+		if ($states) $stateFilter .= " AND `state` IN ('".implode("','", $states)."')";
+		if ($pairs) $stateFilter .= " AND `pair` IN ('".implode("','", $pairs)."')";
+		$query = "UPDATE _watch_orders  SET `triggers_state`='' WHERE uid={$uid} AND market_id={$market_id} {$stateFilter}";
+		return DB::query($query);
+	}
+
 	public function getWatchOrders($uid, $market_id, $states=null, $pairs=null) {
 		$stateFilter = '';
 		if ($states) $stateFilter .= " AND `state` IN ('".implode("','", $states)."')";
@@ -123,6 +131,20 @@ class dataModule extends timeObject {
 		}
 
 		return $list;
+	}
+
+	public function getWatchOrderIds($uid, $market_id, $states=null, $pairs=null) {
+		$stateFilter = '';
+		if ($states) $stateFilter .= " AND `state` IN ('".implode("','", $states)."')";
+		if ($pairs) $stateFilter .= " AND `pair` IN ('".implode("','", $pairs)."')";
+		$query = "SELECT id FROM _watch_orders WHERE uid={$uid} AND market_id={$market_id} {$stateFilter}";
+		$list = DB::asArray($query);
+		return $list;
+	}
+
+	public function resetTriggerStates($order, $value='') {
+		$query = "UPDATE _watch_orders SET `triggers_state`='{$value}' WHERE id={$order['id']}";
+		return DB::query($query);
 	}
 
 	public function resetWatchOrder($order) {
@@ -148,6 +170,20 @@ class dataModule extends timeObject {
 		$result = [];
 		foreach ($recs as $rec) $result[] = $rec['pair'];
 		return $result;
+	}
+
+	public function getOrder($id, $action_state_set='active') {
+		$query = "SELECT * FROM _watch_orders WHERE id=$id";
+		if ($order = DB::line($query)) {
+			$order['action'] = array(
+				'type'=>$order['action'],
+				'volume'=>$order['volume'],
+				'state'=>$action_state_set
+			);
+
+			$order['triggers'] = json_decode($order['triggers'], true);
+		}
+		return $order;
 	}
 
 	public function getOrders($market_id, $states, $action_state_set='inactive') {

@@ -31,7 +31,9 @@ class cur_watch extends baseTrigger {
                 $lres = $this->watchTriggers($action, $cur_in_id, $cur_out_id, $this->data['triggers'], $ts, $isModified, $resTgs);
 
                 if ($isModified) {
-                    $this->dm->saveTriggerState($this->data['id'], $this->getStates($resTgs));
+                    $this->data['triggers_state'] = json_encode($tstates = $this->getStates($resTgs));
+                    $this->dm->saveTriggerState($this->data['id'], $tstates);
+                    $this->sendUserEvent('TRIGGERSTATEMODIFIED', ['order_id'=>$this->data['id'], 'state'=>$tstates]);
                 }
 
             	if ($lres) {
@@ -102,6 +104,7 @@ class cur_watch extends baseTrigger {
                         include_once($classFileName);
                     else {
                         console::log("FILE NOT FOUND {$classFileName}");
+                        $lres = false;
                         break;
                     }
                 }

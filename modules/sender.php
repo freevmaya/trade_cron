@@ -41,7 +41,7 @@ class Sender {
 
 	public function message($pair, $data, $time, $top_order) {
 		$time = date('d H:i:s', $time);
-		console::log("ACTION_BUY {$pair}");
+		console::log("ACTION_MESSAGE {$pair}");
 		return array(
 				'pair'=>$pair,
 				"price"=>$top_order['ask_top'],
