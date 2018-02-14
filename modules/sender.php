@@ -37,7 +37,16 @@ class Sender {
 				'pair'=>$pair,
 				"price"=>$top_order['ask_top'],
 				"quantity"=>$data['volume']);
-	} 
+	}
+
+	public function message($pair, $data, $time, $top_order) {
+		$time = date('d H:i:s', $time);
+		console::log("ACTION_BUY {$pair}");
+		return array(
+				'pair'=>$pair,
+				"price"=>$top_order['ask_top'],
+				"quantity"=>$data['volume']);
+	}  
 
 	public function sell_test($pair, $data, $time, $top_order) {   
 		return $this->sell($pair, $data, $time, $top_order);
@@ -45,6 +54,10 @@ class Sender {
 
 	public function buy_test($pair, $data, $time, $top_order) {
 		return $this->buy($pair, $data, $time, $top_order);
+	}
+
+	public function message_test($pair, $data, $time, $top_order) {
+		return $this->message($pair, $data, $time, $top_order);
 	}
 }
 
