@@ -25,9 +25,11 @@ class cur_watch extends baseTrigger {
             $ts = json_decode($this->data['triggers_state'], true);
             $user = $this->dm->getUser($this->data['uid'], $this->data['market_id']);
             if ($user && in_array('active', $user['states'])) {
+
                 $action = $this->data['action']['type'];
                 $isModified = false;
                 $resTgs = [];
+
                 $lres = $this->watchTriggers($action, $cur_in_id, $cur_out_id, $this->data['triggers'], $ts, $isModified, $resTgs);
 
                 if ($isModified) {
@@ -49,8 +51,11 @@ class cur_watch extends baseTrigger {
                     if ($send_result) {
                         $this->onComplete('PRICE: '.$send_result['price']);
                         $this->sendUserEvent('ORDERSUCCESS', array_merge(['pair'=>$this->data['pair'],
-                                'cur_avgprice'=>$avgPrice, 'price'=>$result['price'], 'action'=>$action], $send_result));
-                    } else $this->onFail('');
+                                'cur_avgprice'=>$avgPrice, 'action'=>$action], $send_result));
+                    } else {
+                        $this->onFail('');
+                        $this->sendUserEvent('FAILORDER', ['pair'=>$this->data['pair'], 'cur_avgprice'=>$avgPrice, 'action'=>$action]);
+                    }
                     $result = 1;             
                 }
             }
@@ -109,14 +114,12 @@ class cur_watch extends baseTrigger {
                     }
                 }
 
-                $tObj = $resTgs[$i] = new $trClass($this->dm, $trigger, $this->time, isset($ts[$i])?$ts[$i]:null, ($action=='buy')?'ask_top':'bid_top');
+                $tObj = $resTgs[$i] = new $trClass($this->dm, $trigger, $this->time, isset($ts[$i])?$ts[$i]:null, $action);
                 if ($res = $tObj->check($cur_in_id, $cur_out_id))
                     $this->maxPeriod  = max($tObj->timePeriod(), $maxPeriod);
 
                 $lres = $lres && $res;
                 $isModified = $isModified || $tObj->isModified();
-
-                //if (is_numeric($i)) print_r($a_ttype.$i);
             }
 
             if (!$lres) break;

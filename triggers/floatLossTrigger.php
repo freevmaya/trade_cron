@@ -14,9 +14,7 @@ class floatLossTrigger extends baseTrigger {
 				if ($low_price < $cur_low_price) {
 					$this->setStateVar('low_price', $cur_low_price);
 				}
-				if ($result = $low_price >= $price) {
-					//echo $this->stime." $price low: $low_price, cur_low: $cur_low_price\n";
-				}
+				$result = $low_price >= $price;
 			} else $this->setStateVar('low_price', $cur_low_price);
 		}
 

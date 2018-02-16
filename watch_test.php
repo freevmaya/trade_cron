@@ -14,6 +14,7 @@
 
     include_once(INCLUDE_PATH.'fdbg.php');
     include_once(TRADEPATH.'include/events.php');
+    include_once(TRADEPATH.'include/Memcache.php');
     include_once(MAINDIR.'include/utils.php');
     include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'modules/cur_watch.php');
@@ -30,6 +31,7 @@
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
     $scriptID = basename(__FILE__);
     $scriptCode = md5(time());
+    $mcache = new ArrCache();
 
     startScript($scriptID, $scriptCode, WAITTIME);
 
@@ -46,7 +48,7 @@
             new console();
 
             $sender = new Sender();
-            $dm = new dataModule($test);
+            $dm = new dataModule($test, $mcache);
 
             $dm->resetWOTriggerStates($test['uid'], $test['market_id'], ['test'], [$test['pair']]);
             $orders = $dm->getWatchOrderIds($test['uid'], $test['market_id'], ['test'], [$test['pair']]);

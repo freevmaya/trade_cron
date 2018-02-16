@@ -5,8 +5,8 @@ class exmoDataModule extends dataModule {
     protected $mid;
     protected $orders;
 
-	function __construct($exmo_api) {
-		parent::__construct();
+	function __construct($exmo_api, $cacheObject=null) {
+		parent::__construct(null, $cacheObject);
         $this->exmo_api = $exmo_api;
         $this->mid = $this->marketID('exmo');
         $this->resetActualPairs();
@@ -22,33 +22,49 @@ class exmoDataModule extends dataModule {
     }
 
 	public function getCurrentOrder($cur_in_id, $cur_out_id) {
-        $cache_index = $cur_in_id.'_'.$cur_out_id.'_'.$this->time;
+        $cache_index = $cur_in_id.'_'.$cur_out_id.'_od_'.$this->time;
 
-        if (!isset($this->recCache[$cache_index])) {
-            
+        if (!($result = $this->recCache->get($cache_index))) {
+
             $list = $this->exmo_api->api_query('order_book', array(
                 "pair"=>$this->pairs,
-                "limit"=>1
+                "limit"=>100
             ));
 
             if ($list) {
                 foreach ($list as $pair=>$data) {
                     $pairA   = explode('_', $pair);
-                    $cur_in_id  = curID($pairA[0]);
-                    $cur_out_id = curID($pairA[1]);
+                    $data['cur_in'] = $cin  = curID($pairA[0]);
+                    $data['cur_out'] = $cout = curID($pairA[1]);
 
-                    $ci = $cur_in_id.'_'.$cur_out_id.'_'.$this->time;
-                    $query = "SELECT MAX(id) as id FROM _orders WHERE cur_in={$cur_in_id} AND cur_out={$cur_out_id}";
+                    $ci = $cin.'_'.$cout.'_od_'.$this->time;
+                    /*
+
+                    $query = "SELECT MAX(id) as id FROM _orders WHERE cur_in={$cin} AND cur_out={$cout}";
                     if ($id = DB::line($query)) // Получае id последней записи, это нужно для расчета объемов, если потребуется
                         $data['id'] = $id['id'];
-                    $this->recCache[$ci] = $data;
-                }
-            } else return null;
+                    */
 
-            //print_r($this->recCache);
+                    $data['avg_price'] = ($data['ask_top'] + $data['bid_top']) / 2;
+                    $volumes = new Volumes($data['ask'], $data['bid']);
+                    unset($data['ask']);
+                    unset($data['bid']);
+                    $data['ask_glass'] = $volumes->getAskvol();
+                    $data['bid_glass'] = $volumes->getBidvol();
+
+                    $this->recCache->set($ci, $data);
+
+                    //print_r($this->recCache[$ci]);
+                }
+
+                $result = $this->recCache->get($cache_index);
+            } else {
+                trace('empty order list');
+            }
+
         }
 
-        return isset($this->recCache[$cache_index])?$this->recCache[$cache_index]:null;
+        return $result;
     }  
 }
 ?>

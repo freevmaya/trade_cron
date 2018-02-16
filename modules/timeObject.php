@@ -21,5 +21,13 @@ class timeObject {
 	public static function sTime() {
 		return round(time() / WAITTIME) * WAITTIME;
 	}
+
+	public function trace($obj) {
+		echo $this->stime.' ';
+		if ($obj) {
+			if (is_numeric($obj) || is_string($obj)) echo $obj."\n";
+			else print_r($obj);
+		} else echo "empty or 0\n";
+	}
 }
 ?>

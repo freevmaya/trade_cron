@@ -3,7 +3,7 @@
     
     include_once('/home/cron_engine.php');
     define('WAITTIME', 30);
-    define('CYCLETIME', 10);
+    define('CYCLETIME', 30);
 
     //define('CHECKTIME', 60);
     //define('REMOVEINTERVAL', '3 DAY');
@@ -19,6 +19,7 @@
 
     include_once(INCLUDE_PATH.'fdbg.php');
     include_once(TRADEPATH.'include/events.php');
+    include_once(TRADEPATH.'include/Memcache.php');
     include_once(MAINDIR.'include/utils.php');
     include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'modules/cur_watch.php');
@@ -41,7 +42,7 @@
     $FDBGLogFile = (__FILE__).'.log';
     
     $sender = new exmoSender();
-    $dm = new exmoDataModule($sender);
+    $dm = new exmoDataModule($sender, new MCache());
     new console($is_dev, $dm);
 
     console::log('START '.$scriptID);
@@ -50,6 +51,8 @@
         $time   = time();
         $orders = $dm->getActualOrders();
         console::clearUID();
+
+    //    $dm->trace("COUNT: ".count($orders));
         
         if ($orders) {
             $dm->resetActualPairs();

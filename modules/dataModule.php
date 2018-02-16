@@ -3,9 +3,9 @@ class dataModule extends timeObject {
 	protected $recCache;
 	protected $events;
 
-	function __construct($fullData=null) {
+	function __construct($fullData=null, $cacheObject=null) {
 		parent::__construct();
-		$this->recCache = array();
+		$this->recCache = $cacheObject;
 		$this->events = $this->createEvents();
 		if ($fullData) $this->fullCache($fullData);
 	}
@@ -14,7 +14,7 @@ class dataModule extends timeObject {
 		$where = "`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}";
 		if ($this->serverTime() != $this->stime) $where .= " AND `time`<='{$this->stime}'";
 
-		$query = "SELECT * FROM _orders WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
+		$query = "SELECT *, (ask_top + bid_top) / 2 AS avg_price FROM _orders WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
 		return DB::line($query);
 	}
 
@@ -22,7 +22,7 @@ class dataModule extends timeObject {
 		$where = "`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}";
 		if ($this->serverTime() != $this->stime) $where .= " AND `time`<='{$this->stime}'";
 
-		$query = "SELECT * FROM _trades WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
+		$query = "SELECT *, (buy_price + sell_price) / 2 AS avg_price FROM _trades WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
 		return DB::line($query);
 	}
 
@@ -34,11 +34,20 @@ class dataModule extends timeObject {
         $end_time 	= $fullData['end_time'];
 
 		$where = "`cur_in`={$cur_in} AND `cur_out`={$cur_out} AND `time`>='{$start_time}' AND  `time`<='{$end_time}'";
-		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time` FROM _orders WHERE {$where}";
-		$list = DB::asArray($query);
-		foreach ($list as $order) {
+		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time`, (ask_top + bid_top) / 2 AS avg_price FROM _orders WHERE {$where}";
+		$listOrder = DB::asArray($query);
+
+		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time`, (buy_price + sell_price) / 2 AS avg_price FROM _trades WHERE {$where}";
+		$listTrade = DB::asArray($query);
+
+		foreach ($listOrder as $order) {
 			$cache_index = $cur_in.'_'.$cur_out.'_od_'.strtotime($order['time']);
-			$this->recCache[$cache_index] = $order;
+			$this->recCache->set($cache_index, $order);
+		}
+
+		foreach ($listTrade as $trade) {
+			$cache_index = $cur_in.'_'.$cur_out.'_td_'.strtotime($trade['time']);
+			$this->recCache->set($cache_index, $trade);
 		}
 	}
 
@@ -47,25 +56,29 @@ class dataModule extends timeObject {
 	}
 
 	public function candle_data($cur_in_id, $cur_out_id, $start_time, $end_time, $field='ask_top') {
-		//if (!($list = $this->candleInCache($cur_in_id, $cur_out_id, $start_time, $end_time))) {
-		$sstart_time = date(DATEFORMAT, $start_time);
-		$send_time = date(DATEFORMAT, $end_time);
-		$where = "(`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}) AND (`time`>='{$sstart_time}' AND `time`<='{$send_time}')";
-		$query = "SELECT id, {$field}, UNIX_TIMESTAMP(`time`) AS `unix_time`, `time` FROM _orders WHERE {$where}";
-		$list = DB::asArray($query);
-		//}
-		$result = null;
+		$cache_index = $cur_in_id.'_'.$cur_out_id.'_s'.$start_time.'_e'.$end_time;
 
-		if (($count = count($list)) > 1) {
-			$result = array();
-			$result['open_time'] = date('d.m.Y H:i:s', $list[0]['unix_time']);
-			$result['close_time'] = date('d.m.Y H:i:s', $list[$count - 1]['unix_time']);
-			$result['min'] = $result['max'] = $result['open'] = $list[0][$field];
-			$result['close'] = $list[$count - 1][$field];
-			foreach ($list as $item) {
-				if ($item[$field] > $result['max'])
-					$result['max'] = $item[$field];
-				else if ($result['min'] > $item[$field]) $result['min'] = $item[$field];
+		if (!($result = $this->recCache->get($cache_index))) {
+			$sstart_time = date(DATEFORMAT, $start_time);
+			$send_time = date(DATEFORMAT, $end_time);
+			$where = "(`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}) AND (`time`>='{$sstart_time}' AND `time`<='{$send_time}')";
+			$query = "SELECT id, {$field}, UNIX_TIMESTAMP(`time`) AS `unix_time`, `time` FROM _orders WHERE {$where}";
+			$list = DB::asArray($query);
+			$result = null;
+
+			if (($count = count($list)) > 1) {
+				$result = array();
+				$result['open_time'] = date('d.m.Y H:i:s', $list[0]['unix_time']);
+				$result['close_time'] = date('d.m.Y H:i:s', $list[$count - 1]['unix_time']);
+				$result['min'] = $result['max'] = $result['open'] = $list[0][$field];
+				$result['close'] = $list[$count - 1][$field];
+				foreach ($list as $item) {
+					if ($item[$field] > $result['max'])
+						$result['max'] = $item[$field];
+					else if ($result['min'] > $item[$field]) $result['min'] = $item[$field];
+				}
+
+				$this->recCache->set($cache_index, $result);
 			}
 		}
 		return $result;
@@ -76,10 +89,10 @@ class dataModule extends timeObject {
 		$end_cache_index = $cur_in_id.'_'.$cur_out_id.'_od_'.$end_time;
 		$list = null;
 
-		if (isset($this->recCache[$start_cache_index]) && isset($this->recCache[$end_cache_index])) {
+		if ($this->recCache->get($start_cache_index) && $this->recCache->get($end_cache_index)) {
 			$list = [];
 			for ($i = $start_time; $i<=$end_time; $i += WAITTIME) 
-				$list[] = $this->recCache[$cur_in_id.'_'.$cur_out_id.'_od_'.$i];
+				$list[] = $this->recCache->get($cur_in_id.'_'.$cur_out_id.'_od_'.$i);
 		}
 
 		return $list;
@@ -88,9 +101,9 @@ class dataModule extends timeObject {
 	public function getCurrentOrder($cur_in_id, $cur_out_id) {
 		$cache_index = $cur_in_id.'_'.$cur_out_id.'_od_'.$this->time;
 
-		if (!isset($this->recCache[$cache_index])) {
-			$this->recCache[$cache_index] = $result = $this->getCurrentOrderDB($cur_in_id, $cur_out_id);
-		} else $result = $this->recCache[$cache_index];
+		if ($result = $this->recCache->get($cache_index)) {
+			$this->recCache->set($cache_index, $result = $this->getCurrentOrderDB($cur_in_id, $cur_out_id));
+		}
 
 		return $result;
 	}
@@ -98,9 +111,9 @@ class dataModule extends timeObject {
 	public function getCurrentTrade($cur_in_id, $cur_out_id) {
 		$cache_index = $cur_in_id.'_'.$cur_out_id.'_td_'.$this->time;
 
-		if (!isset($this->recCache[$cache_index])) {
-			$this->recCache[$cache_index] = $result = $this->getCurrentTradeDB($cur_in_id, $cur_out_id);
-		} else $result = $this->recCache[$cache_index];
+		if ($result = $this->recCache->get($cache_index)) {
+			$this->recCache->set($cache_index, $result = $this->getCurrentTradeDB($cur_in_id, $cur_out_id));
+		}
 
 		return $result;
 	}
@@ -206,8 +219,11 @@ class dataModule extends timeObject {
 	public function setOrderState($id, $state, $unixtime=null) {
 		if ($unixtime) $str_time = date(DATEFORMAT, $unixtime);
 		else $str_time = date(DATEFORMAT);
+
 		$query = "UPDATE _watch_orders SET state='{$state}', state_time='{$str_time}' WHERE id={$id}";
-		return DB::query($query);
+		$result = DB::query($query);	
+
+		return $result;
 	}
 
 	public function saveTriggerState($id_order, $data) {

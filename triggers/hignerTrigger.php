@@ -10,6 +10,7 @@ class hignerTrigger extends baseTrigger {
 
 	public function check($cur_in_id, $cur_out_id) {
 		$result = false;
+
 		if ($item = $this->dm->getCurrentOrder($cur_in_id, $cur_out_id)) {
 			//print_r($item[$this->priceType]);
 			$result = $this->data['value'] <= $item[$this->priceType]; 

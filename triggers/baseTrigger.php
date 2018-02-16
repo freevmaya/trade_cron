@@ -6,15 +6,23 @@ class baseTrigger extends timeObject {
 	protected $state;
 	protected $state_modify;
     protected $priceType;
+    protected $action;
 	protected $dm;
 
-	function __construct($a_dataModule, $a_data, $time=0, $state=null, $checkPriceType='ask_top') {
+	function __construct($a_dataModule, $a_data, $time=0, $state=null, $action='message') {
 		parent::__construct($time);
+
+        $fields = $this->getPriceFields();
 		$this->dm = $a_dataModule;
 		$this->state = $state;
+        $this->action = $action;
         $this->state_modify = false;
-        $this->priceType = $checkPriceType;
+        $this->priceType = $fields[$this->action];
 		$this->setData($a_data);
+    }
+
+    protected function getPriceFields() {
+        return array('buy'=>'ask_top', 'sell'=>'bid_top', 'message'=>'avg_price');
     }
 
     public function setData($a_data) {
