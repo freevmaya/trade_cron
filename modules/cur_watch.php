@@ -114,6 +114,7 @@ class cur_watch extends baseTrigger {
                     }
                 }
 
+                //$this->trace($trClass);
                 $tObj = $resTgs[$i] = new $trClass($this->dm, $trigger, $this->time, isset($ts[$i])?$ts[$i]:null, $action);
                 if ($res = $tObj->check($cur_in_id, $cur_out_id))
                     $this->maxPeriod  = max($tObj->timePeriod(), $maxPeriod);

@@ -10,16 +10,20 @@ class timeObject {
 	public function setTime($time=0) {
 		if ($time == 0) $a_time = time();
 		else $a_time = is_string($time)?strtotime($time):$time; 
-		$this->time = round($a_time / WAITTIME) * WAITTIME;
+		$this->time = $this->correctTime($a_time);
 		$this->stime = date(DATEFORMAT, $this->time);
-	}	
+	}
+
+	protected function correctTime($a_time) {
+		return ceil($a_time / WAITTIME) * WAITTIME;
+	}
 
 	public function serverTime() {
 		return timeObject::sTime();
 	}	
 
 	public static function sTime() {
-		return round(time() / WAITTIME) * WAITTIME;
+		return ceil(time() / WAITTIME) * WAITTIME;
 	}
 
 	public function trace($obj) {

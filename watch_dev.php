@@ -3,7 +3,7 @@
     
     include_once('/home/cron_engine.php');
     define('WAITTIME', 30);
-    define('CYCLETIME', 30);
+    define('CYCLETIME', 10);
 
     //define('CHECKTIME', 60);
     //define('REMOVEINTERVAL', '3 DAY');
@@ -51,8 +51,7 @@
         $time   = time();
         $orders = $dm->getActualOrders();
         console::clearUID();
-
-    //    $dm->trace("COUNT: ".count($orders));
+        //$dm->trace("COUNT: ".count($orders));
         
         if ($orders) {
             $dm->resetActualPairs();

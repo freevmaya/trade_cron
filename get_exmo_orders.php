@@ -65,8 +65,8 @@
                             "'{$item['bid_amount']}', {$item['ask_top']}, {$item['bid_top']}, ".$volumes->getAskvol().','.$volumes->getBidvol().')';
                         DB::query($query);
 
-                        $events->pairdata('exmoorders', $pair, ['time'=>date('d.m H:i'), 'ask_price'=>$item['ask_top'], 'bid_price'=>$item['bid_top'],
-                                                          'ask_volumes'=>$volumes->getAskvol(), 'bid_volumes'=>$volumes->getBidvol()]);
+                        $events->pairdata('exmoorders', $pair, ['time'=>date('d.m H:i'), 'ask_top'=>$item['ask_top'], 'bid_top'=>$item['bid_top'],
+                                                          'ask_glass'=>$volumes->getAskvol(), 'bid_glass'=>$volumes->getBidvol()]);
 
 
                         //$volumes->save(DB::lastID());

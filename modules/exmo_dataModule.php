@@ -12,6 +12,10 @@ class exmoDataModule extends dataModule {
         $this->resetActualPairs();
 	}
 
+    protected function correctTime($a_time) {
+        return ceil($a_time / CYCLETIME) * CYCLETIME;
+    }
+
     public function resetActualPairs() {
         $pairs = $this->getActualPairs($this->mid, ['active', 'process']);
         $this->pairs = implode(',', $pairs);
@@ -21,10 +25,64 @@ class exmoDataModule extends dataModule {
         return $this->getOrders($this->mid, ['active', 'process'], 'active');
     }
 
+    public function getCurrentTrade($cur_in_id, $cur_out_id) {
+        $cache_index = $cur_in_id.'_'.$cur_out_id.'_td_'.$this->time;
+
+        //$this->trace($cache_index );
+
+        if (!($result = $this->recCache->get($cache_index))) {
+
+            $pairs_a = explode(',', $this->pairs); 
+
+            foreach ($pairs_a as $pair) {
+                if ($data = $this->exmo_api->api_query('trades', array(
+                        "pair"=>$pair
+                    ))) {
+                    if (isset($data[$pair]) && (is_array($data[$pair]))) {
+                        $buy_price = -1;
+                        $sell_price = -1;
+                        $buy_volumes = 0;
+                        $sell_volumes = 0;
+                        foreach ($data[$pair] as $item) {
+                            $t = $item['type']; 
+                            if ($t == 'sell') {
+                                if (($sell_price == -1) || ($sell_price < $item['price'])) $sell_price = $item['price'];
+                                $sell_volumes += $item['quantity'];
+                            } else {
+                                if (($buy_price == -1) || ($buy_price < $item['price'])) $buy_price = $item['price'];
+                                $buy_volumes += $item['quantity'];
+                            }
+                        }
+
+                        $item = ['time'=>$this->time, 'buy_price'=>$buy_price, 'sell_price'=>$sell_price,
+                                 'buy_volumes'=>$buy_volumes, 'sell_volumes'=>$sell_volumes];
+
+                        $pairA   = explode('_', $pair);
+                        $item['cur_in'] = $cin  = curID($pairA[0]);
+                        $item['cur_out'] = $cout = curID($pairA[1]);
+
+                        $this->events->pairdata('exmotrades', $pair, $item);
+
+                        $lci = $item['cur_in'].'_'.$item['cur_out'].'_td_'.$this->time;
+                        $this->recCache->set($lci, $item);
+                    }
+                }
+            }
+            $result = $this->recCache->get($cache_index);
+            //$this->trace($result);
+        }
+
+        return $result;
+    }
+
 	public function getCurrentOrder($cur_in_id, $cur_out_id) {
         $cache_index = $cur_in_id.'_'.$cur_out_id.'_od_'.$this->time;
 
+        //$this->trace("cache_index: $cache_index");
+
         if (!($result = $this->recCache->get($cache_index))) {
+
+            //$this->trace($result);
 
             $list = $this->exmo_api->api_query('order_book', array(
                 "pair"=>$this->pairs,
@@ -53,8 +111,9 @@ class exmoDataModule extends dataModule {
                     $data['bid_glass'] = $volumes->getBidvol();
 
                     $this->recCache->set($ci, $data);
+                    $events->pairdata('exmoorders', $pair, $data);
 
-                    //print_r($this->recCache[$ci]);
+                    print_r('getCurrentOrder: '.$this->stime);
                 }
 
                 $result = $this->recCache->get($cache_index);
