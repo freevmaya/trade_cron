@@ -16,6 +16,7 @@
     include_once(INCLUDE_PATH.'fdbg.php');
     include_once(MAINDIR.'include/console.php');
     include_once(TRADEPATH.'include/events.php');
+    include_once(TRADEPATH.'include/exmoUtils.php');
 
     GLOBAL $volumes;
     
@@ -42,38 +43,28 @@
     console::log('START '.$scriptID);
     while (true) {
         $time = time();
+        $buy_price      = 0;
+        $sell_price     = 0;
+        $buy_volumes    = 0;
+        $sell_volumes   = 0;
 
         foreach ($pairs_a as $pair) {
             if ($data = @json_decode(file_get_contents($queryURL.$pair), true)) {
                 if (isset($data['error']) && $data['error']) {
                     console::log($data['error']);
                 } else {
-                    if (isset($data[$pair]) && (is_array($data[$pair]))) {
-                        $buy_price = -1;
-                        $sell_price = -1;
-                        $buy_volumes = 0;
-                        $sell_volumes = 0;
-                        foreach ($data[$pair] as $item) {
-                            $t = $item['type']; 
-                            if ($t == 'sell') {
-                                if (($sell_price == -1) || ($sell_price < $item['price'])) $sell_price = $item['price'];
-                                $sell_volumes += $item['quantity'];
-                            } else {
-                                if (($buy_price == -1) || ($buy_price < $item['price'])) $buy_price = $item['price'];
-                                $buy_volumes += $item['quantity'];
-                            }
-                        }
-
-                        $pairA   = explode('_', $pair);
+                    if ($result = parseExmoTrades($data, $pair)) {
+                        $pairA      = explode('_', $pair);
                         $cur_in_id  = curID($pairA[0]);
                         $cur_out_id = curID($pairA[1]);
-                        $mysqltime = date(DATEFORMAT, ceil($time / WAITTIME) * WAITTIME);
+                        $mysqltime  = date(DATEFORMAT, ceil($time / WAITTIME) * WAITTIME);
                         $query = "REPLACE ".DBPREF."_trades (`time`, `cur_in`, `cur_out`, `buy_price`, `sell_price`, `buy_volumes`, `sell_volumes`) ".
-                            "VALUES ('{$mysqltime}', {$cur_in_id}, {$cur_out_id}, {$buy_price }, {$sell_price}, {$buy_volumes}, {$sell_volumes})";
+                            "VALUES ('{$mysqltime}', {$cur_in_id}, {$cur_out_id}, {$result['buy_price']}, {$result['sell_price']},".
+                            " {$result['buy_volumes']}, {$result['sell_volumes']})";
                         DB::query($query);
 
-                        $events->pairdata('exmotrades', $pair, ['time'=>date('d.m H:i'), 'buy_price'=>$buy_price, 'sell_price'=>$sell_price,
-                                                          'buy_volumes'=>$buy_volumes, 'sell_volumes'=>$sell_volumes]);
+                        $events->pairdata('exmotrades', $pair, ['time'=>date('d.m H:i'), 'buy_price'=>$result['buy_price'], 'sell_price'=>$result['sell_price'],
+                                                          'buy_volumes'=>$result['buy_volumes'], 'sell_volumes'=>$result['sell_volumes']]);
                     }
                 }
             }

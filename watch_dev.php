@@ -20,6 +20,7 @@
     include_once(INCLUDE_PATH.'fdbg.php');
     include_once(TRADEPATH.'include/events.php');
     include_once(TRADEPATH.'include/Memcache.php');
+    include_once(TRADEPATH.'include/exmoUtils.php');
     include_once(MAINDIR.'include/utils.php');
     include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'modules/cur_watch.php');
