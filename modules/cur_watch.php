@@ -2,6 +2,13 @@
 define('TRIGGERSCLASSPATH', MAINDIR.'triggers/');
 include_once(TRIGGERSCLASSPATH.'baseTrigger.php');
 
+/*
+class sendThread extends Thread {
+    function run($watch){
+    }
+}
+*/
+
 class cur_watch extends baseTrigger {
 	protected $sender;
     protected $maxPeriod;
@@ -48,20 +55,24 @@ class cur_watch extends baseTrigger {
                         $taction = $action.'_test';
                         $send_result = $this->sender->$taction($this->data['pair'], $this->data['action'], $this->time, $corder);
                     }
-                    if ($send_result) {
-                        $this->onComplete('PRICE: '.$send_result['price']);
-                        $this->sendUserEvent('ORDERSUCCESS', array_merge(['pair'=>$this->data['pair'],
-                                'cur_avgprice'=>$avgPrice, 'action'=>$action], $send_result));
-                    } else {
-                        $this->onFail('');
-                        $this->sendUserEvent('FAILORDER', ['pair'=>$this->data['pair'], 'cur_avgprice'=>$avgPrice, 'action'=>$action]);
-                    }
+                    $this->afterSend($send_result);
                     $result = 1;             
                 }
             }
         }
         return $result;
 	}
+
+    public function afterSend($send_result)  {
+         if ($send_result) {
+            $this->onComplete('PRICE: '.$send_result['price']);
+            $this->sendUserEvent('ORDERSUCCESS', array_merge(['pair'=>$this->data['pair'],
+                    'cur_avgprice'=>$avgPrice, 'action'=>$action], $send_result));
+        } else {
+            $this->onFail('');
+            $this->sendUserEvent('FAILORDER', ['pair'=>$this->data['pair'], 'cur_avgprice'=>$avgPrice, 'action'=>$action]);
+        }
+    }
 
     public function period() {
         return $this->maxPeriod;

@@ -41,19 +41,17 @@
     $pairs_a = explode(',', $pairs);
 
     console::log('START '.$scriptID);
+
+    $prev = [];
     while (true) {
         $time = time();
-        $buy_price      = 0;
-        $sell_price     = 0;
-        $buy_volumes    = 0;
-        $sell_volumes   = 0;
 
         foreach ($pairs_a as $pair) {
             if ($data = @json_decode(file_get_contents($queryURL.$pair), true)) {
                 if (isset($data['error']) && $data['error']) {
                     console::log($data['error']);
                 } else {
-                    if ($result = parseExmoTrades($data, $pair)) {
+                    if ($result = parseExmoTrades($data, $pair, isset($prev[$pair])?$prev[$pair]:null)) {
                         $pairA      = explode('_', $pair);
                         $cur_in_id  = curID($pairA[0]);
                         $cur_out_id = curID($pairA[1]);
@@ -65,6 +63,8 @@
 
                         $events->pairdata('exmotrades', $pair, ['time'=>date('d.m H:i'), 'buy_price'=>$result['buy_price'], 'sell_price'=>$result['sell_price'],
                                                           'buy_volumes'=>$result['buy_volumes'], 'sell_volumes'=>$result['sell_volumes']]);
+
+                        $prev[$pair] = $result;
                     }
                 }
             }

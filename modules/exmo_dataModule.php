@@ -92,8 +92,6 @@ class exmoDataModule extends dataModule {
 
                     $this->recCache->set($ci, $data);
                     $this->events->pairdata('exmoorders', $pair, $data);
-
-                    print_r('getCurrentOrder: '.$this->stime);
                 }
 
                 $result = $this->recCache->get($cache_index);
