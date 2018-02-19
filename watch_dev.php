@@ -1,7 +1,7 @@
 <?php
     set_time_limit(0);
     
-    include_once('/home/cron_engine.php');
+    include_once('/home/cron_engine_trade.php');
     define('WAITTIME', 30);
     define('CYCLETIME', 10);
 

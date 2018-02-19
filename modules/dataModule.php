@@ -2,19 +2,37 @@
 class dataModule extends timeObject {
 	protected $recCache;
 	protected $events;
+	protected $market_id;
 
-	function __construct($fullData=null, $cacheObject=null) {
+	function __construct($fullData=null, $cacheObject=null, $market_symbol='') {
 		parent::__construct();
-		$this->recCache = $cacheObject;
-		$this->events = $this->createEvents();
+		$this->market_symbol 	= $this->getMarketSymbol($market_symbol);
+		$this->market_id 		= $this->getMarketId();
+		$this->recCache 		= $cacheObject;
+		$this->events 			= $this->createEvents();
 		if ($fullData) $this->fullCache($fullData);
+	}
+
+	//Overrideable
+	protected function getMarketSymbol($market_symbol='') {
+		return $market_symbol;
+	}
+
+    protected function getMarketId() {
+        return getMarketId($this->getMarketSymbol());
+    }
+
+	public function marketID($market_name) {
+		if ($rec = DB::line("SELECT id FROM _markets WHERE `name`='{$market_name}'")) 
+			return $rec['id'];
+		else return 0;
 	}
 
 	protected function getCurrentOrderDB($cur_in_id, $cur_out_id) {
 		$where = "`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}";
 		if ($this->serverTime() != $this->stime) $where .= " AND `time`<='{$this->stime}'";
 
-		$query = "SELECT *, (ask_top + bid_top) / 2 AS avg_price FROM _orders WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
+		$query = "SELECT *, (ask_top + bid_top) / 2 AS avg_price FROM _orders_".$this->market_symbol." WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
 		return DB::line($query);
 	}
 
@@ -22,7 +40,7 @@ class dataModule extends timeObject {
 		$where = "`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}";
 		if ($this->serverTime() != $this->stime) $where .= " AND `time`<='{$this->stime}'";
 
-		$query = "SELECT *, (buy_price + sell_price) / 2 AS avg_price FROM _trades WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
+		$query = "SELECT *, (buy_price + sell_price) / 2 AS avg_price FROM _trades_".$this->market_symbol." WHERE {$where} ORDER BY id DESC LIMIT 0, 1";
 		return DB::line($query);
 	}
 
@@ -34,10 +52,10 @@ class dataModule extends timeObject {
         $end_time 	= $fullData['end_time'];
 
 		$where = "`cur_in`={$cur_in} AND `cur_out`={$cur_out} AND `time`>='{$start_time}' AND  `time`<='{$end_time}'";
-		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time`, (ask_top + bid_top) / 2 AS avg_price FROM _orders WHERE {$where}";
+		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time`, (ask_top + bid_top) / 2 AS avg_price FROM _orders_".$this->market_symbol." WHERE {$where}";
 		$listOrder = DB::asArray($query);
 
-		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time`, (buy_price + sell_price) / 2 AS avg_price FROM _trades WHERE {$where}";
+		$query = "SELECT *, UNIX_TIMESTAMP(`time`) AS `unix_time`, (buy_price + sell_price) / 2 AS avg_price FROM _trades_".$this->market_symbol." WHERE {$where}";
 		$listTrade = DB::asArray($query);
 
 		foreach ($listOrder as $order) {
@@ -62,7 +80,7 @@ class dataModule extends timeObject {
 			$sstart_time = date(DATEFORMAT, $start_time);
 			$send_time = date(DATEFORMAT, $end_time);
 			$where = "(`cur_in`={$cur_in_id} AND `cur_out`={$cur_out_id}) AND (`time`>='{$sstart_time}' AND `time`<='{$send_time}')";
-			$query = "SELECT id, {$field}, UNIX_TIMESTAMP(`time`) AS `unix_time`, `time` FROM _orders WHERE {$where}";
+			$query = "SELECT id, {$field}, UNIX_TIMESTAMP(`time`) AS `unix_time`, `time` FROM _orders_".$this->market_symbol." WHERE {$where}";
 			$list = DB::asArray($query);
 			$result = null;
 
@@ -168,12 +186,6 @@ class dataModule extends timeObject {
 			}
 		}
 		return $order;
-	}
-
-	public function marketID($market_name) {
-		if ($rec = DB::line("SELECT id FROM _markets WHERE `name`='{$market_name}'")) 
-			return $rec['id'];
-		else return 0;
 	}
 
 	public function getActualPairs($market_id, $states) {

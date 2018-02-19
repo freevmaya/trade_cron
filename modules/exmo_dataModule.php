@@ -8,9 +8,14 @@ class exmoDataModule extends dataModule {
 	function __construct($exmo_api, $cacheObject=null) {
 		parent::__construct(null, $cacheObject);
         $this->exmo_api = $exmo_api;
-        $this->mid = $this->marketID('exmo');
+        $this->mid      = $this->market_id;
         $this->resetActualPairs();
 	}
+
+    //Overrideable
+    protected function getMarketSymbol($market_symbol='') {
+        return 'exmo';
+    }
 
     protected function correctTime($a_time) {
         return ceil($a_time / CYCLETIME) * CYCLETIME;

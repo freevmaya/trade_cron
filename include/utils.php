@@ -1,15 +1,34 @@
 <?
     define('REFRESHMIN', 15);
+
+    GLOBAL $utils_cur_ids; 
+    $utils_cur_ids = [];
     
     function curID($cur_sign) {
-        $query = "SELECT * FROM ".DBPREF."_currency WHERE `sign`='$cur_sign'";
-        $cur_rec = DB::line($query);
-        if ($cur_rec) return $cur_rec['cur_id'];
+        GLOBAL $utils_cur_ids;
+        if (!isset($utils_cur_ids[$cur_sign])) {
+            $query = "SELECT * FROM ".DBPREF."_currency";
+            $cur_rec = DB::asArray($query);
+
+            foreach ($cur_rec as $item)
+                $utils_cur_ids[$item['sign']] = $item['cur_id'];
+        }
+
+        if (isset($utils_cur_ids[$cur_sign])) return $utils_cur_ids[$cur_sign];
         else {
             DB::query("INSERT INTO ".DBPREF."_currency (`sign`, `name`) VALUES ('{$cur_sign}', '{$cur_sign}')");
-            return DB::lastID();
-        }        
+            return $utils_cur_ids[$cur_sign] = DB::lastID();
+        }
     } 
+
+    function getMarketId($marketSymbol) {
+        if ($res = DB::line("SELECT * FROM _markets WHERE name='$marketSymbol'")) {
+            return $res['id'];
+        } else {
+            DB::query("INSERT INTO _markets (`name`) VALUES ('$marketSymbol')");
+            return DB::lastID();
+        }
+    }
     
     function r($val, $round) {
         return round($val * $round)/$round;

@@ -55,7 +55,7 @@ class cur_watch extends baseTrigger {
                         $taction = $action.'_test';
                         $send_result = $this->sender->$taction($this->data['pair'], $this->data['action'], $this->time, $corder);
                     }
-                    $this->afterSend($send_result);
+                    $this->afterSend($send_result, $this->data['action']);
                     $result = 1;             
                 }
             }
@@ -63,14 +63,13 @@ class cur_watch extends baseTrigger {
         return $result;
 	}
 
-    public function afterSend($send_result)  {
+    public function afterSend($send_result, $action)  {
          if ($send_result) {
             $this->onComplete('PRICE: '.$send_result['price']);
-            $this->sendUserEvent('ORDERSUCCESS', array_merge(['pair'=>$this->data['pair'],
-                    'cur_avgprice'=>$avgPrice, 'action'=>$action], $send_result));
+            $this->sendUserEvent('ORDERSUCCESS', array_merge(['pair'=>$this->data['pair'], 'price'=>$send_result['price'], 'action'=>$action], $send_result));
         } else {
             $this->onFail('');
-            $this->sendUserEvent('FAILORDER', ['pair'=>$this->data['pair'], 'cur_avgprice'=>$avgPrice, 'action'=>$action]);
+            $this->sendUserEvent('FAILORDER', ['pair'=>$this->data['pair'], 'action'=>$action]);
         }
     }
 

@@ -1,7 +1,7 @@
 <?php
     set_time_limit(0);
     
-    include_once('/home/cron_engine.php');
+    include_once('/home/cron_engine_trade.php');
     define('WAITTIME', 30);
     define('REMOVEINTERVAL', '3 DAY');
     define('DBPREF', '');
@@ -26,6 +26,7 @@
     GLOBAL $volumes;
     
     $dbname = 'trade';
+    $market = 'exmo';
     $FDBGLogFile = (__FILE__).'.log';
     $isdea = explode('_', dirname(__FILE__));
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
@@ -47,8 +48,9 @@
             $events = new Events();
             new console();
 
+            $market = DB::line("SELECT * FROM _markets WHERE id={$test['market_id']}");
             $sender = new Sender();
-            $dm = new dataModule($test, $mcache);
+            $dm = new dataModule($test, $mcache, $market['name']);
 
             $dm->resetWOTriggerStates($test['uid'], $test['market_id'], ['test'], [$test['pair']]);
             $orders = $dm->getWatchOrderIds($test['uid'], $test['market_id'], ['test'], [$test['pair']]);

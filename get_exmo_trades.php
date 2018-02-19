@@ -1,7 +1,7 @@
 <?php
     set_time_limit(0);
     
-    include_once('/home/cron_engine.php');
+    include_once('/home/cron_engine_trade.php');
     define('WAITTIME', 30);
     define('REMOVEINTERVAL', '1 WEEK');
     define('DBPREF', '');
@@ -17,15 +17,21 @@
     include_once(MAINDIR.'include/console.php');
     include_once(TRADEPATH.'include/events.php');
     include_once(TRADEPATH.'include/exmoUtils.php');
+    include_once(MAINDIR.'include/crawlers/baseCrawler.php');
+
+    $market_symbol = 'exmo'; 
+
+    include_once(MAINDIR.'include/crawlers/'.$market_symbol.'Crawler.php');   
 
     GLOBAL $volumes;
     
     $dbname = 'trade';
+    $market_symbol = 'exmo';
     $isdea = explode('_', dirname(__FILE__));
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
 
     startTransaction();
-    DB::query("DELETE FROM _trades WHERE time <= NOW() - INTERVAL ".REMOVEINTERVAL);
+    DB::query("DELETE FROM _trades_{$market_symbol} WHERE time <= NOW() - INTERVAL ".REMOVEINTERVAL);
     commitTransaction();
     
     $scriptID = basename(__FILE__);
@@ -38,38 +44,28 @@
     $startTime = strtotime('NOW');
 
     $events = new Events();
-    $pairs_a = explode(',', $pairs);
+
+    $crawlerName = $market_symbol.'Crawler';
+    $crawler = new $crawlerName();
 
     console::log('START '.$scriptID);
-
-    $prev = [];
     while (true) {
         $time = time();
 
-        foreach ($pairs_a as $pair) {
-            if ($data = @json_decode(file_get_contents($queryURL.$pair), true)) {
-                if (isset($data['error']) && $data['error']) {
-                    console::log($data['error']);
-                } else {
-                    if ($result = parseExmoTrades($data, $pair, isset($prev[$pair])?$prev[$pair]:null)) {
-                        $pairA      = explode('_', $pair);
-                        $cur_in_id  = curID($pairA[0]);
-                        $cur_out_id = curID($pairA[1]);
-                        $mysqltime  = date(DATEFORMAT, ceil($time / WAITTIME) * WAITTIME);
-                        $query = "REPLACE ".DBPREF."_trades (`time`, `cur_in`, `cur_out`, `buy_price`, `sell_price`, `buy_volumes`, `sell_volumes`) ".
-                            "VALUES ('{$mysqltime}', {$cur_in_id}, {$cur_out_id}, {$result['buy_price']}, {$result['sell_price']},".
-                            " {$result['buy_volumes']}, {$result['sell_volumes']})";
-                        DB::query($query);
+        if ($trades = $crawler->getTrades()) {
 
-                        $events->pairdata('exmotrades', $pair, ['time'=>date('d.m H:i'), 'buy_price'=>$result['buy_price'], 'sell_price'=>$result['sell_price'],
-                                                          'buy_volumes'=>$result['buy_volumes'], 'sell_volumes'=>$result['sell_volumes']]);
+            foreach ($trades as $pair=>$data) {
+                $mysqltime  = date(DATEFORMAT, ceil($time / WAITTIME) * WAITTIME);
+                $query = "REPLACE ".DBPREF."_trades_{$market_symbol} (`time`, `cur_in`, `cur_out`, `buy_price`, `sell_price`, `buy_volumes`, `sell_volumes`) ".
+                    "VALUES ('{$mysqltime}', {$data['cur_in']}, {$data['cur_out']}, {$data['buy_price']}, {$data['sell_price']},".
+                    " {$data['buy_volumes']}, {$data['sell_volumes']})";
+                DB::query($query);
 
-                        $prev[$pair] = $result;
-                    }
-                }
+                $events->pairdata("{$market_symbol}trades", $pair, ['time'=>date('d.m H:i'), 'buy_price'=>$data['buy_price'], 'sell_price'=>$data['sell_price'],
+                                                  'buy_volumes'=>$data['buy_volumes'], 'sell_volumes'=>$data['sell_volumes']]);
             }
 
-            cronReport($scriptID, ['is_response'=>is_array($data)]);
+            cronReport($scriptID, ['is_response'=>is_array($trades)]);
         }
 
         if (isStopScript($scriptID, $scriptCode)) break;
