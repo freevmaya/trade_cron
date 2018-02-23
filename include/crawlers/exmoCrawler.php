@@ -1,4 +1,6 @@
 <?
+define("EXMOPROTOCOL", 'http');
+
 class exmoCrawler extends baseCrawler {
 	protected $prevTrades;
 
@@ -8,7 +10,7 @@ class exmoCrawler extends baseCrawler {
 
 	public function getOrders() {
     	include(MAINDIR.'data/exmo_pairs.php');
-	    $queryURL = 'https://api.exmo.me/v1/order_book?limit=100&pair='.$pairs;
+	    $queryURL = EXMOPROTOCOL.'://api.exmo.me/v1/order_book?limit=100&pair='.$pairs;
 	    return @json_decode(file_get_contents($queryURL), true);
 	}
 
@@ -16,11 +18,12 @@ class exmoCrawler extends baseCrawler {
     	include(MAINDIR.'data/exmo_pairs.php');
 
     	$pairs_a = explode(',', $pairs);
-    	$queryURL = 'https://api.exmo.me/v1/trades/?pair=';
+    	$queryURL = EXMOPROTOCOL.'://api.exmo.me/v1/trades/?pair=';
     	$result = [];
 
     	foreach ($pairs_a as $pair) {
-	        if ($data = @json_decode(file_get_contents($queryURL.$pair), true)) {
+    		$url = $queryURL.$pair;
+	        if ($data = json_decode(file_get_contents($url), true)) {
 	            if (isset($data['error']) && $data['error']) {
 	                console::log($data['error']);
 	            } else {
@@ -31,7 +34,7 @@ class exmoCrawler extends baseCrawler {
 						$this->prevTrades[$pair] 	= $result[$pair];
 	                }
 	            }
-	        }
+	        } else console::log($url.' no data');
 	    }
 
 	    return $result;

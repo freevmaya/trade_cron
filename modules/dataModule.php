@@ -258,5 +258,8 @@ class dataModule extends timeObject {
 		}
 		return $user;
 	}
+
+	public function transaction($uid, $account_id, $in_cur, $out_cur, $price, $quantity) {
+	}
 }
 ?>
