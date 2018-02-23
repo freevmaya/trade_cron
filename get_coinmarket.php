@@ -41,7 +41,8 @@
 
     while (true) {
         $time = time();
-        if ($str_data = file_get_contents($url.$start)) {
+        $full_url = $url.$start;
+        if ($str_data = @file_get_contents($full_url)) {
             $data = json_decode($str_data, true);
 
             $count = count($data);
@@ -56,6 +57,9 @@
                 }
                 $start += $count;
             } else $start = 0;
+        } else {
+            //console::log('ERROR URL '.$full_url);
+            $start = 0;
         }
        
         cronReport($scriptID, ['start'=>$start]);

@@ -1,5 +1,5 @@
 <?
-define("EXMOPROTOCOL", 'http');
+define("EXMOPROTOCOL", 'https');
 
 class exmoCrawler extends baseCrawler {
 	protected $prevTrades;
