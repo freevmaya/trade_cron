@@ -6,17 +6,16 @@
     define('REMOVEINTERVAL', '1 WEEK');
     define('DBPREF', '');
     define('DATEFORMAT', 'Y-m-d H:i:s');
-    define('TRADEPATH', '/home/vmaya/trade/');
     define('MAINDIR', dirname(__FILE__).'/');
 
     include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'include/utils.php');
-    
     include_once(MAINDIR.'data/exmo_pairs.php');
+
     include_once(INCLUDE_PATH.'fdbg.php');
+    include_once(INCLUDE_PATH.'events.php');
+    include_once(INCLUDE_PATH.'exmoUtils.php');
     include_once(MAINDIR.'include/console.php');
-    include_once(TRADEPATH.'include/events.php');
-    include_once(TRADEPATH.'include/exmoUtils.php');
     include_once(MAINDIR.'include/crawlers/baseCrawler.php');
 
     $market_symbol = 'exmo'; 
@@ -49,6 +48,9 @@
     $crawler = new $crawlerName();
 
     console::log('START '.$scriptID);
+
+    $table = DBPREF."_trades_{$market_symbol}";
+    $market_id = getMarketId($market_symbol);
     while (true) {
         $time = time();
 
@@ -56,13 +58,22 @@
 
             foreach ($trades as $pair=>$data) {
                 $mysqltime  = date(DATEFORMAT, ceil($time / WAITTIME) * WAITTIME);
-                $query = "REPLACE ".DBPREF."_trades_{$market_symbol} (`time`, `cur_in`, `cur_out`, `buy_price`, `sell_price`, `buy_volumes`, `sell_volumes`) ".
+                $query = "REPLACE {$table} (`time`, `cur_in`, `cur_out`, `buy_price`, `sell_price`, `buy_volumes`, `sell_volumes`) ".
                     "VALUES ('{$mysqltime}', {$data['cur_in']}, {$data['cur_out']}, {$data['buy_price']}, {$data['sell_price']},".
                     " {$data['buy_volumes']}, {$data['sell_volumes']})";
                 DB::query($query);
 
                 $events->pairdata("{$market_symbol}trades", $pair, ['time'=>date('d.m H:i'), 'buy_price'=>$data['buy_price'], 'sell_price'=>$data['sell_price'],
                                                   'buy_volumes'=>$data['buy_volumes'], 'sell_volumes'=>$data['sell_volumes']]);
+
+
+                $query = "SELECT MIN(`sell_price`) AS min_price, MAX(`sell_price`) AS max_price FROM {$table} ".
+                        "WHERE `cur_in`={$data['cur_in']} AND `cur_out`={$data['cur_out']}";
+                if ($minmax = DB::line($query)) {
+                    $pair_id = getMPID($market_id, $data['cur_in'], $data['cur_out']);
+                    $query = "REPLACE _minmax (`pair_id`, `min`, `max`) VALUES ($pair_id, {$minmax['min_price']}, {$minmax['max_price']})";
+                    DB::query($query);
+                }
             }
 
             cronReport($scriptID, ['is_response'=>is_array($trades)]);
