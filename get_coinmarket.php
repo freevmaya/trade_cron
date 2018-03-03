@@ -18,17 +18,22 @@
     include_once(MAINDIR.'data/exmo_pairs.php');
     include_once(TRADEPATH.'include/events.php');
     include_once(INCLUDE_PATH.'fdbg.php');
+    include_once(INCLUDE_PATH.'_dbu.php');
+    include_once(INCLUDE_PATH.'_edbu2.php');
     include_once(MAINDIR.'include/console.php');
+    include_once(MAINDIR.'include/db/mySQLProvider.php');
 
     $url = 'https://api.coinmarketcap.com/v1/ticker/?limit='.LIMIT.'&start=';
     
     $dbname = 'trade';
+
+    $dbp = new mySQLProvider('localhost', $dbname, $user, $password);
     $isdea = explode('_', dirname(__FILE__));
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
 
     $scriptID = basename(__FILE__);
     $scriptCode = md5(time());
-    $crec = startScript($scriptID, $scriptCode, WAITTIME);
+    $crec = startScript($dbp, $scriptID, $scriptCode, WAITTIME);
     $FDBGLogFile = (__FILE__).'.log';
     new console($is_dev);
 
@@ -50,10 +55,10 @@
                 foreach ($data as $coin) {
                     $vals = '';
                     foreach ($fields as $field)
-                        $vals .= ($vals?",":"")."'".DB::safeVal($coin[$field])."'";
+                        $vals .= ($vals?",":"")."'".$dbp->safeVal($coin[$field])."'";
 
                     $query = "REPLACE _coinmarket ({$fieldsStr}) VALUES ({$vals})";
-                    DB::query($query);
+                    $dbp->query($query);
                 }
                 $start += $count;
             } else $start = 0;
@@ -62,11 +67,12 @@
             $start = 0;
         }
        
-        cronReport($scriptID, ['start'=>$start]);
-        if (isStopScript($scriptID, $scriptCode)) break;
+        cronReport($dbp, $scriptID, ['start'=>$start]);
+        if (isStopScript($dbp, $scriptID, $scriptCode)) break;
         if (($dtime = $time + WAITTIME - time()) > 0) sleep($dtime);
     }
 
     console::log('STOP '.$scriptID);
+    $dbp->close();
     if ($db) $db->close();
 ?>

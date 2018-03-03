@@ -14,8 +14,11 @@
     include_once(MAINDIR.'include/utils.php');
     include_once(MAINDIR.'modules/cur_watch.php');
     include_once(MAINDIR.'modules/volumes.php');
+    include_once(TRADEPATH.'include/_dbu.php');
+    include_once(TRADEPATH.'include/_edbu2.php');
     include_once(TRADEPATH.'include/events.php');
     include_once(INCLUDE_PATH.'fdbg.php');
+    include_once(MAINDIR.'include/db/mySQLProvider.php');
     include_once(MAINDIR.'include/console.php');
     include_once(MAINDIR.'include/crawlers/baseCrawler.php');
 
@@ -27,14 +30,17 @@
 
     $isdea = explode('_', dirname(__FILE__));
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
+    $dbp = new mySQLProvider('localhost', $dbname, $user, $password);
 
     startTransaction();
-    DB::query("DELETE FROM _orders_{$market_symbol} WHERE time <= NOW() - INTERVAL ".REMOVEINTERVAL);
+    $dbp->query("DELETE FROM _orders_{$market_symbol} WHERE time <= NOW() - INTERVAL ".REMOVEINTERVAL);
     commitTransaction();
 
     $scriptID = basename(__FILE__);
     $scriptCode = md5(time());
-    startScript($scriptID, $scriptCode, WAITTIME);
+
+    startScript($dbp, $scriptID, $scriptCode, WAITTIME);
+
     $FDBGLogFile = (__FILE__).'.log';
     new console($is_dev);
 
@@ -68,25 +74,26 @@
                         $query = "INSERT INTO ".DBPREF."_orders_{$market_symbol} (`time`, `cur_in`, `cur_out`, `ask_quantity`, `ask_amount`, `bid_quantity`, `bid_amount`, `ask_top`, `bid_top`, `ask_glass`, `bid_glass`) ".
                             "VALUES ('{$mysqltime}', {$cur_in_id}, {$cur_out_id}, {$item['ask_quantity']}, {$item['ask_amount']}, {$item['bid_quantity']}, ".
                             "'{$item['bid_amount']}', {$item['ask_top']}, {$item['bid_top']}, ".$volumes->getAskvol().','.$volumes->getBidvol().')';
-                        DB::query($query);
+                        $dbp->query($query);
 
                         $events->pairdata("{$market_symbol}orders", $pair, ['time'=>date('d.m H:i'), 'ask_top'=>$item['ask_top'], 'bid_top'=>$item['bid_top'],
                                                           'ask_glass'=>$volumes->getAskvol(), 'bid_glass'=>$volumes->getBidvol()]);
 
 
-                        //$volumes->save(DB::lastID());
+                        //$volumes->save($dbp->lastID());
                     }
                 }
             }
         }
 
-        cronReport($scriptID, ['is_response'=>is_array($data)]);
-        if (isStopScript($scriptID, $scriptCode)) break;
+        cronReport($dbp, $scriptID, ['is_response'=>is_array($data)]);
+        if (isStopScript($dbp, $scriptID, $scriptCode)) break;
 
         if (($dtime = $time + WAITTIME - time()) > 0) sleep($dtime);
     }
 
     console::clearUID();
     console::log('STOP '.$scriptID);
+    $dbp->close();
     if ($db) $db->close();
 ?>
