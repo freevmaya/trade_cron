@@ -1,10 +1,10 @@
 <?
-    function getMarketId($marketSymbol) {
-        if ($res = DB::line("SELECT * FROM _markets WHERE name='$marketSymbol'")) {
+    function getMarketId($dbp, $marketSymbol) {
+        if ($res = $dbp->line("SELECT * FROM _markets WHERE name='$marketSymbol'")) {
             return $res['id'];
         } else {
-            DB::query("INSERT INTO _markets (`name`) VALUES ('$marketSymbol')");
-            return DB::lastID();
+            $dbp->query("INSERT INTO _markets (`name`) VALUES ('$marketSymbol')");
+            return $dbp->lastID();
         }
     }
 
@@ -19,35 +19,55 @@
     /*
         Выполнять при старте скрипта, $code = уникальный код из md5(время запуска)
     */
-    function startScript($script, $code, $waitSec=0, $data='') {
-        while (time() != timeObject::sTime()) sleep(1);
+    function startScript($dbp, $script, $code, $waitSec=0, $data='', $is_dev=false) {
+        if (!$is_dev)
+            while (time() != timeObject::sTime()) sleep(1);
 
-        if ($rec = cronReportData($script)) {
-            DB::query("UPDATE _cron_report SET `code`='$code', `time`=NOW(), `period`={$waitSec} WHERE `script`='{$script}'");
+        if ($rec = cronReportData($dbp, $script)) {
+            $dbp->query("UPDATE _cron_report SET `code`='$code', `time`=NOW(), `period`={$waitSec} WHERE `script`='{$script}'");
             $waitSec = $waitSec - (time() - strtotime($rec['time'])); // Расчитываем время задержки
             $rec['data'] = json_decode($rec['data'], true);
-        } else DB::query("INSERT INTO _cron_report (`script`, `time`, `data`, `code`, `period`) VALUES ('{$script}', NOW(), '{$data}', '{$code}', {$waitSec})");
+        } else $dbp->query("INSERT INTO _cron_report (`script`, `time`, `data`, `code`, `period`) VALUES ('{$script}', NOW(), '{$data}', '{$code}', {$waitSec})");
 
-        if ($waitSec > 0) sleep($waitSec);
+        if (!$is_dev && ($waitSec > 0)) sleep($waitSec);
 
         return $rec;
     }
 
-    function cronReport($script, $data) {
+    function cronReport($dbp, $script, $data) {
         if (!is_string($data)) $data = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        DB::query("UPDATE _cron_report SET `time`=NOW(), `data`='{$data}' WHERE `script`='{$script}'");
+        $dbp->query("UPDATE _cron_report SET `time`=NOW(), `data`='{$data}' WHERE `script`='{$script}'");
     }
 
-    function cronReportData($script) {
+    function cronReportData($dbp, $script) {
         $query = "SELECT * FROM _cron_report WHERE `script`='{$script}'";
-        return DB::line($query);
+        return $dbp->line($query);
     }
 
-    function isStopScript($script, $code) {
+    function isStopScript($dbp, $script, $code) {
         $result = false;
-        if ($rec = cronReportData($script)) {
+        if ($rec = cronReportData($dbp, $script)) {
             $result = $rec['code'] != $code;
         }
         return $result;
+    }
+
+    function merge($arr1, $arr2, $fields) {
+        $res = [];
+        foreach ($fields as $field) {
+            if (is_object($arr2)) $val = isset($arr2->$field)?$arr2->$field:(isset($arr1[$field])?$arr1[$field]:'');
+            else $val = isset($arr2[$field])?$arr2[$field]:(isset($arr1[$field])?$arr1[$field]:'');
+            $res[$field] = $val;
+        }
+        return $res;
+    }
+
+    function object_to_array($obj) {
+        $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
+        foreach ($_arr as $key => $val) {
+                $val = (is_array($val) || is_object($val)) ? object_to_array($val) : $val;
+                $arr[$key] = $val;
+        }
+        return $arr;
     }
 ?>

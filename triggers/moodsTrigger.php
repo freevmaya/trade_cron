@@ -3,7 +3,7 @@ class moodsTrigger extends baseTrigger {
 	public function check($cur_in_id, $cur_out_id) {
 		$result = false;
 		if ($item = $this->dm->getCurrentTrade($cur_in_id, $cur_out_id)) {
-			$ddata = $this->data['range'];
+			$ddata = $this->data['range_percent'];
 	       	if (is_array($ddata)) {
 		       	$min_a = $ddata['min'];
 		       	$max_a = $ddata['max'];

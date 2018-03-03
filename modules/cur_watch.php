@@ -1,43 +1,37 @@
 <?
 define('TRIGGERSCLASSPATH', MAINDIR.'triggers/');
 include_once(TRIGGERSCLASSPATH.'baseTrigger.php');
-
-/*
-class sendThread extends Thread {
-    function run($watch){
-    }
-}
-*/
+include_once(MAINDIR.'include/workers/sendThread.php');
+include_once(MAINDIR.'include/workers/sendWatchOrder.php');
 
 class cur_watch extends baseTrigger {
-	protected $sender;
     protected $maxPeriod;
+    protected $user;
+    protected $corder;
 
-	public function watch($sender, $options=null) {
-        $result = 0;
-		$this->sender = $sender;
+	public function watch($options=null) {
         $this->maxPeriod = 0;
-        $options = $options?array_merge($this->defOptions(), $options):$this->defOptions();
+        $options    = $options?array_merge($this->defOptions(), $options):$this->defOptions();
+        $tcount     = 0;
+        $state      = $this->data['state'];
+        $this->user = $this->dm->getUser($this->data['uid'], $this->data['market_id']);
 
-        $result = 0;
-        $tcount = 0;
-        $state = $this->data['state'];
-        if ($state == 'process') 
-            $result = $this->process();
+        if ($state == 'process') $this->process();
         else {
             $pairA   = explode('_', $this->data['pair']);   
-            $cur_in_id  = curID($pairA[0]);
-            $cur_out_id = curID($pairA[1]);
+            $cur_in_id  = $this->dm->curID($pairA[0]);
+            $cur_out_id = $this->dm->curID($pairA[1]);
 
             $ts = json_decode($this->data['triggers_state'], true);
-            $user = $this->dm->getUser($this->data['uid'], $this->data['market_id']);
-            if ($user && in_array('active', $user['states'])) {
+            if ($this->user && in_array('active', $this->user['states'])) {
 
                 $action = $this->data['action']['type'];
                 $isModified = false;
                 $resTgs = [];
 
-                $lres = $this->watchTriggers($action, $cur_in_id, $cur_out_id, $this->data['triggers'], $ts, $isModified, $resTgs);
+                if ($this->data['triggers'])
+                    $lres = $this->watchTriggers($action, $cur_in_id, $cur_out_id, $this->data['triggers'], $ts, $isModified, $resTgs);
+                else $lres = true;
 
                 if ($isModified) {
                     $this->data['triggers_state'] = json_encode($tstates = $this->getStates($resTgs));
@@ -46,31 +40,23 @@ class cur_watch extends baseTrigger {
                 }
 
             	if ($lres) {
-                    $corder = $this->dm->getCurrentOrder($cur_in_id, $cur_out_id);
-                    $avgPrice = $this->avg($corder);
-                    if ($state == 'active') {
-                        $this->sender->setUser($user);
-                        $send_result = $this->sender->$action($this->data['pair'], $this->data['action'], $this->time, $corder);
-                    } else if ($state == 'test') {
-                        $taction = $action.'_test';
-                        $send_result = $this->sender->$taction($this->data['pair'], $this->data['action'], $this->time, $corder);
-                    }
+                    $this->corder = $this->dm->getCurrentOrder($cur_in_id, $cur_out_id);
+                    $sendWorker = $this->createSendThread();
+                    $sendWorker->start();
+                    //$sendWorker->join();
+
+                    /*
                     $this->afterSend($send_result, $this->data['action']);
                     $result = 1;             
+                    */
                 }
             }
         }
-        return $result;
 	}
 
-    public function afterSend($send_result, $action)  {
-         if ($send_result) {
-            $this->onComplete('PRICE: '.$send_result['price']);
-            $this->sendUserEvent('ORDERSUCCESS', array_merge(['pair'=>$this->data['pair'], 'price'=>$send_result['price'], 'action'=>$action], $send_result));
-        } else {
-            $this->onFail('');
-            $this->sendUserEvent('FAILORDER', ['pair'=>$this->data['pair'], 'action'=>$action]);
-        }
+    protected function createSendThread($order=null) {
+        $dbp = $this->dm->dbProvider()->getDBParams();
+        return new sendThread($dbp, $order?$order:$this->data, $this->user, $this->time, $this->corder);
     }
 
     public function period() {
@@ -140,37 +126,35 @@ class cur_watch extends baseTrigger {
 
     protected function process() {
 
-        $pairA   = explode('_', $this->data['pair']);   
-        $cur_in_id  = curID($pairA[0]);
-        $cur_out_id = curID($pairA[1]);
+        $pairA      = explode('_', $this->data['pair']);   
+        $cur_in_id  = $this->dm->curID($pairA[0]);
+        $cur_out_id = $this->dm->curID($pairA[1]);
 
         $market_order = $this->dm->getCurrentOrder($cur_in_id, $cur_out_id);
         $price = $market_order['bid_top'];
         $avgPrice = $this->avg($market_order);
 
-        if (($this->data['take_profit'] <= $price) || ($this->data['stop_loss'] >= $price)) {
+        $take_profit = $this->data['take_profit'] <= $price;
+        $stop_loss = $this->data['stop_loss'] >= $price;
 
+        if ($take_profit || $stop_loss) {
+
+            $order = array_merge([
+                'action'=>dataModule::actionObject($order['action'], $order['volume'], $action_state_set)
+            ], $this->data);
+
+            $sendWorker = $this->createSendThread($order);
+            $sendWorker->start();
+
+            /*
             $this->data['state'] = 'success';
             $this->dm->setOrderState($this->data['id'], $this->data['state']);
             console::log('EXTENDS, PRICE: '.$price);
             $this->sendUserEvent('ORDERSUCCESS', ['cur_avgprice'=>$avgPrice]);
+            */
         } 
     }
 
-    protected function onFail($info) {
-        $this->data['state'] = 'fail';
-        $this->dm->setOrderState($this->data['id'], $this->data['state'], $this->time);
-        console::log('ORDER '.$this->data['id'].' '.$this->data['pair'].' FAIL '.$info, 'error');
-    }
-
-	protected function onComplete($info) {
-        if ($this->data['state'] != 'test') {
-            $isprocess = ($this->data['state'] != 'process') && ($this->data['take_profit'] > 0) && ($this->data['stop_loss'] > 0);
-            $this->data['state'] = $isprocess?'process':'success';
-            $this->dm->setOrderState($this->data['id'], $this->data['state'], $this->time);
-        }
-		console::log('ORDER '.$this->data['id'].' '.$this->data['pair'].' SUCCESS '.$info);
-	}
 }
 
 ?>

@@ -5,8 +5,8 @@ class exmoDataModule extends dataModule {
     protected $mid;
     protected $orders;
 
-	function __construct($exmo_api, $cacheObject=null) {
-		parent::__construct(null, $cacheObject);
+	function __construct($dbProvider, $exmo_api, $cacheObject=null) {
+		parent::__construct($dbProvider, null, $cacheObject);
         $this->exmo_api = $exmo_api;
         $this->mid      = $this->market_id;
         $this->resetActualPairs();
@@ -46,11 +46,12 @@ class exmoDataModule extends dataModule {
                     if ($result = parseExmoTrades($data, $pair)) {
 
                         $item = ['time'=>$this->time, 'buy_price'=>$result['buy_price'], 'sell_price'=>$result['sell_price'],
-                                 'buy_volumes'=>$result['buy_volumes'], 'sell_volumes'=>$result['sell_volumes']];
+                                'buy_volumes'=>$result['buy_volumes'], 'sell_volumes'=>$result['sell_volumes'],
+                                'avg_price'=>($result['buy_price'] + $result['sell_price']) / 2];
 
                         $pairA   = explode('_', $pair);
-                        $item['cur_in'] = $cin  = curID($pairA[0]);
-                        $item['cur_out'] = $cout = curID($pairA[1]);
+                        $item['cur_in'] = $cin  = $this->curID($pairA[0]);
+                        $item['cur_out'] = $cout = $this->curID($pairA[1]);
 
                         $this->events->pairdata('exmotrades', $pair, $item);
 
@@ -83,8 +84,8 @@ class exmoDataModule extends dataModule {
             if ($list) {
                 foreach ($list as $pair=>$data) {
                     $pairA   = explode('_', $pair);
-                    $data['cur_in'] = $cin  = curID($pairA[0]);
-                    $data['cur_out'] = $cout = curID($pairA[1]);
+                    $data['cur_in'] = $cin  = $this->curID($pairA[0]);
+                    $data['cur_out'] = $cout = $this->curID($pairA[1]);
 
                     $ci = $cin.'_'.$cout.'_od_'.$this->time;
 
