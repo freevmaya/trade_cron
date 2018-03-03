@@ -92,7 +92,6 @@
         if (($dtime = $time + WAITTIME - time()) > 0) sleep($dtime);
     }
 
-    console::clearUID();
     console::log('STOP '.$scriptID);
     $dbp->close();
     if ($db) $db->close();
