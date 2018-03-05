@@ -10,6 +10,13 @@
     define('TRADEPATH', '/home/vmaya/trade/');
     define('MAINDIR', dirname(__FILE__).'/');
 
+    if (!isset($argv[1])) {
+        echo "Name market no found\n";
+        exit; 
+    }
+
+    $market_symbol = $argv[1];
+
     include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'include/utils.php');
     include_once(MAINDIR.'modules/cur_watch.php');
@@ -22,7 +29,6 @@
     include_once(MAINDIR.'include/console.php');
     include_once(MAINDIR.'include/crawlers/baseCrawler.php');
 
-    $market_symbol = 'exmo';    
     $dbname = 'trade';
 
     include_once(MAINDIR.'include/crawlers/'.$market_symbol.'Crawler.php');
@@ -32,14 +38,17 @@
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
     $dbp = new mySQLProvider('localhost', $dbname, $user, $password);
 
+    $crawlerName = $market_symbol.'Crawler';
+    $crawler = new $crawlerName();
+
     startTransaction();
     $dbp->query("DELETE FROM _orders_{$market_symbol} WHERE time <= NOW() - INTERVAL ".REMOVEINTERVAL);
     commitTransaction();
 
-    $scriptID = basename(__FILE__);
+    $scriptID = basename(__FILE__).$market_symbol;
     $scriptCode = md5(time());
 
-    startScript($dbp, $scriptID, $scriptCode, WAITTIME);
+    startScript($dbp, $scriptID, $scriptCode, WAITTIME, '', $is_dev);
 
     $FDBGLogFile = (__FILE__).'.log';
     new console($is_dev);
@@ -48,8 +57,6 @@
 
     $startTime = strtotime('NOW');
 
-    $crawlerName = $market_symbol.'Crawler';
-    $crawler = new $crawlerName();
 
     console::log('START '.$scriptID);
 
@@ -59,6 +66,9 @@
         $time = time();
 
         if ($data = $crawler->getOrders()) {
+            print_r($data);
+            exit;
+            
             if (is_array($data)) {
                 if (isset($data['error']) && $data['error']) {
                     console::log($data['error']);
