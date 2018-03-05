@@ -7,7 +7,6 @@
     define('REMOVEINTERVALORDERS', '1 DAY');
     define('DBPREF', '');
     define('DATEFORMAT', 'Y-m-d H:i:s');
-    define('TRADEPATH', '/home/vmaya/trade/');
     define('MAINDIR', dirname(__FILE__).'/');
 
     if (!isset($argv[1])) {

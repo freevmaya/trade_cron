@@ -1,5 +1,6 @@
 <?
 define("BINANCEURL", 'https://www.binance.com/');
+define("BINANCETRADELIMITS", 100);
 
 class binanceCrawler extends baseCrawler {
 	protected $prevTrades;
@@ -40,12 +41,12 @@ class binanceCrawler extends baseCrawler {
 	}
 
 	public function getOrders() {
-		include(MAINDIR.'data/binance_pairs.php');
+		include(TRADEPATH.'data/binance_pairs.php');
 		$result = [];
 		$pairs = explode(',', $pairs);
 
 	    foreach ($pairs as $pair) {
-		    $queryURL = BINANCEURL.'api/v1/depth?symbol='.str_replace('_', '', $pair).'&limit=100';
+		    $queryURL = BINANCEURL.'api/v1/depth?symbol='.str_replace('_', '', $pair).'&limit='.BINANCETRADELIMITS;
 		    $data = json_decode(file_get_contents($queryURL), true);
 
 		    $sumAsks = $this->sum($data['asks']);
@@ -63,11 +64,52 @@ class binanceCrawler extends baseCrawler {
 	}
 
 	public function getTrades() {
-    	include(MAINDIR.'data/exmo_pairs.php');
-
-    	$pairs_a = explode(',', $pairs);
-    	$queryURL = BINANCEURL.'://api.exmo.me/v1/trades/?pair=';
+		include(TRADEPATH.'data/binance_pairs.php');
     	$result = [];
+		$pairs = explode(',', $pairs);
+
+	    foreach ($pairs as $pair) {
+		    $queryURL = BINANCEURL.'api/v1/trades?symbol='.str_replace('_', '', $pair).'&limit='.BINANCETRADELIMITS;
+		    $data = json_decode(file_get_contents($queryURL), true);
+
+		    $result[$pair] = $this->parseTrades($data, $pair);
+
+		    if ($result[$pair]) {
+		    	$pairA      				= explode('_', $pair);
+                $result[$pair]['cur_in']  	= curID($pairA[0]);
+                $result[$pair]['cur_out']  	= curID($pairA[1]);
+				$this->prevTrades[$pair] 	= $result[$pair];
+            }
+		}
+	    return $result;
+	}	
+
+	public function parseTrades($data, $pair) {
+		$result = null;
+		if ($data) {
+			$result = isset($this->prevTrades[$pair])?$this->prevTrades[$pair]:['buy_price'=>0, 'sell_price'=>0, 'buy_volumes'=>0, 'sell_volumes'=>0];
+	        $a_buy_price    = 0;
+	        $a_sell_price   = 0;
+	        $a_buy_volumes  = 0;
+	        $a_sell_volumes = 0;
+	        $sell_count     = 0;
+	        $buy_count      = 0;
+	        foreach ($data as $i=>$item) {
+	            if ($item['isBuyerMaker']) {
+	                if (($i == 0) || ($a_buy_price < $item['price'])) $a_buy_price = $item['price'];
+	                $a_buy_volumes += $item['qty'];
+	                $buy_count++;
+	            } else {
+	                if (($i == 0) || ($a_sell_price < $item['price'])) $a_sell_price = $item['price'];
+	                $a_sell_volumes += $item['qty'];
+	                $sell_count++;
+	            }
+	        }
+	        $result['buy_price']    = ($buy_count>0)?$a_buy_price:$result['buy_price'];
+	        $result['sell_price']   = ($sell_count>0)?$a_sell_price:$result['sell_price'];
+	        $result['buy_volumes']  = ($buy_count>0)?$a_buy_volumes:$result['buy_volumes'];
+	        $result['sell_volumes'] = ($sell_count>0)?$a_sell_volumes:$result['sell_volumes'];
+	    }
 	    return $result;
 	}
 }

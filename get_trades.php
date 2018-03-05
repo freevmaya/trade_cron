@@ -17,7 +17,6 @@
 
     include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'include/utils.php');
-    include_once(MAINDIR.'data/exmo_pairs.php');
 
     include_once(INCLUDE_PATH.'_dbu.php');
     include_once(INCLUDE_PATH.'_edbu2.php');
@@ -33,7 +32,6 @@
     GLOBAL $volumes;
     
     $dbname = 'trade';
-    $market_symbol = 'exmo';
     $isdea = explode('_', dirname(__FILE__));
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
     $dbp = new mySQLProvider('localhost', $dbname, $user, $password);
@@ -48,7 +46,6 @@
     $FDBGLogFile = (__FILE__).'.log';
     new console($is_dev);
     
-    $queryURL = 'https://api.exmo.me/v1/trades/?pair=';
     $startTime = strtotime('NOW');
 
     $events = new Events();
@@ -91,8 +88,6 @@
         if (isStopScript($dbp, $scriptID, $scriptCode)) break;
         if (($dtime = $time + WAITTIME - time()) > 0) sleep($dtime);
     }
-
-    console::clearUID();
     console::log('STOP '.$scriptID);
 
     $dbp->close();

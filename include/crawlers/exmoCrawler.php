@@ -9,13 +9,13 @@ class exmoCrawler extends baseCrawler {
 	}
 
 	public function getOrders() {
-    	include(MAINDIR.'data/exmo_pairs.php');
+    	include(TRADEPATH.'data/exmo_pairs.php');
 	    $queryURL = EXMOPROTOCOL.'://api.exmo.me/v1/order_book?limit=100&pair='.$pairs;
 	    return @json_decode(file_get_contents($queryURL), true);
 	}
 
 	public function getTrades() {
-    	include(MAINDIR.'data/exmo_pairs.php');
+    	include(TRADEPATH.'data/exmo_pairs.php');
 
     	$pairs_a = explode(',', $pairs);
     	$queryURL = EXMOPROTOCOL.'://api.exmo.me/v1/trades/?pair=';
