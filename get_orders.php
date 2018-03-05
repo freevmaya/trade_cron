@@ -66,9 +66,6 @@
         $time = time();
 
         if ($data = $crawler->getOrders()) {
-            print_r($data);
-            exit;
-            
             if (is_array($data)) {
                 if (isset($data['error']) && $data['error']) {
                     console::log($data['error']);
