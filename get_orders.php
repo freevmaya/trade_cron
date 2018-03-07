@@ -3,6 +3,7 @@
     
     include_once('/home/cron_engine_trade.php');
     define('WAITTIME', 30);
+    define('WAITAFTERERROR', WAITTIME * 10);
     define('REMOVEINTERVAL', '7 DAY');
     define('REMOVEINTERVALORDERS', '1 DAY');
     define('DBPREF', '');
@@ -69,6 +70,7 @@
             if (is_array($data)) {
                 if (isset($data['error']) && $data['error']) {
                     console::log($data['error']);
+                    sleep(WAITAFTERERROR);
                 } else {
                     foreach ($data as $pair=>$item) {
                          

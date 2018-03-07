@@ -11,7 +11,7 @@ class exmoCrawler extends baseCrawler {
 	public function getOrders() {
     	include(TRADEPATH.'data/exmo_pairs.php');
 	    $queryURL = EXMOPROTOCOL.'://api.exmo.me/v1/order_book?limit=100&pair='.$pairs;
-	    return @json_decode(file_get_contents($queryURL), true);
+	    return $this->query($queryURL);
 	}
 
 	public function getTrades() {
@@ -23,9 +23,9 @@ class exmoCrawler extends baseCrawler {
 
     	foreach ($pairs_a as $pair) {
     		$url = $queryURL.$pair;
-	        if ($data = json_decode(file_get_contents($url), true)) {
+	        if ($data = $this->query($url)) {
 	            if (isset($data['error']) && $data['error']) {
-	                console::log($data['error']);
+	                return $data;
 	            } else {
 	                if ($result[$pair] = $this->parseExmoTrades($data, $pair)) {
 	                    $pairA      				= explode('_', $pair);
@@ -34,7 +34,10 @@ class exmoCrawler extends baseCrawler {
 						$this->prevTrades[$pair] 	= $result[$pair];
 	                }
 	            }
-	        } else console::log($url.' no data');
+	        } else {
+	        	console::log($url.' no data');
+	        	return null;
+	        }
 	    }
 
 	    return $result;

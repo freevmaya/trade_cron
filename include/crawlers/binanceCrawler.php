@@ -47,20 +47,26 @@ class binanceCrawler extends baseCrawler {
 
 	    foreach ($pairs as $pair) {
 		    $queryURL = BINANCEURL.'api/v1/depth?symbol='.str_replace('_', '', $pair).'&limit='.BINANCETRADELIMITS;
-		    $data = json_decode(file_get_contents($queryURL), true);
+		    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
+			    $sumAsks = $this->sum($data['asks']);
+			    $sumBids = $this->sum($data['bids']);
 
-		    $sumAsks = $this->sum($data['asks']);
-		    $sumBids = $this->sum($data['bids']);
-
-		    $item = ['ask'=>$data['asks'], 'bid'=>$data['bids'], 
-		    		'ask_top'=>$data['asks'][0][0], 'bid_top'=>$data['bids'][0][0],
-		    		'ask_quantity'=>$sumAsks[0], 'bid_quantity'=>$sumBids[0],
-		    		'ask_amount'=>$sumAsks[1], 'bid_amount'=>$sumBids[1]];
-	    	$result[$pair] = $item;
+			    $item = ['ask'=>$data['asks'], 'bid'=>$data['bids'], 
+			    		'ask_top'=>$data['asks'][0][0], 'bid_top'=>$data['bids'][0][0],
+			    		'ask_quantity'=>$sumAsks[0], 'bid_quantity'=>$sumBids[0],
+			    		'ask_amount'=>$sumAsks[1], 'bid_amount'=>$sumBids[1]];
+		    	$result[$pair] = $item;
+		    } else return $data; 
 		}
 
 
 	    return $result;
+	}
+
+	protected function checkError($data) {
+		if (isset($data['code'])) {
+			return ['error'=>$data['msg'], 'error_code'=>$data['code']];
+		} else return null;
 	}
 
 	public function getTrades() {
@@ -70,17 +76,18 @@ class binanceCrawler extends baseCrawler {
 
 	    foreach ($pairs as $pair) {
 		    $queryURL = BINANCEURL.'api/v1/trades?symbol='.str_replace('_', '', $pair).'&limit='.BINANCETRADELIMITS;
-		    $data = json_decode(file_get_contents($queryURL), true);
+		    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
+			    $result[$pair] = $this->parseTrades($data, $pair);
 
-		    $result[$pair] = $this->parseTrades($data, $pair);
-
-		    if ($result[$pair]) {
-		    	$pairA      				= explode('_', $pair);
-                $result[$pair]['cur_in']  	= curID($pairA[0]);
-                $result[$pair]['cur_out']  	= curID($pairA[1]);
-				$this->prevTrades[$pair] 	= $result[$pair];
-            }
+			    if ($result[$pair]) {
+			    	$pairA      				= explode('_', $pair);
+	                $result[$pair]['cur_in']  	= curID($pairA[0]);
+	                $result[$pair]['cur_out']  	= curID($pairA[1]);
+					$this->prevTrades[$pair] 	= $result[$pair];
+	            }
+	        } else return $data;
 		}
+
 	    return $result;
 	}	
 
