@@ -79,9 +79,8 @@
     else $options = json_decode(
         '{
             "TICK": 30,
-            "CANDLEINTERVAL": 30,
-            "CANDLECOUNT": 60,
-            "HISTOGRAM_STEP": 0.000001,
+            "CANDLEINTERVAL": 15,
+            "CANDLECOUNT": 120,
             "MANAGER": {
                 "ema_interval": 8,
                 "min_percent": 0.004

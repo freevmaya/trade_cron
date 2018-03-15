@@ -69,6 +69,7 @@ class tradeManager {
 				// Выставляем цену ордера
 				$order_price = max($emas[1][$i], $buy_price + $buy_price * $this->config['min_percent']);
 
+
 				// Если расчетная цена продажи корректна и цена поднялась выше цены ордера
 				if ($order_price <= $candle[2]) 
 					$sell_price = $order_price; // Цена продажи
