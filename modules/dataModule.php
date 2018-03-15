@@ -168,19 +168,19 @@ class dataModule extends timeObject {
 		return $result;
 	}
 
-	public function resetWOTriggerStates($uid, $market_id, $states=null, $pairs=null) {
+	public function resetWOTriggerStates($account_id, $market_id, $states=null, $pairs=null) {
 		$stateFilter = '';
 		if ($states) $stateFilter .= " AND `state` IN ('".implode("','", $states)."')";
 		if ($pairs) $stateFilter .= " AND `pair` IN ('".implode("','", $pairs)."')";
-		$query = "UPDATE _watch_orders  SET `triggers_state`='' WHERE uid={$uid} AND market_id={$market_id} {$stateFilter}";
+		$query = "UPDATE _watch_orders  SET `triggers_state`='' WHERE account_id={$account_id} AND market_id={$market_id} {$stateFilter}";
 		return $this->dbp->query($query);
 	}
 
-	public function getWatchOrders($uid, $market_id, $states=null, $pairs=null) {
+	public function getWatchOrders($account_id, $market_id, $states=null, $pairs=null) {
 		$stateFilter = '';
 		if ($states) $stateFilter .= " AND `state` IN ('".implode("','", $states)."')";
 		if ($pairs) $stateFilter .= " AND `pair` IN ('".implode("','", $pairs)."')";
-		$query = "SELECT * FROM _watch_orders WHERE uid={$uid} AND market_id={$market_id} {$stateFilter}";
+		$query = "SELECT * FROM _watch_orders WHERE account_id={$account_id} AND market_id={$market_id} {$stateFilter}";
 		$list = $this->dbp->asArray($query);
 
 		foreach ($list as $key=>$item) {
@@ -196,11 +196,11 @@ class dataModule extends timeObject {
 		return $list;
 	}
 
-	public function getWatchOrderIds($uid, $market_id, $states=null, $pairs=null) {
+	public function getWatchOrderIds($account_id, $market_id, $states=null, $pairs=null) {
 		$stateFilter = '';
 		if ($states) $stateFilter .= " AND `state` IN ('".implode("','", $states)."')";
 		if ($pairs) $stateFilter .= " AND `pair` IN ('".implode("','", $pairs)."')";
-		$query = "SELECT id FROM _watch_orders WHERE uid={$uid} AND market_id={$market_id} {$stateFilter}";
+		$query = "SELECT id FROM _watch_orders WHERE account_id={$account_id} AND market_id={$market_id} {$stateFilter}";
 		$list = $this->dbp->asArray($query);
 		return $list;
 	}
@@ -248,7 +248,7 @@ class dataModule extends timeObject {
 
 	public function getOrders($market_id, $states, $action_state_set='inactive') {
 		$states_str = "'".implode("','", $states)."'";
-		$query = "SELECT wo.*, m.name as market_name FROM _watch_orders wo INNER JOIN _users u ON wo.uid = u.uid INNER JOIN _markets m ON m.id = wo.market_id ".
+		$query = "SELECT wo.*, m.name as market_name FROM _watch_orders wo INNER JOIN _users u ON wo.account_id = u.account_id INNER JOIN _markets m ON m.id = wo.market_id ".
 				"WHERE wo.`state` IN ($states_str) AND FIND_IN_SET('active', u.states) > 0 AND market_id={$market_id}";
 		$orders = $this->dbp->asArray($query);
 

@@ -15,6 +15,7 @@ class baseCrawler {
 
 	public function query($url, $req=null) {
 		// generate the POST data string
+		//echo $url;
 	    static $ch = null;
 	    if (is_null($ch)) {
 	        $ch = curl_init();
@@ -28,7 +29,9 @@ class baseCrawler {
 		    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 	    }
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-	    if (($res = curl_exec($ch)) === false) {
+	    $res = curl_exec($ch);
+
+	    if (($res) === false) {
 	    	return ['error'=>'Could not get reply:'. curl_error($ch), 'error_code'=>curl_errno($ch)];
 	    } else {
 	    	$data = json_decode($res, true);

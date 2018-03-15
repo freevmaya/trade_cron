@@ -67,6 +67,10 @@
                 sleep(WAITAFTERERROR);
             } else {
                 foreach ($trades as $pair=>$data) {
+                    $pairA             = explode('_', $pair);
+                    $data['cur_in']    = curID($pairA[0]);
+                    $data['cur_out']   = curID($pairA[1]);
+
                     $mysqltime  = date(DATEFORMAT, ceil($time / WAITTIME) * WAITTIME);
                     $query = "REPLACE {$table} (`time`, `cur_in`, `cur_out`, `buy_price`, `sell_price`, `buy_volumes`, `sell_volumes`) ".
                         "VALUES ('{$mysqltime}', {$data['cur_in']}, {$data['cur_out']}, {$data['buy_price']}, {$data['sell_price']},".

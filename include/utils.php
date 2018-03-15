@@ -70,4 +70,29 @@
         }
         return $arr;
     }
+        
+
+    function varavg($list, $count_k) {
+        $inc    = ($count_k>0)?1:-1;
+        $countl = count($list);
+        $i      = ($count_k>0)?0:(count($list)-1);
+        $count  = $countl * $count_k;
+        $accum  = 0;
+        if ($countl > 1) { 
+            $n      = abs($count) + 1;
+            $an     = 2 / $n;
+            $d      = $an / ($n - 1);
+            while (($i >= 0) && ($i < $countl)) {
+                if (!isset($list[$i])) {
+                    print_r($list);
+                }
+
+                $accum += $list[$i] * $an;
+                
+                $i += $inc;
+                $an -= $d;
+            }
+        } else if ($countl > 0) $accum = $list[0];
+        return $accum;
+    } 
 ?>

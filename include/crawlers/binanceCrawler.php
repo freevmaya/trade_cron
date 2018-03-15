@@ -1,20 +1,28 @@
 <?
 define("BINANCEURL", 'https://www.binance.com/');
-define("BINANCETRADELIMITS", 100);
+define("BINANCETRADELIMITS", 500);
+define("BINANCEORDERLIMITS", 100);
 
 class binanceCrawler extends baseCrawler {
 	protected $prevTrades;
 	protected $symbols;
-	protected $list;
+	protected $info;
+	protected $pairs;
 
-	function __construct() {
+	function __construct($a_pairs = null) {
 		$this->prevTrades = [];
+		$this->info = $this->getExchangeInfo();
+
+		if (!$a_pairs) {
+			include(TRADEPATH.'data/binance_pairs.php');
+			$this->pairs = explode(',', $pairs);
+		} else $this->pairs = $a_pairs;
 	}
 
 	protected function getActualPairs() {
 		$symbols = [];
-		if ($this->list = $this->getExchangeInfo()) {
-			foreach ($this->list['symbols'] as $item) {
+		if ($this->info) {
+			foreach ($this->info['symbols'] as $item) {
 				$len = strlen($item['baseAsset']);
 				$right = substr($item['symbol'], $len);
 				if ($right == 'BTC') {
@@ -27,7 +35,7 @@ class binanceCrawler extends baseCrawler {
 	}
 
 	protected function getExchangeInfo() {
-		return json_decode(file_get_contents(BINANCEURL."api/v1/exchangeInfo"), true);
+		return $this->query(BINANCEURL."api/v1/exchangeInfo");
 	}
 
 	protected function sum($arr) {
@@ -41,13 +49,10 @@ class binanceCrawler extends baseCrawler {
 	}
 
 	public function getOrders() {
-		include(TRADEPATH.'data/binance_pairs.php');
 		$result = [];
-		$pairs = explode(',', $pairs);
 
-	    foreach ($pairs as $pair) {
-		    $queryURL = BINANCEURL.'api/v1/depth?symbol='.str_replace('_', '', $pair).'&limit='.BINANCETRADELIMITS;
-		    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
+		if (($list = $this->getOrderList()) && !isset($list['error'])) {
+		    foreach ($list as $pair=>$data) {
 			    $sumAsks = $this->sum($data['asks']);
 			    $sumBids = $this->sum($data['bids']);
 
@@ -56,9 +61,21 @@ class binanceCrawler extends baseCrawler {
 			    		'ask_quantity'=>$sumAsks[0], 'bid_quantity'=>$sumBids[0],
 			    		'ask_amount'=>$sumAsks[1], 'bid_amount'=>$sumBids[1]];
 		    	$result[$pair] = $item;
-		    } else return $data; 
+			}
 		}
 
+	    return $result;
+	}
+
+	public function getOrderList() {
+		$result = [];
+
+	    foreach ($this->pairs as $pair) {
+		    $queryURL = BINANCEURL.'api/v1/depth?symbol='.str_replace('_', '', $pair).'&limit='.BINANCEORDERLIMITS;
+		    if (($item = $this->query($queryURL)) && (!isset($data['error']))) {
+		    	$result[$pair] = $item;
+		    } else return $item; 
+		}
 
 	    return $result;
 	}
@@ -70,26 +87,33 @@ class binanceCrawler extends baseCrawler {
 	}
 
 	public function getTrades() {
-		include(TRADEPATH.'data/binance_pairs.php');
     	$result = [];
-		$pairs = explode(',', $pairs);
+    	$list = $this->getTradeList();
 
-	    foreach ($pairs as $pair) {
-		    $queryURL = BINANCEURL.'api/v1/trades?symbol='.str_replace('_', '', $pair).'&limit='.BINANCETRADELIMITS;
+	    foreach ($list as $pair=>$item) {
+		    $result[$pair] = $this->parseTrades($item, $pair);
+		    if ($result[$pair]) $this->prevTrades[$pair] = $result[$pair];
+		}
+
+	    return $result;
+	}
+
+	protected function paitToSymbol($pair) {
+		return str_replace('_', '', $pair);
+	}
+
+	public function getTradeList() {
+		$result = [];
+
+	    foreach ($this->pairs as $pair) {
+		    $queryURL = BINANCEURL.'api/v1/trades?symbol='.$this->paitToSymbol($pair).'&limit='.BINANCETRADELIMITS;
 		    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
-			    $result[$pair] = $this->parseTrades($data, $pair);
-
-			    if ($result[$pair]) {
-			    	$pairA      				= explode('_', $pair);
-	                $result[$pair]['cur_in']  	= curID($pairA[0]);
-	                $result[$pair]['cur_out']  	= curID($pairA[1]);
-					$this->prevTrades[$pair] 	= $result[$pair];
-	            }
+			    $result[$pair] = $data;
 	        } else return $data;
 		}
 
 	    return $result;
-	}	
+	}
 
 	public function parseTrades($data, $pair) {
 		$result = null;
@@ -118,6 +142,68 @@ class binanceCrawler extends baseCrawler {
 	        $result['sell_volumes'] = ($sell_count>0)?$a_sell_volumes:$result['sell_volumes'];
 	    }
 	    return $result;
+	}
+
+	/* Response
+	[
+	  [
+	    1499040000000,      // Open time
+	    "0.01634790",       // Open
+	    "0.80000000",       // High
+	    "0.01575800",       // Low
+	    "0.01577100",       // Close
+	    "148976.11427815",  // Volume
+	    1499644799999,      // Close time
+	    "2434.19055334",    // Quote asset volume
+	    308,                // Number of trades
+	    "1756.87402397",    // Taker buy base asset volume
+	    "28.46694368",      // Taker buy quote asset volume
+	    "17928899.62484339" // Ignore
+	  ]
+	]
+	*/
+	public function candles($pair, $interval='30m', $startTime=0, $endTime=0, $limit=0) {
+		$queryURL = BINANCEURL.'api/v1/klines?symbol='.$this->paitToSymbol($pair).'&interval='.$interval;
+		if ($startTime) $queryURL .= '&startTime='.($startTime * 1000);
+		if ($endTime) $queryURL .= '&endTime='.($endTime * 1000);
+		if ($limit) $queryURL .= '&limit='.$limit;
+
+	    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
+		    return $data;
+        } else return null;
+	}
+
+	/*
+	Response:
+
+	{
+	  "symbol": "BNBBTC",
+	  "priceChange": "-94.99999800",
+	  "priceChangePercent": "-95.960",
+	  "weightedAvgPrice": "0.29628482",
+	  "prevClosePrice": "0.10002000",
+	  "lastPrice": "4.00000200",
+	  "lastQty": "200.00000000",
+	  "bidPrice": "4.00000000",
+	  "askPrice": "4.00000200",
+	  "openPrice": "99.00000000",
+	  "highPrice": "100.00000000",
+	  "lowPrice": "0.10000000",
+	  "volume": "8913.30000000",
+	  "quoteVolume": "15.30000000",
+	  "openTime": 1499783499040,
+	  "closeTime": 1499869899040,
+	  "fristId": 28385,   // First tradeId
+	  "lastId": 28460,    // Last tradeId
+	  "count": 76         // Trade count
+	}
+	*/
+	public function changeStat($pair) {
+		$queryURL = BINANCEURL.'api/v1/ticker/24hr?symbol='.$this->paitToSymbol($pair);
+
+	    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
+		    return $data;
+        } else return null;
 	}
 }
 ?>
