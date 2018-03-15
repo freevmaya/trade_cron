@@ -1,0 +1,21 @@
+{"purchases":[], 
+"options":{
+	"NCASH_BTC": {
+                "TICK": 30,
+                "MINSUPPORT":0,
+                "MINRESIST":0,
+                "MINPROFIT":0.005,
+                "MINRIGHTWALLDEST":0.20,
+                "MINLEFTWALLDEST":0.20,
+                "MINWALLSPREED":0.008
+	},
+	"MCO_BTC": {
+                "TICK": 30,
+                "MINSUPPORT":0.3,
+                "MINRESIST":-0.3,
+                "MINPROFIT":0.005,
+                "MINRIGHTWALLDEST":0.15,
+                "MINLEFTWALLDEST":0.15,
+                "MINWALLSPREED":0.008
+	}
+}}
