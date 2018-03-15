@@ -2,7 +2,7 @@
 class tradeManager {
 	protected $candles;
 	protected $config;
-	protected $date_format = 'd:m H:i';
+	protected $date_format = 'd.m H:i';
 	function __construct($candles, $config) {
 		$this->candles = $candles;
 		$this->config = $config;
@@ -33,8 +33,8 @@ class tradeManager {
 				foreach ($test as $itm) $accProfit += $itm['profit'];
 
 				$result['test_result'] = [
-					'profit'=>$accProfit,
 					'list'=>$test,
+					'profit'=>$accProfit,
 					'count'=>count($test),
 					'perod_start'=>$this->date($cans[$this->config['ema_interval']][0]),
 					'perod_stop'=>$this->date($cans[count($cans) - 1][0])
@@ -123,5 +123,6 @@ class tradeManager {
 		$list = $this->candles->getData();
 		return ($list[0][1] + $list[0][4]) / 2;
 	}
+
 }
 ?>

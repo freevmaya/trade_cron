@@ -7,6 +7,11 @@
         "GTO_BTC": {
             "price": 3.0058811673401e-5,
             "volume": 1
+        },
+        "ETH_BTC": {
+            "time": "2018-03-15 15:11:56",
+            "price": 0.074779301383129,
+            "volume": 1
         }
     },
     "profit": {
@@ -17,12 +22,6 @@
             "TICK": 30,
             "CANDLEINTERVAL": 15,
             "CANDLECOUNT": 60,
-            "MACD": [
-                12,
-                20,
-                6,
-                4
-            ],
             "HISTOGRAM_STEP": 1.0e-6,
             "MANAGER": {
                 "ema_interval": 9,
@@ -33,31 +32,39 @@
             "TICK": 30,
             "CANDLEINTERVAL": 15,
             "CANDLECOUNT": 60,
-            "MACD": [
-                12,
-                20,
-                6,
-                4
-            ],
             "HISTOGRAM_STEP": 1.0e-7,
             "MANAGER": {
                 "ema_interval": 10,
                 "min_percent": 0.003
             }
         },
-        "BNB_BTC":{
+        "BNB_BTC": {
             "TICK": 30,
             "CANDLEINTERVAL": 15,
             "CANDLECOUNT": 60,
-            "MACD": [
-                12,
-                20,
-                6,
-                4
-            ],
-            "HISTOGRAM_STEP": 0.00001,
+            "HISTOGRAM_STEP": 1.0e-5,
             "MANAGER": {
                 "ema_interval": 7,
+                "min_percent": 0.003
+            }
+        },
+        "ETH_BTC": {
+            "TICK": 30,
+            "CANDLEINTERVAL": 15,
+            "CANDLECOUNT": 60,
+            "HISTOGRAM_STEP": 0.0001,
+            "MANAGER": {
+                "ema_interval": 12,
+                "min_percent": 0.003
+            }
+        },
+        "DGD_BTC": {
+            "TICK": 30,
+            "CANDLEINTERVAL": 15,
+            "CANDLECOUNT": 60,
+            "HISTOGRAM_STEP": 0.0001,
+            "MANAGER": {
+                "ema_interval": 8,
                 "min_percent": 0.003
             }
         }

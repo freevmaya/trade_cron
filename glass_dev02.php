@@ -53,7 +53,8 @@
     $scriptID = basename(__FILE__).$pair;
     $scriptCode = md5(time());
 
-    startScript($dbp, $scriptID, $scriptCode, WAITTIME, '', $is_dev);
+    if (!$istest) 
+        startScript($dbp, $scriptID, $scriptCode, WAITTIME, '', $is_dev);
     $FDBGLogFile = (__FILE__).'.log';
     new console($is_dev && $isecho);
     
@@ -78,18 +79,12 @@
     else $options = json_decode(
         '{
             "TICK": 30,
-            "CANDLEINTERVAL": 15,
+            "CANDLEINTERVAL": 30,
             "CANDLECOUNT": 60,
-            "MACD": [
-                12,
-                20,
-                6,
-                4
-            ],
-            "HISTOGRAM_STEP": 0.00001,
+            "HISTOGRAM_STEP": 0.000001,
             "MANAGER": {
-                "ema_interval": 7,
-                "min_percent": 0.002
+                "ema_interval": 8,
+                "min_percent": 0.004
             }
         }', true);        
 
@@ -139,22 +134,30 @@
                 $hist = $glass->histogram(isset($options['HISTOGRAM_STEP'])?$options['HISTOGRAM_STEP']:$prices['buy'] * 0.01);
 
                 $maxwall_ask = $glass->maxWall($hist['ask']);
+                $maxwall_bid = $glass->maxWall($hist['bid']);
                 $data = $manager->tradeCycle($purchase);
 
                 if (!$purchase) {
+
+                    //print_r($maxwall_bid);
                     if ($prices['buy'] <= $data['buy_price']) {
-                        $temp_purchase = ['time'=>date(DATEFORMAT, $time), 'price'=>$data['buy_price'], 'volume'=>1];
+                        //Заготовка покупки
+                        $temp_order = ['time'=>date(DATEFORMAT, $time), 'price'=>$data['buy_price'], 'volume'=>1];
 
                         $volumes = $tradeClass->lastVolumes($pair, $options['TICK']);
                         // Текущая скорость покупок и продаж в сек.
                         $buy_persec = $volumes['buy_persec']; 
                         $sell_persec = $volumes['sell_persec'];
 
+                        $direct = $volumes['buy'] - $volumes['sell']; // покупают - продают = настроение рынка, т.е. объем дисбаланса за TICK сек. положительно если больше покупают
 
-                        if ($maxwall_ask[0]) {
+                        if ($direct < 0) {
+                            //Здесь расчет цены попупки с учетом снижения цены
+                            //$extra = glass->extrapolate($buy_persec, $sell_persec);
+                            $echo .= "Больше продаж\n";
+                        } else if ($maxwall_ask[0]) {
                             // Расчитываем расстояние от требуемой цены продажи до наибольшей стенки
-
-                            $data = $manager->tradeCycle($temp_purchase);
+                            $data = $manager->tradeCycle($temp_order);
                             
                             $wallPrice = $maxwall_ask[0];
                             $wall_vol = $maxwall_ask[1];
@@ -162,17 +165,18 @@
 
                             // Если стенка далеко, то покупаем. Или если объем стенки разбирается за 5 сек.
                             if (($wall_dest > 0) || ($wall_vol < $buy_persec * 5)) {  
-                                $purchase = $temp_purchase;
+                                $purchase = $temp_order;
                             } else $echo .= "Откладываем покупку, стенка на ".sprintf(NFRM, $wallPrice).", объем: ".$wall_vol."\n";
 
-                        } else $purchase = $temp_purchase; // Или если стенок нет то покупаем
+                        } else $purchase = $temp_order; // Или если стенок нет то покупаем
 
                         if ($purchase) {
-                            $echo .= "Покупка по цене ".sprintf(NFRM, $data['buy_price'])."\n";
+                            $echo .= "Выставляем ордер по цене ".sprintf(NFRM, $data['buy_price'])."\n";
                             $purchAll[$pair] = $purchase;
                             $config->set('purchases', $purchAll);
                         }
-                    }
+                    } else $echo .= "Ждем цену меньше ".sprintf(NFRM, $data['buy_price'])."\n";
+
                 } else {
                     $profit = $data['sell_price'] - $purchase['price'];
                     if ($prices['sell'] >= $data['sell_price']) {
