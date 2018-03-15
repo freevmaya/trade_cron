@@ -55,7 +55,8 @@ class tradeManager {
 
 		foreach ($emas[0] as $i=>$bottomPrice) {
 			$candle = $cans[$i + $offset];
-			if ($buy == 0) { // Если нет текущих покупок
+			// Если нет текущих покупок
+			if (!$buy) { 
 				// Выставляем ордер по цене EMAS1
 				if ($bottomPrice >= $candle[3]) { // Если цена опустилась ниже цены ордера
 					// Срабатывает ордер на покупку 
@@ -73,7 +74,7 @@ class tradeManager {
 					$sell_price = $order_price; // Цена продажи
 
 				if ($sell_price > 0) { 
-					$profitPercent = (1 - $buy_price/$sell_price) * 100;
+					$profitPercent = (($sell_price - $buy_price)/$sell_price) * 100;
 					$profit = $sell_price - $buy_price;
 					$list[] = [$this->date($buy[0]), $this->date($candle[0]),
 								'buy'=>$buy_price, 'sell'=>$sell_price, 'percent'=>$profitPercent, 'profit'=>$profit];

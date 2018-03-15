@@ -11,7 +11,7 @@ class binanceCrawler extends baseCrawler {
 
 	function __construct($a_pairs = null) {
 		$this->prevTrades = [];
-		$this->info = $this->getExchangeInfo();
+		//$this->info = $this->getExchangeInfo();
 
 		if (!$a_pairs) {
 			include(TRADEPATH.'data/binance_pairs.php');
