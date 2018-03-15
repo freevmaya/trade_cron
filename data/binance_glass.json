@@ -1,16 +1,12 @@
 {
     "purchases": {
-        "AE_BTC": {
-            "price": 0.0001915707758128,
-            "volume": 1
-        },
         "GTO_BTC": {
             "price": 3.0058811673401e-5,
             "volume": 1
         }
     },
     "profit": {
-        "AE_BTC": 0
+        "AE_BTC": 7.6628310325121e-7
     },
     "options": {
         "AE_BTC": {
@@ -26,7 +22,7 @@
             "HISTOGRAM_STEP": 1.0e-6,
             "MANAGER": {
                 "ema_interval": 9,
-                "min_percent": 0.003
+                "min_percent": 0.004
             }
         },
         "GTO_BTC": {
@@ -42,10 +38,10 @@
             "HISTOGRAM_STEP": 1.0e-7,
             "MANAGER": {
                 "ema_interval": 10,
-                "min_percent": 0.003
+                "min_percent": 0.004
             }
         },
-        "BNB_BTC":{
+        "BNB_BTC": {
             "TICK": 30,
             "CANDLEINTERVAL": 15,
             "CANDLECOUNT": 60,
@@ -55,10 +51,10 @@
                 6,
                 4
             ],
-            "HISTOGRAM_STEP": 0.00001,
+            "HISTOGRAM_STEP": 1.0e-5,
             "MANAGER": {
                 "ema_interval": 7,
-                "min_percent": 0.003
+                "min_percent": 0.004
             }
         }
     },
