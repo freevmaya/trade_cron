@@ -17,3 +17,26 @@
 			delta
 		Если тип below, higner
 			value
+
+
+
+
+Конфигурация
+
+"BNB_BTC": {
+    "TICK": 30, 
+    "CANDLEINTERVAL": 15,
+    "CANDLECOUNT": 120,
+    "HISTOGRAM_STEP": 1.0e-5,
+    "MANAGER": {
+        "ema_interval": 7,
+        "min_percent": 0.004,
+        "buy_volume": 1,
+        "extra_ask": 20,
+        "extra_bid": 20,
+        "max_buy_direct": 0,
+        "min_sell_direct": 0.1,
+        "min_left_wall": 4.0e-5,
+        "min_right_wall": 4.0e-5
+    }
+}

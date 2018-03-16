@@ -3,6 +3,7 @@ class tradeManager {
 	protected $candles;
 	protected $config;
 	protected $date_format = 'd.m H:i';
+
 	function __construct($candles, $config) {
 		$this->candles = $candles;
 		$this->config = $config;
@@ -92,7 +93,7 @@ class tradeManager {
 		return [$this->candles->ema($ema_iv, 0, 3), $this->candles->ema($ema_iv, 0, 2)];
 	}
 
-	public function tradeCycle($purchase) {
+	public function tradeRequired($purchase) {
 		$emas = $this->getEmas();
 		$end = count($emas[0]) - 1;
 		$result = ['buy_price'=>$emas[0][$end]];
@@ -101,6 +102,12 @@ class tradeManager {
 		}
 
 		return $result;
+	}
+
+	public function lastCap() {
+		$emas = $this->getEmas();
+		$end = count($emas[0]) - 1;
+		return [$emas[0][$end], $emas[1][$end]];
 	}
 
 	public function minmaxHeight($emas) {

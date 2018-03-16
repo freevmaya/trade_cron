@@ -28,7 +28,7 @@ class Glass {
 		return $this->orders[$type.'s'][0][0];
 	}
 
-	public function extraType($type, $volume, $break=0) {
+	public function extraType($type, $volume) {
 		$end = count($this->orders[$type]) - 1;
 		$prev_vol 	= 0;
 		$acc_vol 	= 0;

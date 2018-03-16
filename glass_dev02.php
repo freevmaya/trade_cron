@@ -30,6 +30,7 @@
     include_once(INCLUDE_PATH.'events.php');
     include_once(MAINDIR.'include/db/mySQLProvider.php');
     include_once(MAINDIR.'include/console.php');
+    include_once(MAINDIR.'include/log.php');
     include_once(MAINDIR.'include/glass/trades.php');
     include_once(MAINDIR.'include/glass/glass.php');
     include_once(MAINDIR.'include/glass/levels.php');
@@ -55,7 +56,7 @@
 
     if (!$istest) 
         startScript($dbp, $scriptID, $scriptCode, WAITTIME, '', $is_dev);
-    $FDBGLogFile = (__FILE__).'.log';
+    $FDBGLogFile = $scriptID.'.log';
     new console($is_dev && $isecho);
     
     $startTime = strtotime('NOW');
@@ -81,10 +82,17 @@
             "TICK": 30,
             "CANDLEINTERVAL": 15,
             "CANDLECOUNT": 120,
+            "HISTOGRAM_STEP": 1.0e-5,
             "MANAGER": {
-                "ema_interval": 8,
-                "min_percent": 0.004
-            }
+                "ema_interval": 7,
+                "min_percent": 0.004,
+                "buy_volume": 1,
+                "extra_ask": 20,
+                "extra_bid": 20,
+                "max_buy_direct": 0,
+                "min_sell_direct": 0.1,
+                "min_left_wall": 0.00004,
+                "min_right_wall": 0.00004
         }', true);        
 
     $candleMin  = 60; //min
@@ -93,18 +101,21 @@
 
     $mngcfg =  $options['MANAGER'];
     $manager = new tradeManager($candles, $mngcfg);
-    $result = $manager->analizer();
-    print_r($result);
 
-    if (!isset($result['test_result']) || ($result['test_result']['count'] == 0)) {
-        echo "TEST RESULT\n";
+    if ($istest) {
+        $result = $manager->analizer();
+        if ($is_dev) print_r($result);
+
+        if (!isset($result['test_result']) || ($result['test_result']['count'] == 0)) {
+            echo "TEST RESULT\n";
+            exit;
+        }
         exit;
     }
 
-    if ($istest) exit;
-
     $purchAll = $config->get('purchases', []);
     $purchase = @$purchAll[$pair];
+    $tradeLog = new Log('data/'.$scriptID.'_trade.log');
 
     $tradeClass = new Trades();
 
@@ -125,6 +136,9 @@
 
                 $tradeClass->addHistory($trades);
                 $prices = $tradeClass->lastPrice($pair);
+                $min_profit = $prices['sell'] * $mngcfg['min_percent'] * 1.5;
+
+                //$echo .= 'Цены: '.sprintf(NFRM, $prices['buy']).' '.sprintf(NFRM, $prices['sell'])."\n";
 
                 $candles->updateCurPrices($prices);
 
@@ -134,64 +148,162 @@
 
                 $maxwall_ask = $glass->maxWall($hist['ask']);
                 $maxwall_bid = $glass->maxWall($hist['bid']);
-                $data = $manager->tradeCycle($purchase);
+                $req_data = $manager->tradeRequired($purchase);
+
+                $volumes = $tradeClass->lastVolumes($pair, $options['TICK']);
+                // Текущая скорость покупок и продаж в сек.
+                $buy_persec = $volumes['buy_persec']; 
+                $sell_persec = $volumes['sell_persec'];
+
+                $allvol = $volumes['buy'] + $volumes['sell'];
+                $direct = $volumes['buy']/$allvol - $volumes['sell']/$allvol; // покупают - продают = настроение рынка, т.е. объем дисбаланса за TICK сек. положительно если больше покупают
 
                 if (!$purchase) {
 
-                    //print_r($maxwall_bid);
-                    if ($prices['buy'] <= $data['buy_price']) {
-                        //Заготовка покупки
-                        $temp_order = ['time'=>date(DATEFORMAT, $time), 'price'=>$data['buy_price'], 'volume'=>1];
+//-------------------------ПОДГОТОВКА ПОКУПКИ-----------------------     
+                    $lastCap = $manager->lastCap();
+                    $cap = $lastCap[1] - $lastCap[0];
+                    if ($cap < $min_profit) {
+                        $echo .= "Текущий зазор недостаточен для торговли ".sprintf(NFRM, $cap).", требуется не менее ".sprintf(NFRM, $min_profit)."\n";
+                    } else {
 
-                        $volumes = $tradeClass->lastVolumes($pair, $options['TICK']);
-                        // Текущая скорость покупок и продаж в сек.
-                        $buy_persec = $volumes['buy_persec']; 
-                        $sell_persec = $volumes['sell_persec'];
+                        // Подготавливаем ордер
+                        $temp_order = ['time'=>date(DATEFORMAT, $time), 'price'=>min($prices['sell'], 
+                                        $req_data['buy_price']), 'volume'=>$mngcfg['buy_volume'], 'state'=>'order_buy'];
+                        $iscreate = 0;
 
-                        $direct = $volumes['buy'] - $volumes['sell']; // покупают - продают = настроение рынка, т.е. объем дисбаланса за TICK сек. положительно если больше покупают
 
-                        if ($direct < 0) {
-                            //Здесь расчет цены попупки с учетом снижения цены
-                            //$extra = glass->extrapolate($buy_persec, $sell_persec);
-                            $echo .= "Больше продаж\n";
-                        } else if ($maxwall_ask[0]) {
-                            // Расчитываем расстояние от требуемой цены продажи до наибольшей стенки
-                            $data = $manager->tradeCycle($temp_order);
+
+                        if ($maxwall_ask[0]) {
+                            // Расчитываем расстояние от требуемой цены продажи до наибольшей правой стенки
+                            $req_data = $manager->tradeRequired($temp_order);
                             
-                            $wallPrice = $maxwall_ask[0];
-                            $wall_vol = $maxwall_ask[1];
-                            $wall_dest = $wallPrice - $data['sell_price'];
+                            $wallPrice  = $maxwall_ask[0];
+                            $wall_vol   = $maxwall_ask[1];
+                            $wall_dest  = $wallPrice - $req_data['sell_price'];
 
-                            // Если стенка далеко, то покупаем. Или если объем стенки разбирается за 5 сек.
-                            if (($wall_dest > 0) || ($wall_vol < $buy_persec * 5)) {  
-                                $purchase = $temp_order;
-                            } else $echo .= "Откладываем покупку, стенка на ".sprintf(NFRM, $wallPrice).", объем: ".$wall_vol."\n";
+                            // Если стенка близко 
+                            if ($wall_dest <= 0) {  
+                                // Расчитваем ту цену которая будет после extra_ask секунд, разбирается ли эта стенка
+                                $wallPrice = $glass->extraType('asks', $buy_persec * $mngcfg['extra_ask']);
+                                $wall_dest = $wallPrice - $req_data['sell_price'];
+                            } 
 
-                        } else $purchase = $temp_order; // Или если стенок нет то покупаем
+                            if ($wall_dest > 0) $iscreate++;
+                            else $echo .= "Откладываем покупку, стенка на ".sprintf(NFRM, $wallPrice).", объем: ".$wall_vol."\n";
 
-                        if ($purchase) {
-                            $echo .= "Выставляем ордер по цене ".sprintf(NFRM, $data['buy_price'])."\n";
-                            $purchAll[$pair] = $purchase;
+                        } else if ($direct <= $mngcfg['max_buy_direct']) { //Здесь расчет цены попупки с учетом снижения цены
+                            //$extra = glass->extrapolate($buy_persec, $sell_persec);
+                            $echo .= "Ждем, так как больше продаж {$direct}\n";
+                        } else $iscreate++; // Или если стенок нет то покупаем
+
+                        if ($iscreate > 0) {
+                            $purchAll[$pair] = $purchase = $temp_order;
+                            $echo .= "Выставляем ордер на покупку по цене ".sprintf(NFRM, $purchase['price'])."\n";
                             $config->set('purchases', $purchAll);
                         }
-                    } else $echo .= "Ждем цену меньше ".sprintf(NFRM, $data['buy_price'])."\n";
+                    }
+                }
 
-                } else {
-                    $profit = $data['sell_price'] - $purchase['price'];
-                    if ($prices['sell'] >= $data['sell_price']) {
-                        $echo .= "Продажа по цене ".sprintf(NFRM, $data['sell_price']).", профит: ".sprintf(NFRM, $profit)."!!!\n";
-                        $purchase = null;
-                        unset($purchAll[$pair]);
-                        $profitAll = $config->get('profit', [$pair=>0]);
-                        $profitAll[$pair] += $profit;
+                if ($purchase) {
 
-                        $config->set('profit', $profitAll);
-                        $config->set('purchases', $purchAll);
-                    } else $echo .= "тек цена продажи: ".sprintf(NFRM, $data['sell_price']).", профит: ".sprintf(NFRM, $profit)."\n";
+//-------------------------ПОКУПКА-----------------------                     
+                    if ($purchase['state'] == 'order_buy') {
+
+                        if ($prices['sell'] <= $purchase['price']) {
+                            $echo .= "Сработал ордер на покупку по цене ".sprintf(NFRM, $purchase['price'])."\n";
+                            $purchase['state'] = 'completed_buy';
+                            $purchAll[$pair] = $purchase;
+                            $config->set('purchases', $purchAll);
+                            $tradeLog->log($echo);
+                        } else {
+                            $left_wall = 0;
+                            if ($direct <= $mngcfg['max_buy_direct']) { // Если продажи преобладают
+                                $left_wall = $glass->extraType('bids', $sell_persec * $mngcfg['extra_bid']);
+                            } else if ($maxwall_bid[0] > 0) $left_wall = $maxwall_bid[0];
+
+                            if ($left_wall > 0) {
+                                $left_price = $left_wall + $left_wall * $mngcfg['min_left_wall'];
+                                if ($req_data['buy_price'] < $left_price) {
+                                    $req_data['buy_price'] = $left_price;
+                                    $echo .= "Корректируем цену по левой стенке: ".sprintf(NFRM, $req_data['buy_price'])."\n";
+                                }
+                            }                            
+                            if ($req_data['buy_price'] != $purchase['price']) {
+                                $isLess = $req_data['buy_price'] < $purchase['price'];
+                                $purchase['price'] = $req_data['buy_price'];
+
+                                $echo .= ($isLess?'Уменьшаем':'Увеличиваем')." цену ".sprintf(NFRM, $purchase['price'])." в ордере на покупку\n";
+                                $purchAll[$pair] = $purchase;
+                                $config->set('purchases', $purchAll);
+                            }
+                        }
+                    } else if ($purchase['state'] == 'completed_buy') {
+
+//-------------------------ПОДГОТОВКА ОРДЕРА НА ПРОДАЖУ-----------------------                     
+                        if ($direct >= $mngcfg['min_sell_direct']) {
+                            $echo .= "Ждем, так как много покупателей {$direct}\n";
+                        } else {
+                            $purchase['state'] = 'order_sell';
+                            $purchase['sell_price'] = $req_data['sell_price'];
+                            $purchAll[$pair] = $purchase;
+                            $config->set('purchases', $purchAll);
+                            $profit = $purchase['sell_price'] - $purchase['price'];
+                            $echo .= "Выставляем ордер на продажу по цене ".sprintf(NFRM, $req_data['sell_price']).
+                                        ", профит: ".sprintf(NFRM, $profit)."!!!\n";
+                        }
+                    } else if ($purchase['state'] == 'order_sell') {
+
+//-------------------------ПРОДАЖА-----------------------   
+                        if ($prices['buy'] >= $req_data['sell_price']) {
+                            $profit = $purchase['sell_price'] - $purchase['price'];
+                            $echo .= "Продажа по цене ".sprintf(NFRM, $req_data['sell_price']).", профит: ".sprintf(NFRM, $profit)."!!!\n";
+                            $purchase = null;
+                            unset($purchAll[$pair]);
+                            $profitAll = $config->get('profit', [$pair=>0]);
+                            $profitAll[$pair] = (isset($profitAll[$pair])?$profitAll[$pair]:0) + $profit;
+
+                            $config->set('profit', $profitAll);
+                            $config->set('purchases', $purchAll);
+                            $tradeLog->log($echo);
+                        } else {
+                            $right_wall = 0;
+                            if ($direct >= $mngcfg['min_sell_direct']) { // Если преобладают покупки
+                                $right_wall = $glass->extraType('asks', $buy_persec * $mngcfg['extra_ask']);
+                            } else if ($maxwall_ask[0] > 0) $right_wall = $maxwall_ask[0];
+                            else if ($direct <= $mngcfg['max_buy_direct']) { // Если преобладают продажи
+                                // И если текщая цена больше требуемой цены продажи, то продавать по тек. цене
+                                if ($req_data['sell_price'] < $prices['buy'])
+                                    $req_data['sell_price'] = $prices['buy'];
+                            }
+
+
+                            if ($right_wall > 0) {
+                                $right_price = $right_wall - $right_wall * $mngcfg['min_right_wall'];
+                                if ($req_data['sell_price'] < $right_price) {
+                                    $req_data['sell_price'] = $right_price;
+                                    $echo .= "Корректируем цену по правой стенке: ".sprintf(NFRM, $req_data['sell_price'])."\n";
+                                }
+                            }
+
+                            if ($req_data['sell_price'] != $purchase['sell_price']) {
+                                $isLess = $req_data['sell_price'] < $purchase['sell_price'];
+                                $purchase['sell_price'] = $req_data['sell_price'];
+
+                                $echo .= ($isLess?'Уменьшаем':'Увеличиваем')." цену ".sprintf(NFRM, $purchase['sell_price'])." в ордере на продажу\n";
+                                $purchAll[$pair] = $purchase;
+                                $config->set('purchases', $purchAll);
+                            } else {
+                                $profit = $purchase['sell_price'] - $purchase['price'];
+                                $echo .= "Минимальная цена продажи: ".sprintf(NFRM, $req_data['sell_price']).
+                                        ". В ордере ".sprintf(NFRM, $purchase['sell_price'])." профит: ".sprintf(NFRM, $profit)."\n";
+                            }
+                        }
+                    }
                 }
             }
 
-            console::log($pair."\n".$echo);
+            if ($echo) console::log($pair."\n".$echo);
 
             cronReport($dbp, $scriptID, ['time'=>$time]);
         }
