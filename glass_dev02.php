@@ -145,9 +145,6 @@
                 // Текущая скорость покупок и продаж в сек.
                 $buy_persec = $volumes['buy_persec']; 
                 $sell_persec = $volumes['sell_persec'];
-                // Избегаем нулевой скорости
-                $buy_persec = ($buy_persec<=0)?($sell_persec * 0.01):$buy_persec;
-                $sell_persec = ($sell_persec<=0)?($buy_persec * 0.01):$sell_persec;
 
                 $allvol = $volumes['buy'] + $volumes['sell'];
                 $directAvg->push($volumes['buy']/$allvol - $volumes['sell']/$allvol);
@@ -186,7 +183,7 @@
                                 //$echo .= sprintf(NFRM, $sell_price)."\n";
 
                                 // Если стенка близко 
-                                if ($wall_dest <= 0) {  
+                                if (($wall_dest <= 0) && ($buy_persec > 0)) {  
                                     // Расчитваем ту цену которая будет после extra_ask секунд, разбирается ли эта стенка
                                     $wallPrice = $glass->extraType('asks', $buy_persec * $mngcfg['extra_ask']);
                                     $wall_dest = $wallPrice - $sell_price;
@@ -223,7 +220,7 @@
                                 $tradeLog->log($echo.$debug);
                             } else {
                                 $left_wall = 0;
-                                if ($direct <= $mngcfg['max_buy_direct']) { // Если продажи преобладают
+                                if (($direct <= $mngcfg['max_buy_direct']) && ($sell_persec > 0)) { // Если продажи преобладают
                                     $left_wall = $glass->extraType('bids', $sell_persec * $mngcfg['extra_bid'] * abs($direct));
                                 } else if ($maxwall_bid[0] > 0) $left_wall = $maxwall_bid[0];
 
@@ -273,7 +270,7 @@
                                 $tradeLog->log($echo.$debug);
                             } else {
                                 $right_wall = 0;
-                                if ($direct >= $mngcfg['min_sell_direct']) { // Если преобладают покупки
+                                if (($direct >= $mngcfg['min_sell_direct']) && ($buy_persec > 0)) { // Если преобладают покупки
                                     $right_wall = $glass->extraType('asks', $buy_persec * $mngcfg['extra_ask'] * $direct);
                                 }// else if ($maxwall_ask[0] > 0) $right_wall = $maxwall_ask[0];
                                 else if ($direct <= $mngcfg['max_buy_direct']) { // Если преобладают продажи

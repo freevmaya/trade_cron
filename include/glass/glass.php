@@ -29,7 +29,7 @@ class Glass {
 	}
 
 	public function extraType($type, $volume) {
-        if ($volume == 0) trace('Volume null', 'disp');
+        if ($volume == 0) trace("volume=0\n", 'disp');
         else {
     		$end = count($this->orders[$type]) - 1;
     		$prev_vol 	= 0;
