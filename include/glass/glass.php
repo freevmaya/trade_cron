@@ -29,25 +29,28 @@ class Glass {
 	}
 
 	public function extraType($type, $volume) {
-		$end = count($this->orders[$type]) - 1;
-		$prev_vol 	= 0;
-		$acc_vol 	= 0;
-		$cur_volume = $volume;
-        foreach ($this->orders[$type] as $i=>$item) {
-    		$slope = pow($item[1] / $volume, 2);
-    		$kslope = (1 - $slope);
-        	
-        	//echo "$kslope, vol: {$item[1]}\n";
+        if ($volume == 0) trace('Volume null', 'disp');
+        else {
+    		$end = count($this->orders[$type]) - 1;
+    		$prev_vol 	= 0;
+    		$acc_vol 	= 0;
+    		$cur_volume = $volume;
+            foreach ($this->orders[$type] as $i=>$item) {
+        		$slope = pow($item[1] / $volume, 2);
+        		$kslope = (1 - $slope);
+            	
+            	//echo "$kslope, vol: {$item[1]}\n";
 
-            if (($item[1] < $cur_volume) && ($i < $end)) $cur_volume -= $item[1];
-            else {
-		      	//echo "---\n";
-                return $item[0];
-                break;
+                if (($item[1] < $cur_volume) && ($i < $end)) $cur_volume -= $item[1];
+                else {
+    		      	//echo "---\n";
+                    return $item[0];
+                    break;
+                }
+                $prev_vol = $acc_vol;
+                $acc_vol += $item[1];
+                $cur_volume *= $kslope;
             }
-            $prev_vol = $acc_vol;
-            $acc_vol += $item[1];
-            $cur_volume *= $kslope;
         }
 
         return false;

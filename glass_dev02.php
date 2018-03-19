@@ -145,6 +145,9 @@
                 // Текущая скорость покупок и продаж в сек.
                 $buy_persec = $volumes['buy_persec']; 
                 $sell_persec = $volumes['sell_persec'];
+                // Избегаем нулевой скорости
+                $buy_persec = ($buy_persec<=0)?($sell_persec * 0.01):$buy_persec;
+                $sell_persec = ($sell_persec<=0)?($buy_persec * 0.01):$sell_persec;
 
                 $allvol = $volumes['buy'] + $volumes['sell'];
                 $directAvg->push($volumes['buy']/$allvol - $volumes['sell']/$allvol);
