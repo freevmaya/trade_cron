@@ -2,14 +2,18 @@
 define("BINANCEURL", 'https://www.binance.com/');
 define("BINANCETRADELIMITS", 500);
 define("BINANCEORDERLIMITS", 100);
+include_once(MAINDIR.'include/php-binance-api.php');
 
 class binanceCrawler extends baseCrawler {
 	protected $prevTrades;
 	protected $symbols;
 	protected $info;
 	protected $pairs;
+	protected $api;
 
 	function __construct($a_pairs = null) {
+		$this->api = new Binance\API();	
+
 		$this->prevTrades = [];
 		//$this->info = $this->getExchangeInfo();
 
@@ -32,10 +36,6 @@ class binanceCrawler extends baseCrawler {
 		}
 
 		return $symbols;
-	}
-
-	protected function getExchangeInfo() {
-		return $this->query(BINANCEURL."api/v1/exchangeInfo");
 	}
 
 	protected function sum($arr) {
@@ -67,12 +67,14 @@ class binanceCrawler extends baseCrawler {
 	    return $result;
 	}
 
-	public function getOrderList() {
+	public function getOrderList($pairs=null) {
 		$result = [];
 
-	    foreach ($this->pairs as $pair) {
-		    $queryURL = BINANCEURL.'api/v1/depth?symbol='.str_replace('_', '', $pair).'&limit='.BINANCEORDERLIMITS;
-		    if (($item = $this->query($queryURL)) && (!isset($data['error']))) {
+		$pairs = $pairs?$pairs:$this->pairs;
+
+	    foreach ($pairs as $pair) {
+//		    $queryURL = BINANCEURL.'api/v1/depth?symbol='.str_replace('_', '', $pair).'&limit='.BINANCEORDERLIMITS;
+		    if (($item = $this->api->depthRequest($this->paitToSymbol($pair)))) {
 		    	$result[$pair] = $item;
 		    } else return $item; 
 		}
@@ -106,8 +108,9 @@ class binanceCrawler extends baseCrawler {
 		$result = [];
 
 	    foreach ($this->pairs as $pair) {
-		    $queryURL = BINANCEURL.'api/v1/trades?symbol='.$this->paitToSymbol($pair).'&limit='.BINANCETRADELIMITS;
-		    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
+		    //$queryURL = BINANCEURL.'api/v1/trades?symbol='.$this->paitToSymbol($pair).'&limit='.BINANCETRADELIMITS;
+
+		    if (($data = $this->api->getTrades($this->paitToSymbol($pair), BINANCETRADELIMITS))) {
 			    $result[$pair] = $data;
 	        } else return $data;
 		}
@@ -163,14 +166,7 @@ class binanceCrawler extends baseCrawler {
 	]
 	*/
 	public function candles($pair, $interval='30m', $startTime=0, $endTime=0, $limit=0) {
-		$queryURL = BINANCEURL.'api/v1/klines?symbol='.$this->paitToSymbol($pair).'&interval='.$interval;
-		if ($startTime) $queryURL .= '&startTime='.($startTime * 1000);
-		if ($endTime) $queryURL .= '&endTime='.($endTime * 1000);
-		if ($limit) $queryURL .= '&limit='.$limit;
-
-	    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
-		    return $data;
-        } else return null;
+		return $this->api->candles($this->paitToSymbol($pair), $interval, $limit, $startTime * 1000, $endTime * 1000);
 	}
 
 	/*
@@ -199,11 +195,7 @@ class binanceCrawler extends baseCrawler {
 	}
 	*/
 	public function changeStat($pair) {
-		$queryURL = BINANCEURL.'api/v1/ticker/24hr?symbol='.$this->paitToSymbol($pair);
-
-	    if (($data = $this->query($queryURL)) && (!isset($data['error']))) {
-		    return $data;
-        } else return null;
+		return $this->api->prevDay($this->paitToSymbol($pair));
 	}
 }
 ?>

@@ -95,4 +95,19 @@
         } else if ($countl > 0) $accum = $list[0];
         return $accum;
     } 
+
+    function jsonencode($value) {
+        return json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+    function union(&$arr1, $arr2) {
+        foreach ($arr2 as $field=>$val) {
+            if (isset($arr1[$field])) {
+                if (is_array($val)) $arr1[$field] = union($arr1[$field], $val);
+                else $arr1[$field] = $val;
+            } else $arr1[$field] = $val;
+        }
+        return $arr1;
+    }
+
 ?>

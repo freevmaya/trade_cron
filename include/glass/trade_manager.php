@@ -88,6 +88,68 @@ class tradeManager {
 		return $list; 
 	}
 
+	public function macdTest($index=0) {
+		$result = ['buy'=>0, 'sell'=>0];
+
+		if (intval($this->config['no_macd']) == 1) {
+			return ['buy'=>1, 'sell'=>1];
+		}
+
+	    $macd = $this->candles->macd($this->config['MACD'][0], $this->config['MACD'][1], $this->config['MACD'][2]);
+/*
+	    $this->candles->print($macd[0]);
+	    $this->candles->print($macd[1]);
+	    $this->candles->print($macd[2]);
+
+	    $time = $this->candles->cnvTime(time()) + 2 * 60 * 60;
+	    $si = 2;
+	    for ($i=0;$i<40;$i++) {
+	    	$idx = count($macd[$si]) - 1 - $i;
+	    	echo $this->date($time * 1000)." ".sprintf("%01.8f", $macd[$si][$idx])."\n";
+	    	$time -= 60 * 15;
+	    }
+	    exit;
+*/	    
+
+	    $hist = $macd[2];
+
+//	Тестирование вариантов MACD
+//	    $hist = [-0.00011, -0.00012, -0.00013, -0.00014, -0.00015, -0.00016, 0.00011, 0.00012, 0.00013, 0.00014, 0.00015, 0.00016]; // Ничего
+//	    $hist = [-0.00011, -0.00012, -0.00013, -0.00014, -0.00015, -0.00016, 0.00011, 0.00020, 0.00013, 0.00012, 0.00011, 0.00010]; // Продажа
+//	    $hist = [0.00011, 0.00020, 0.00013, 0.00012, 0.00011, 0.00010, -0.00011, -0.00012, -0.00013, -0.00014, -0.00015, -0.00016]; // Ничего
+//	    $hist = [0.00011, 0.00020, 0.00013, 0.00012, 0.00011, 0.00010, -0.00011, -0.00020, -0.00013, -0.00012, -0.00011, -0.00010]; // Покупка
+
+    	$min = abs(min($hist));
+    	$max = max($hist);
+
+    	$cur = new Queue(3);
+    	$end = count($hist) - $index - 1; 
+    	$v = $hist[$end];
+
+    	for ($i=1;$i<=$cur->size();$i++) $cur->push($hist[$end - $i]);
+    	$avg	= $cur->weighedAvg();
+    	$bdirect = ($v - $avg) / $min;
+    	$sdirect = ($v - $avg) / $max;
+    	$bmv = $v / $min;
+    	$smv = $v / $max;
+
+    	//echo $bmv.' '.$smv."\n";
+
+    	if ($bmv <= $this->config['buy_macd_value'])
+    		$result['buy'] = ($bdirect > $this->config['buy_macd_direct'])?1:0;
+
+    	if ($smv >= $this->config['sell_macd_value']) 
+    		$result['sell'] = ($sdirect < $this->config['sell_macd_direct'])?1:0;
+
+    	$result['avg'] = $avg;
+    	$result['buy_macd_value'] = $bmv;
+    	$result['sell_macd_value'] = $smv;
+    	$result['buy_macd_direct'] = $bdirect;
+    	$result['sell_macd_direct'] = $sdirect;
+
+    	return $result;
+	}
+
 	public function getEmas() {
 		$ema_iv = $this->config['ema_interval'];
 		return [$this->candles->ema($ema_iv, 0, 3), $this->candles->ema($ema_iv, 0, 2)];
@@ -96,7 +158,8 @@ class tradeManager {
 	public function tradeRequired($purchase) {
 		$emas = $this->getEmas();
 		$end = count($emas[0]) - 1;
-		$result = ['buy_price'=>$emas[0][$end]];
+		$result = $this->macdTest();
+		$result['buy_price']=$emas[0][$end];
 		if ($purchase) {
 			$result['sell_price'] = max($emas[1][$end], $purchase['price'] + $purchase['price'] * $this->config['min_percent']);
 		}

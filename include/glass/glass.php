@@ -81,18 +81,41 @@ class Glass {
         return $stop;
     }
 
-    public function histogramType($type, $step) {
+    public function calcStep($type) {
+        $price = $this->orders[$type][0][0];
+
+        for ($i=0; $i<10; $i++) {
+            $pp = $price * pow(10, $i);
+            $v = round($pp) * $pp;
+            if ($v >= 10) {
+                return 1 / pow(10, $i);
+            }
+        }
+
+        return 0;
+    }
+
+    public function histogramType($type, $step=0, $minPrice=0, $maxPrice=0) {
+        $step = ($step==0)?$this->calcStep($type):$step;
   		$ip = 0; $lip = 0; $res = [];
 
+        foreach ($this->orders[$type] as $item) {
+            if ($minPrice == 0) $minPrice = $item[0];
+            else $minPrice = min($item[0], $minPrice);
+            if ($maxPrice == 0) $maxPrice = $item[0];
+            else $maxPrice = max($item[0], $maxPrice);
+        }
 //  		print_r($this->orders[$type]);
 		foreach ($this->orders[$type] as $item) { 
 			$price = $item[0];
-			if (abs($price - $lip) >= 0) {
-				$ip  = $price;
-				$lip = $price + $step;
-				$res[] = [$price, 0];
-				$id = count($res) - 1;
-			}
+            if (($price >= $minPrice) && ($price <= $maxPrice)) { 
+    			if (abs($price - $lip) >= 0) {
+    				$ip  = $price;
+    				$lip = $price + $step;
+    				$res[] = [$price, 0];
+    				$id = count($res) - 1;
+    			}
+            } else break;
 
 			$res[$id][1] += $item[1];
 		}
@@ -100,11 +123,11 @@ class Glass {
     	return $res;
     }
 
-    public function histogram($step)  {
-    	return ['ask'=>$this->histogramType('asks', $step), 'bid'=>$this->histogramType('bids', -$step)];
+    public function histogram($step=0, $minPrice=0, $maxPrice=0)  {
+    	return ['ask'=>$this->histogramType('asks', $step, $minPrice, $maxPrice), 'bid'=>$this->histogramType('bids', -$step, $minPrice, $maxPrice)];
     }
 
-	// Возвращает самую стенки более $minVolume.
+	// Возвращает стенки более $minVolume.
     // [Цена, Объем стенки, Объем до стенки]
     public function walls($his, $minVolume) {
     	$res = [];

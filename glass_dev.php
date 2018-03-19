@@ -81,24 +81,11 @@
             } else {
 
                 $tradeClass->addHistory($trades);
-
                 $timeCount = $tradeClass->timeCountSec($symbol);
+                $prices = $tradeClass->lastPrice($symbol);
 
                 if ($timeCount > $tick) {
                     foreach ($trades as $pair=>$list) {
-                        $levels_data = json_decode(file_get_contents('data/'.$market_symbol.'_levels.json'), true);
-                        $levels->setData($levels_data[$pair]);
-
-                        $optionsAll = $config->get('options', []);
-                        if (isset($optionsAll[$pair])) $options = $optionsAll[$pair];
-                        else $options = [
-                            "MINSUPPORT"=>0,
-                            "MINRESIST"=>0,
-                            "MINPROFIT"=>0.005,
-                            "MINRIGHTWALLDEST"=>0.12,
-                            "MINLEFTWALLDEST"=>0.1,
-                            "MINWALLSPREED"=>0.008
-                        ];
 
                         $volumes = $tradeClass->lastVolumes($pair, $tick);
                         $echo = '';
@@ -113,114 +100,45 @@
                         $cur_direct = $buy_persec - $sell_persec;
 
                         $echo .= "-----------------{$pair}-TICK-{$tick}------------------\n";
-                        $echo .= 'SPEED SELL '.sprintf(NFRM, $sell_persec).', BUY '.sprintf(NFRM, $buy_persec)."\n";
+//                        $echo .= 'SPEED SELL '.sprintf(NFRM, $sell_persec).', BUY '.sprintf(NFRM, $buy_persec)."\n";
 
                         if (!(($buy_persec > 0) && ($sell_persec > 0))) {
                             $tick += $tickStep;
                         } else {
+                            $avg_price = ($prices['sell'] + $prices['buy']) / 2;
 
                             $glass = new Glass($orders[$pair]);
                             $stop = $glass->extrapolate(max($buy_persec, 1), 
-                                                        max($volumes['sell_persec'], 1), 
-                                                        $tick * 10);
+                                                        max($sell_persec, 1), 
+                                                        $tick);
+                            $hist = $glass->histogram($avg_price * 0.85, $avg_price * 1.15);
+                            $askWall = $glass->maxWall($hist['ask']);
+                            $bidWall = $glass->maxWall($hist['bid']);
+
                             $wall_ask_q->push($stop['ask']['price']);
                             $wall_bid_q->push($stop['bid']['price']);
 
-                            $trade_price = $tradeClass->lastPrice($pair);                           // Последняя цены покупки и продажи
-                            if ($trade_price['buy'] && $trade_price['sell']) {
-                                $trade_price_avg = ($trade_price['buy'] + $trade_price['sell']) / 2;    // Средняя торговая цена
+                            $allvol = $volumes['buy'] + $volumes['sell'];
+                            $direct = $volumes['buy']/$allvol - $volumes['sell']/$allvol;
+                            $directAvg->push($direct);
+                            $directAvgLong->push($direct);
 
-                                $cur_price  = $trade_price_avg;
+                            $direct_s = $directAvgLong->weighedAvg();
+                            $spreedVol = $askWall[2] + $bidWall[2];
+                            $tires  = 20;
+                            $left_tires    = ceil($askWall[2] / $spreedVol * $tires); 
+                            $right_tires     = $tires - $left_tires; 
 
-                                $directAvg->push($cur_direct);
-                                $directAvgLong->push($cur_direct);
+                            echo $left_tires."\n";
 
-                                $i++;
-                                if ($i > $wall_smoon_count) {
-                                    $spreed = $trade_price['buy'] - $trade_price['sell'];
+                            $echo .= 'DIRECT S: '.sprintf(NFRM, $direct_s).', L: '.sprintf(NFRM, $directAvgLong->weighedAvg())."\n";
+                            $echo .= 'BID: '.sprintf(NFRM, $wall_bid_q->weighedAvg()).' ASK: '.sprintf(NFRM, $wall_ask_q->weighedAvg())."\n";
 
-                                    $wdirect  = $directAvg->weighedAvg();
-                                    $ldirect  = $directAvgLong->weighedAvg();
-
-                                    $level_test = $levels->check($cur_price);
-                                    $echo .= "PRICE: ".sprintf(NFRM, $cur_price).', LEVEL TEST: '.sprintf(NFRM, $level_test)." ".
-                                                    ($levels->checkData()?'ok':'error')."\n";
-
-                                    $wall_ask = $wall_ask_q->weighedAvg();
-                                    $wall_bid = $wall_bid_q->weighedAvg();
-                                    $wall_interval = $wall_ask - $wall_bid - $spreed;                       // Спред между стенками
-                                    /*
-                                    $cur_price = ($glass->curPrice('ask') + $glass->curPrice('bid')) / 2;   // Текущая средняя цена в стакане
-                                    $cur_direct = $stop['avg_price'] - $cur_price;                          // Текущий расчетный умпульс
-                                    */
-
-                                    $left_dest  = ($trade_price['sell'] - $wall_bid) / $wall_interval;             // Расстояние до стенок
-                                    $right_dest = ($wall_ask - $trade_price['buy']) / $wall_interval;
-
-                                    $echo .= 'WALLS: '.sprintf(NFRM, $wall_bid).'|'.sprintf(NFRM, $wall_ask).
-                                                    " WSPRED: ".sprintf(NFRMS, $wall_interval/$cur_price * 100)."%\n";
-                                    $echo .= 'DIRECT_3: '.sprintf(NFRM, $wdirect).", DIRECT_15: ".sprintf(NFRM, $ldirect)."\n";
-                                    $echo .= 'LEFT: '.sprintf(NFRMS, $left_dest * 100).'%, RIGHT: '.sprintf(NFRMS, $right_dest * 100)."%\n";
-
-                                    $purchases  = $config->get('purchases', []);
-                                    $purchase = isset($purchases[$pair])?$purchases[$pair]:null;
-
-                                    $timeStr = date('d.m H:i:s', $time);
-
-                                    if ($level_test >= $options['MINSUPPORT']) {
-
-                                        // Если есть поддержка от уровня и если расстояние до правой стенки больше минимального профита, 
-                                        // т.е. можно заработать на изменении цены до правой стенки
-
-                                        $to_right_wall = $wall_ask - ($cur_price + $cur_price * $options['MINWALLSPREED']);
-                                        $echo .= "Готовим покупку. До правой стенки: ".sprintf(NFRM, $to_right_wall)."\n";
-                                        if ($to_right_wall > 0) { 
-
-                                            if (($left_dest < $options['MINLEFTWALLDEST']) && ($wdirect >= 0)) {
-
-                                                console::log($echo);
-                                                console::log("{$timeStr} ПОКУПКА! Цена: {$trade_price['buy']}\n");
-                                                $echo = '';
-
-                                                /*
-                                                $purchase = [
-                                                    'price'=>$trade_price['buy'],
-                                                    'time'=>time(),
-                                                    'volume'=>1
-                                                ];
-                                                $purchases[$pair] = $purchase;
-                                                $config->set('purchases', $purchases);
-                                                */
-                                            }
-                                        }
-                                    } else if ($level_test <= $options['MINRESIST']) { 
-
-                                        // Если есть приобретение, сопротивление от уровня,
-                                        // есть минимальный профит и есть правая стенка на определеном расстоянии, 
-                                        // а так преобладает продажи
-
-                                        $prof_percent = $options['MINPROFIT'];//($trade_price['sell'] - $purchase['price']) / $purchase['price'];
-                                        if ($prof_percent >= $options['MINPROFIT']) {
-                                            $profit = $prof_percent * $purchase['volume'];
-                                            $to_right_wall = $options['MINRIGHTWALLDEST'] - $right_dest;
-                                            $msg = "Готовим продажу по цене: {$trade_price['sell']}, профит: {$profit}\n";
-                                            $echo .= $msg."\n";
-                                            if (($to_right_wall > 0) && ($wdirect <= 0)) {
-
-                                                console::log($echo);
-                                                console::log("{$timeStr} ПРОДАЖА! {$msg}");
-                                                $echo = '';
-
-                                                /*
-                                                $purchase = null;
-                                                unset($purchases[$pair]);
-                                                $config->set('purchases', $purchases);
-                                                */
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            $echo .= sprintf(NFRM, $bidWall[0]).
+                                        str_repeat('-', $left_tires + ($direct_s<0?-1:0)).($direct_s<0?'<':'').
+                                    sprintf(NFRM, $avg_price).
+                                        ($direct_s<0?'':'>').str_repeat('-', $right_tires + ($direct_s<0?0:-1)).
+                                     sprintf(NFRM, $askWall[0])."\n";
                         }
                         if ($isecho) echo $echo;
                         $echo = '';

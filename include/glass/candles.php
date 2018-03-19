@@ -14,7 +14,7 @@ class Candles {
 		$this->start($this->cnvTime($startTime));
 	}
 
-	protected function cnvTime($time) {
+	public function cnvTime($time) {
 		return floor($time / $this->interval) * $this->interval;
 	}
 
@@ -43,8 +43,9 @@ class Candles {
 
 	public function start($startTime=0) {
 		if ($startTime > 0) $this->startTime = $startTime;
-		if ($this->startTime > 0)
+		if ($this->startTime > 0) {
 			$this->data = $this->crawler->candles($this->symbol, $this->ivStr(), $this->startTime);
+		}
 	}
 
 	public function update($time) {
@@ -54,6 +55,9 @@ class Candles {
 				$this->data = array_merge($this->data, $addData);
 				$this->time = $ntime;
 			}
+		} else {
+			if ($updateData = $this->crawler->candles($this->symbol, $this->ivStr(), $this->time, $this->time, 1))
+				$this->data[count($this->data) - 1] = $updateData[0];
 		}
 	}
 
@@ -78,13 +82,12 @@ class Candles {
 		$ema1 = $this->ema($emaSm1, 0, $data_index);
 		$ema2 = $this->ema($emaSm2, 0, $data_index);
 
-		$macd = Math::suba($ema1, $ema2, 0, count($ema1) - count($ema2));
-
+		$macd = Math::suba($ema1, $ema2);
 		$signal = Math::ema($macd, $emaSm);
-		$histogram = Math::suba($macd, $signal, 0, count($macd) - count($signal));;
+		$histogram = Math::suba($macd, $signal);
 
 		//$this->print($histogram, "%01.10f");
-		return [$macd, $signal, $histogram];
+		return [$macd, $signal, $histogram, $ema1, $ema2];
 	}
 
 	public function buyCheck($macdConf, $maxHState=0) {
@@ -113,17 +116,29 @@ class Candles {
 		$this->data[$end][3] = min($this->data[$end][3], $prices['sell']); // Обновляем минимум
 	}
 
-	public function print($list, $format="%01.8f") {
-		$time = $this->time;		
+	public function dDate($date) {
+		return date('d.m.Y H:i:s', ceil($date / 1000) + 2 * 60 * 60);
+	}
 
+	public function printInv($list, $format="%01.8f") {
 		for ($i=count($list)-1; $i>=0; $i--) {
 			$itm = $list[$i];
 			if (is_array($itm)) {
-				echo date('d:m H:i:s', ceil($itm[0] / 1000) + 2 * 60 * 60)."\n";
+				echo $this->dDate($itm[0])."\n";
 				print_r($itm);
 			} else echo sprintf($format, $itm)."\n";
+		}
 
-			$time -= $this->interval;
+		echo "----\n";
+	}
+
+	public function print($list, $format="%01.8f") {
+		for ($i=0; $i<count($list); $i++) {
+			$itm = $list[$i];
+			if (is_array($itm)) {
+				echo $this->dDate($itm[0])."\n";
+				print_r($itm);
+			} else echo sprintf($format, $itm)."\n";
 		}
 
 		echo "----\n";

@@ -32,12 +32,14 @@ class Math {
 		return $result;
 	}
 
-	public static function suba($ema1, $ema2, $start1=0, $start2=0) {
+	public static function suba($ema1, $ema2) {
 		$res = [];
-		$count = min(count($ema1) - $start1, count($ema2) - $start2);
+		$count1 = count($ema1);
+		$count2 = count($ema2);
+		$count 	= min($count1, $count2);
 
-		for ($i=0; $i<$count; $i++)
-			$res[] = $ema1[$i + $start1] - $ema2[$i + $start2];
+		for ($i=$count; $i>0; $i--)
+			$res[] = $ema1[$count1 - $i] - $ema2[$count2 - $i];
 
 		return $res;
 	}
