@@ -1,13 +1,8 @@
 <?
-class baseSender {
-	protected $config;
-	function __construct($config) {
-		$this->config = $config;
-		$this->init();
-	}
-
+class binanceSender extends baseSender {
+	private $api;
 	protected function init() {
-
+		$this->api = new Binance\API();	
 	}
 
 	public function buy($symbol, $volume, $price=0) {

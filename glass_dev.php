@@ -5,6 +5,7 @@
     define('WAITTIME', 5);
     define('WAITAFTERERROR', WAITTIME * 5);
     define('REMOVEINTERVAL', '1 WEEK');
+    define('PURCHASE_FILE', 'data/purchase.json');
     define('DBPREF', '');
     define('DATEFORMAT', 'Y-m-d H:i:s');
     define('MAINDIR', dirname(__FILE__).'/');
@@ -84,6 +85,9 @@
     $purchase = null;
     $profit = 0;
     $komsa = 0.002;
+    if (file_exists(PURCHASE_FILE))
+        $purchase = json_decode(file_get_contents(PURCHASE_FILE), true);
+
     while (true) {
         $time = time();
         if ($trades = $crawler->getTradeList()) {
@@ -106,8 +110,10 @@
                         if (!$purchase) {
                             if ($data['state'] == 'buy') {
                                 $purchase = ['symbol'=>$symbol, 'price'=>$data['price']];
-                                $echo .= "BUY!!!\n";
+                                $echo .= date(DATEFORMAT, $time)." BUY!!!\n";
                                 $echo .= $data['msg'];
+
+                                file_put_contents(PURCHASE_FILE, json_encode($purchase));
                             }
                         } else {
                             if ($data['state'] == 'sell') {
@@ -115,8 +121,10 @@
                                 if ($t_prefit >= 0) {
                                     $profit += $t_prefit;
                                     $purchase = null;
-                                    $echo .= "SELL PROFIT: $profit\n";
+                                    $echo .= date(DATEFORMAT, $time)." SELL PROFIT: $profit\n";
                                     $echo .= $data['msg'];
+
+                                    unlink(PURCHASE_FILE);
                                 }
                             }
                         }
