@@ -67,8 +67,10 @@ class Trades {
 	
 	public function lastVolumes($pair, $timeSecCount) {
 		$volume = ['buy'=>0, 'sell'=>0, 'buy_persec'=>0, 'sell_persec'=>0, 'time_delta'=>0];
+		$ids = [0=>'buy', 1=>'sell'];
 
 		$timeMlsCount = $timeSecCount * 1000;
+		$vols = [0=>[], 1=>[]];
 
 		if (($lastIndex = count($this->history[$pair]) - 1) > 0) {
 			$lastTime = $this->history[$pair][$lastIndex]['time'];
@@ -76,8 +78,12 @@ class Trades {
 				$itm = $this->history[$pair][$i];
 				$delta = $lastTime - $itm['time'];
 				if ($delta <= $timeMlsCount) {
-					$id = ($itm['isBuyerMaker']==1)?'sell':'buy';
+					$isbm = $itm['isBuyerMaker'];
+					$id = $ids[$isbm];
 					$volume[$id] += $itm['qty'];
+					$vols[$isbm][] = $itm['qty'];
+					$vols[($isbm + 1) % 2][] = 0;
+
 					$volume['time_delta'] = $delta;
 				} else {
 					if ($volume['time_delta'] > 0) {
@@ -88,6 +94,9 @@ class Trades {
 				}
 			}
 		}
+
+		$volume['buy_wgt'] = varavg($vols[0], 1);
+		$volume['sell_wgt'] = varavg($vols[1], 1);
 
 		return $volume;
 	}

@@ -1,9 +1,17 @@
 <?
-class Glass {
+class Glass extends timeObject {
 	protected $orders;
 	function __construct($a_orders) {
-		$this->orders = $a_orders;
+        parent::__construct(time());
+
+        $this->history = new orderHistory(5);
+		$this->setOrders($a_orders);        
 	}
+
+
+    public function setOrders($a_orders) {
+        $this->orders = $a_orders;
+    }
 
 	public function getWalls($minPower, $maxPower) {
 		return ['ask'=>$this->getTypeWalls('asks', $minPower, $maxPower), 
@@ -98,41 +106,66 @@ class Glass {
         return 0;
     }
 
-    public function histogramType($type, $step=0, $minPrice=0, $maxPrice=0) {
-        $step = ($step==0)?$this->calcStep($type):$step;
-  		$ip = 0; $lip = 0; $res = [];
+    public function speedHist($type, $step=0) {
 
-        foreach ($this->orders[$type] as $item) {
+        for ($i=0; $i<$this->history->getSize(); $i++) {
+            $hist = $this->histogramTypeA($this->history->get($i), $type, $step);
+
+        }
+    }
+/*
+    $orders - список ордеров в стакане
+    $type - asks или bids, предложение или спрос
+    $step - шаг или размерность гистограммы
+    $minPrice - Выбирать начиная с этой минимальной цены 
+    $maxPrice - Выбирать заканчивая этой максимальной ценой 
+*/
+    protected function histogramTypeA($orders, $type, $step=0, $minPrice=0, $maxPrice=0) {
+        $step = ($step==0)?$this->calcStep($type):$step;
+        $ip = 0; $lip = 0; $res = [];
+
+        foreach ($orders[$type] as $item) {
             if ($minPrice == 0) $minPrice = $item[0];
             else $minPrice = min($item[0], $minPrice);
             if ($maxPrice == 0) $maxPrice = $item[0];
             else $maxPrice = max($item[0], $maxPrice);
         }
-//  		print_r($this->orders[$type]);
-		foreach ($this->orders[$type] as $item) { 
-			$price = $item[0];
+//          print_r($orders[$type]);
+        foreach ($orders[$type] as $item) { 
+            $price = $item[0];
             if (($price >= $minPrice) && ($price <= $maxPrice)) { 
-    			if (abs($price - $lip) >= 0) {
-    				$ip  = $price;
-    				$lip = $price + $step;
-    				$res[] = [$price, 0];
-    				$id = count($res) - 1;
-    			}
+                if (abs($price - $lip) >= 0) {
+                    $ip  = $price;
+                    $lip = $price + $step;
+                    $res[] = [$price, 0];
+                    $id = count($res) - 1;
+                }
             } else break;
 
-			$res[$id][1] += $item[1];
-		}
+            $res[$id][1] += $item[1];
+        }
 
-    	return $res;
+        return $res;
+    }
+
+    public function histogramType($type, $step=0, $minPrice=0, $maxPrice=0) {
+    	return $this->histogramTypeA($this->orders, $type, $step, $minPrice, $maxPrice);
     }
 
     public function histogram($step=0, $minPrice=0, $maxPrice=0)  {
     	return ['ask'=>$this->histogramType('asks', $step, $minPrice, $maxPrice), 'bid'=>$this->histogramType('bids', -$step, $minPrice, $maxPrice)];
     }
 
+    public function nearWall($his, $hearVolume, $minVolume=0) {
+        $walls = $this->walls($his, $minVolume);
+        foreach ($walls as $wall) 
+        if ($wall[2] >= $hearVolume) return $wall;
+        return null;
+    }
+
 	// Возвращает стенки более $minVolume.
     // [Цена, Объем стенки, Объем до стенки]
-    public function walls($his, $minVolume) {
+    public function walls($his, $minVolume=0) {
     	$res = [];
     	$vol = 0;
     	foreach ($his as $itm) {
