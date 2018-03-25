@@ -112,12 +112,15 @@
                             $left_price    = $bid_walls[0][0];
                             $right_price   = $ask_walls[0][0];
 
+                            $to_right_percent = (1 - $price/$right_price) * 100;
 
-                            if (($direct_trend >= 0) && ($direct_s > 0) && ($left < 0.4)) $state = 'buy';
+
+                            if (($direct_trend >= 0) && ($direct_s > 0) && ($left < 0.4) && ($to_right_percent >= 0.5)) $state = 'buy';
                             else if (($direct_trend <= 0) && ($direct_s < 0) && ($left > 0.6)) $state = 'sell';
                             else $state = 'wait';
 
-                            $echo .= 'DIRECT: '.sprintf(NFRM, $direct_s).", DIRECT_TRENDS: ".sprintf(NFRM, $direct_trend).", STATE: {$state}\n";
+                            $echo .= 'DIRECT: '.sprintf(NFRM, $direct_s).", DIRECT_TRENDS: ".sprintf(NFRM, $direct_trend).
+                                    ", STATE: {$state}, TORIGHT: ".round($to_right_percent)."%\n";
                             $result['state'] = $state;// && 
                             $result['price'] = $price;
 

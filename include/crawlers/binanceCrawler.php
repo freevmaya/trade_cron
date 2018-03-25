@@ -23,19 +23,53 @@ class binanceCrawler extends baseCrawler {
 		} else $this->pairs = $a_pairs;
 	}
 
-	protected function getActualPairs() {
+	protected function getActualPairs($rightCyrrency='BTC') {
 		$symbols = [];
 		if ($this->info) {
 			foreach ($this->info['symbols'] as $item) {
 				$len = strlen($item['baseAsset']);
 				$right = substr($item['symbol'], $len);
-				if ($right == 'BTC') {
-					$symbols[$item['symbol']] = $item['baseAsset'].'_'.$right;
+				if ($right == $rightCyrrency) {
+					$symbols[$item['baseAsset']] = $item['baseAsset'].'_'.$right;
 				}
 			}
 		}
 
 		return $symbols;
+	}
+
+	public function getInfo($symbol) {
+		foreach ($this->info['symbols'] as $item) {
+			if ($item['symbol'] == $symbol) return $item;
+		}
+	}
+
+	public function ticker($symbol) {
+		return $this->api->prevDay($symbol);
+	}
+
+	public function getTradedWith($baseCurrencyList) {
+		$this->info = $this->api->exchangeInfo();
+		$list = [];
+		$result = [];
+		$curs = [];
+
+		foreach ($baseCurrencyList as $right) {
+			$list[$right] = $this->getActualPairs($right);
+			$curs = array_merge(array_keys($list[$right]));
+		}
+
+		$curs = array_unique($curs);
+
+		foreach ($curs as $cur) {
+			$count = 0;
+			foreach ($baseCurrencyList as $right) {
+				if (isset($list[$right][$cur])) $count++;
+			}
+			if ($count == count($list)) $result[] = $cur;
+		}
+
+		return $result;
 	}
 
 	protected function sum($arr) {

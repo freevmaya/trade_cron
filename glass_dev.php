@@ -57,6 +57,24 @@
     $crawlerName = $market_symbol.'Crawler';
     $crawler = new $crawlerName($symbols);
 
+/*
+    $baseCurs = ['BTC','ETH','BNB'];
+    $list = $crawler->getTradedWith($baseCurs);
+
+    $pairs = [];
+    foreach ($baseCurs as $rcur)
+        foreach ($list as $lcur) {
+            $ticker = $crawler->ticker($lcur.$rcur);
+            if ($ticker['priceChangePercent'] > 0) $pairs[] = $ticker;
+            if (count($pairs) > 20) break;
+            usleep(1000);
+        }
+
+    print_r($pairs);
+
+    exit;
+*/    
+
     console::log('START '.$scriptID);
 
     $tradeClass     = new Trades();
@@ -93,7 +111,7 @@
                             }
                         } else {
                             if ($data['state'] == 'sell') {
-                                $t_prefit = $data['price'] * (1 - $komsa) - $purchase['price'];
+                                $t_prefit = $data['price'] - $data['price'] * $komsa - $purchase['price'];
                                 if ($t_prefit >= 0) {
                                     $profit += $t_prefit;
                                     $purchase = null;
