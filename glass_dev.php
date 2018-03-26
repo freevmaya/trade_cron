@@ -1,11 +1,19 @@
 <?php
+/*
+    Параметры
+        m - маркет
+        s - торговые пары, через запятую
+        e - показывать информацию
+        td - 0 или 1 - если торговать
+*/
+
     set_time_limit(0);
     
     include_once('/home/cron_engine_trade.php');
     define('WAITTIME', 5);
     define('WAITAFTERERROR', WAITTIME * 5);
     define('REMOVEINTERVAL', '1 WEEK');
-    define('PURCHASE_FILE', 'data/purchase.json');
+    define('PURCHASE_FILE', 'data/trade_pair.json');
     define('DBPREF', '');
     define('DATEFORMAT', 'Y-m-d H:i:s');
     define('MAINDIR', dirname(__FILE__).'/');
@@ -17,9 +25,16 @@
         exit; 
     }
 
-    $market_symbol = $argv[1];
-    $symbols = explode(',', isset($argv[2])?$argv[2]:'GAS_BTC');
-    $isecho = isset($argv[3]);
+    $params = [];
+    for ($i=1;$i<count($argv);$i++) {
+        $a = explode('=', $argv[$i]);
+        $params[$a[0]] = isset($a[1])?$a[1]:true;
+    }
+
+    $market_symbol  = $params['m'];                 // Маркет
+    $symbols        = explode(',', $params['s']);   // Пары
+    $isecho         = $params['e'];                 // echo
+    $istrade        = isset($params['td'])?$params['td']:false;
 
     include_once(MAINDIR.'modules/timeObject.php');
     include_once(MAINDIR.'include/utils.php');
@@ -35,6 +50,8 @@
     include_once(MAINDIR.'include/glass/tradeConfig.php');
     include_once(MAINDIR.'include/glass/orderHistory.php');
     include_once(MAINDIR.'include/glass/checkPair.php');
+    include_once(MAINDIR.'include/glass/sender/baseSender.php');
+    include_once(MAINDIR.'include/glass/sender/'.$market_symbol.'Sender.php');
     include_once(MAINDIR.'include/crawlers/baseCrawler.php');
     include_once(MAINDIR.'include/crawlers/'.$market_symbol.'Crawler.php');   
 
@@ -80,13 +97,8 @@
 
     $tradeClass     = new Trades();
     $prevPrice      = 0;
-    
     $checkList = [];
-    $purchase = null;
-    $profit = 0;
     $komsa = 0.002;
-    if (file_exists(PURCHASE_FILE))
-        $purchase = json_decode(file_get_contents(PURCHASE_FILE), true);
 
     while (true) {
         $time = time();
@@ -101,32 +113,44 @@
                 $tradeClass->addHistory($trades);
                 $echo = '';
                 foreach ($trades as $symbol=>$list) {
+
                     if (!isset($checkList[$symbol])) 
                         $checkList[$symbol] = new checkPair($symbol, $tradeClass);
                     else {
-                        $options = ['state'=>$purchase?'buy':'sell'];
-                        $data = $checkList[$symbol]->check($orders[$symbol], $options);
+                        if ($istrade) {
 
-                        if (!$purchase) {
-                            if ($data['state'] == 'buy') {
-                                $purchase = ['symbol'=>$symbol, 'price'=>$data['price']];
-                                $echo .= date(DATEFORMAT, $time)." BUY!!!\n";
-                                $echo .= $data['msg'];
+                            $file_name = str_replace('pair', $symbol, PURCHASE_FILE);
+                            if (file_exists($file_name)) $file_data = json_decode(file_get_contents($file_name), true);
+                            else $file_data = ['purchase'=>null, 'profit'=>0];
 
-                                file_put_contents(PURCHASE_FILE, json_encode($purchase));
-                            }
-                        } else {
-                            if ($data['state'] == 'sell') {
-                                $t_prefit = $data['price'] - $data['price'] * $komsa - $purchase['price'];
-                                if ($t_prefit >= 0) {
-                                    $profit += $t_prefit;
-                                    $purchase = null;
-                                    $echo .= date(DATEFORMAT, $time)." SELL PROFIT: $profit\n";
+                            $options = [
+                                'state'=>$file_data['purchase']?'buy':'sell'
+                            ];
+
+                            $data = $checkList[$symbol]->check($orders[$symbol], $options);
+
+                            if (!$file_data['purchase']) {
+                                if ($data['state'] == 'buy') {
+                                    $file_data['purchase'] = ['symbol'=>$symbol, 'price'=>$data['price']]; 
+                                    $echo .= date(DATEFORMAT, $time)." BUY!!!\n";
                                     $echo .= $data['msg'];
-
-                                    unlink(PURCHASE_FILE);
+                                    file_put_contents($file_name, json_encode($file_data));
+                                }
+                            } else {
+                                if ($data['state'] == 'sell') {
+                                    $t_prefit = $data['price'] - $data['price'] * $komsa - $file_data['purchase']['price'];
+                                    if ($t_prefit >= 0) {
+                                        $file_data['profit'] += $t_prefit;
+                                        $file_data['purchase'] = null;
+                                        $echo .= date(DATEFORMAT, $time)." SELL PROFIT: {$file_data['profit']}\n";
+                                        $echo .= $data['msg'];
+                                        file_put_contents($file_name, json_encode($file_data));
+                                    }
                                 }
                             }
+                        } else {
+                            $data = $checkList[$symbol]->check($orders[$symbol], ['state'=>'buy']);
+                            $echo .= $data['msg'];
                         }
                     }
                 }

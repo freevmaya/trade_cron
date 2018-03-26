@@ -11,11 +11,15 @@ class baseSender {
 	}
 
 	public function buy($symbol, $volume, $price=0) {
-
+		return 1;
 	}
 
 	public function sell($symbol, $volume, $price=0) {
-		
+		return 1;
+	}
+
+	public function checkOrder($order_id) {
+		return 0;
 	}
 }
 ?>

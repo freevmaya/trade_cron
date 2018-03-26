@@ -92,7 +92,7 @@
                             $bid_walls = $this->glass->walls($hist['bid'], $avgSellVol * $wallkf);
                             if ((count($ask_walls) == 0) || (count($bid_walls) == 0)) {
                                 $wallkf *= 0.9;
-                            } else if ((count($ask_walls) > 4) && (count($bid_walls) > 4)) {
+                            } else if ((count($ask_walls) > 3) && (count($bid_walls) > 3)) {
                                 $wallkf *= 1.1;
                             } else break;
                             $d--;
@@ -106,21 +106,24 @@
                         if ((count($ask_walls) > 0) && (count($bid_walls) > 0)) {
                             $this->wallkf = $wallkf;
 
-                            $spreed  = $ask_walls[0][0] - $bid_walls[0][0];
-                            $left    = max(($price - $bid_walls[0][0]) / $spreed, 0);
+                            $spreedPercent  = 1; // Процент цены до стенки
 
-                            $left_price    = $bid_walls[0][0];
-                            $right_price   = $ask_walls[0][0];
+                            $spreed         = $ask_walls[0][0] - $bid_walls[0][0];
 
-                            $to_right_percent = (1 - $price/$right_price) * 100;
+                            $left_price     = $bid_walls[0][0];
+                            $right_price    = $ask_walls[0][0];
 
+                            $left           = min(max(($price - $left_price) / $spreed, 0), 1);
 
-                            if (($direct_trend >= 0) && ($direct_s > 0) && ($left < 0.4) && ($to_right_percent >= 0.5)) $state = 'buy';
-                            else if (($direct_trend <= 0) && ($direct_s < 0) && ($left > 0.6)) $state = 'sell';
+                            $to_right_percent   = ($right_price - $price) / $right_price * 100;
+                            $to_left_percent    = ($price - $left_price) / $price * 100;
+
+                            if (($direct_trend >= 0) && ($direct_s > 0) && ($left < 0.3) && ($to_right_percent >= $spreedPercent)) $state = 'buy';
+                            else if (($direct_trend <= 0) && ($direct_s < 0) /*&& ($left > 0.6)*/ && ($to_left_percent >= $spreedPercent)) $state = 'sell';
                             else $state = 'wait';
 
                             $echo .= 'DIRECT: '.sprintf(NFRM, $direct_s).", DIRECT_TRENDS: ".sprintf(NFRM, $direct_trend).
-                                    ", STATE: {$state}, TORIGHT: ".round($to_right_percent)."%\n";
+                                    ", STATE: {$state}, TOLEFT: ".round($to_left_percent)."%, TORIGHT: ".round($to_right_percent)."%\n";
                             $result['state'] = $state;// && 
                             $result['price'] = $price;
 
