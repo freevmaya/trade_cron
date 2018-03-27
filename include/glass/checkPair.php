@@ -4,16 +4,16 @@
         protected $directAvgLong;
         protected $trade_volumes;
         protected $tradeClass;
-        protected $tick;
+        protected $tradecount;
         protected $glass;
         protected $wallkf;
         function __construct($symbol, $tradeClass) {
             $this->symbol           = $symbol;
             $this->directAvg        = new Queue(3);
-            $this->directAvgLong    = new Queue(15);
-            $this->trade_volumes    = ['buy'=>new Queue(15), 'sell'=>new Queue(15)];
+            $this->directAvgLong    = new Queue(6);
+            $this->trade_volumes    = ['buy'=>new Queue(12), 'sell'=>new Queue(12)];
             $this->tradeClass       = $tradeClass;
-            $this->tick             = 120;
+            $this->tradecount       = 0;
             $this->wallkf           = 0.3;
         }
 
@@ -34,12 +34,14 @@
 
             $result = ['state'=>'none', 'msg'=>''];
 
-            $timeCount = $this->tradeClass->timeCountSec($this->symbol);
+//            $timeCount = $this->tradeClass->timeCountSec($this->symbol);
             $prices    = $this->tradeClass->lastPrice($this->symbol);
 
             $echo = '';
-            if ($timeCount > $this->tick) {
-                $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tick);
+            if ($this->tradecount == 0) $this->tradecount = $options['MINTRADECOUNT'];
+
+//            if ($timeCount > $this->tick) {
+                $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount);
                 $allvol = $volumes['buy_wgt'] + $volumes['sell_wgt'];
 
                 //print_r($volumes);
@@ -61,50 +63,53 @@
                     $sell_persec = ($sell_persec<=0)?($buy_persec * 0.01):$sell_persec;
                     $direct_speed = $buy_persec - $sell_persec;
 
-                    $direct = $volumes['buy_wgt']/$allvol - $volumes['sell_wgt']/$allvol;
-                    $this->directAvg->push($direct);
-                    $this->directAvgLong->push($direct);
 
-                    $direct_s = $this->directAvgLong->weighedAvg();
-
-
-                    $echo .= "-----------------{$this->symbol}-TICK-{$this->tick}------------------\n";
+                    $echo .= "-----------------{$this->symbol}-TRADECOUNT-{$this->tradecount}------------------\n";
     //                        $echo .= 'SPEED SELL '.sprintf(NFRM, $sell_persec).', BUY '.sprintf(NFRM, $buy_persec)."\n";
 
                     if (!(($buy_persec > 0) && ($sell_persec > 0))) {
-                        $this->tick += 5;
+                        $this->tradecount += 5;
                     } else {
-                        $price = $prices[$options['state']];
 
                         if (!$this->glass) $this->glass = new Glass($orders);
                         else $this->glass->setOrders($orders);
+                        $price = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');//$prices[$options['state']];
 
-                        $stop = $this->glass->extrapolate(max($buy_persec, 1), max($sell_persec, 1), $this->tick);
 
+
+                        $direct = $volumes['buy_wgt']/$allvol - $volumes['sell_wgt']/$allvol;
+                        $this->directAvg->push($direct);
+                        $this->directAvgLong->push($direct);
+
+                        $direct_s = $this->directAvgLong->weighedAvg();                        
+
+                        $stop = $this->glass->extrapolate(max($buy_persec, 1), max($sell_persec, 1), $volumes['time_delta']);
                         $hist = $this->glass->histogram(0, $price * 0.8, $price * 1.2);
 
-                        $d = 20;
+                        $d = 80;
                         $wallkf = $this->wallkf;
 
                         while (true) {
                             $abs_vol = $avgBuyVol + $avgSellVol;
-                            $ask_walls = $this->glass->walls($hist['ask'], $avgBuyVol * $wallkf);
-                            $bid_walls = $this->glass->walls($hist['bid'], $avgSellVol * $wallkf);
+                            $ask_walls = $this->glass->walls($hist['ask'], $abs_vol * $wallkf);
+                            $bid_walls = $this->glass->walls($hist['bid'], $abs_vol * $wallkf);
                             if ((count($ask_walls) == 0) || (count($bid_walls) == 0)) {
-                                $wallkf *= 0.9;
-                            } else if ((count($ask_walls) > 3) && (count($bid_walls) > 3)) {
-                                $wallkf *= 1.1;
+                                $wallkf *= 0.6;
+                            } else if ((count($ask_walls) > 5) || (count($bid_walls) > 5)) {
+                                $wallkf *= 1.4;
                             } else break;
                             $d--;
                             if ($d == 0) break;
                         } 
+                        $this->wallkf = $wallkf;
 
                         //print_r($hist['bid']);
                         //print_r($bid_walls);
                         $direct_trend = $this->directAvgLong->trends();
 
                         if ((count($ask_walls) > 0) && (count($bid_walls) > 0)) {
-                            $this->wallkf = $wallkf;
+                            //print_r($bid_walls);
+                            //print_r($ask_walls);
 
                             $spreedPercent  = 1; // Процент цены до стенки
 
@@ -118,8 +123,16 @@
                             $to_right_percent   = ($right_price - $price) / $right_price * 100;
                             $to_left_percent    = ($price - $left_price) / $price * 100;
 
-                            if (($direct_trend >= 0) && ($direct_s > 0) && ($left < 0.3) && ($to_right_percent >= $spreedPercent)) $state = 'buy';
-                            else if (($direct_trend <= 0) && ($direct_s < 0) /*&& ($left > 0.6)*/ && ($to_left_percent >= $spreedPercent)) $state = 'sell';
+                            $left_buy = (1 - $left) + $direct_s * 0.6;
+                            $right_sell = $left - $direct_s * 0.6;
+
+                            $echo .= "LEFT_BUY: {$left_buy}, RIGHT_SELL: {$right_sell}\n";
+
+                            if (($direct_trend >= 0) && ($left < 0.8) && 
+                                ($left_buy >= $options['BUYPOWER']) && 
+                                ($to_right_percent >= $spreedPercent)) $state = 'buy';
+
+                            else if ($right_sell >= $options['SELLPOWER']) $state = 'sell';
                             else $state = 'wait';
 
                             $echo .= 'DIRECT: '.sprintf(NFRM, $direct_s).", DIRECT_TRENDS: ".sprintf(NFRM, $direct_trend).
@@ -140,10 +153,10 @@
 
                             
                         } else {
-                            $echo .= "SMALL TRADES\n";
+                            $echo .= "SMALL WALLS, K: {$this->wallkf}\n";
                         }
                     }
-                }
+                //}
             }
 
             $result['msg'] = $echo;

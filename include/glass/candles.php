@@ -90,14 +90,21 @@ class Candles {
 		return [$macd, $signal, $histogram, $ema1, $ema2];
 	}
 
-	public function buyCheck($macdConf, $maxHState=0) {
-		$macd = $this->macd($macdConf[0], $macdConf[1], $macdConf[2], $macdConf[3]);
+	public function buyCheck($macdConf, $maxHState=0, $minDirect=0) {
+		$macd 		= $this->macd($macdConf[0], $macdConf[1], $macdConf[2], $macdConf[3]);
 
-		$index = count($macd[2]) - 1;
-		$hisState = $macd[2][$index];
-		if ($hisState <= $maxHState) {
-			return $macd[2][$index - 1] < $hisState;
-		}
+		$index 		= count($macd[2]) - 1;
+		$hisState 	= $macd[2][$index];
+		$direct 	= $hisState - $macd[2][$index - 1];
+
+		$result 	= false;
+//		print_r($macd[2]);
+//		echo "MACD: ($hisState <= $maxHState) && ($direct >= $minDirect)\n";
+		$result = ($hisState <= $maxHState) && ($direct >= $minDirect);
+		foreach ($macd as $item) unset($item);
+		unset($macd);
+		
+		return $result;
 	}
 
 	public function sellCheck($macdConf, $minHState=0) {
@@ -142,6 +149,10 @@ class Candles {
 		}
 
 		echo "----\n";
+	}
+
+	public function dispose() {
+		unset($this->data);
 	}
 }
 ?>

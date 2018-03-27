@@ -1,6 +1,6 @@
 <?
 define("BINANCEURL", 'https://www.binance.com/');
-define("BINANCETRADELIMITS", 500);
+define("BINANCETRADELIMITS", 200);
 define("BINANCEORDERLIMITS", 100);
 include_once(MAINDIR.'include/php-binance-api.php');
 
@@ -122,9 +122,9 @@ class binanceCrawler extends baseCrawler {
 		} else return null;
 	}
 
-	public function getTrades() {
+	public function getTrades($pairs=null) {
     	$result = [];
-    	$list = $this->getTradeList();
+    	$list = $this->getTradeList($pairs);
 
 	    foreach ($list as $pair=>$item) {
 		    $result[$pair] = $this->parseTrades($item, $pair);
@@ -138,10 +138,12 @@ class binanceCrawler extends baseCrawler {
 		return str_replace('_', '', $pair);
 	}
 
-	public function getTradeList() {
+	public function getTradeList($pairs=null) {
 		$result = [];
 
-	    foreach ($this->pairs as $pair) {
+		$pairs = $pairs?$pairs:$this->pairs;
+
+	    foreach ($pairs as $pair) {
 		    //$queryURL = BINANCEURL.'api/v1/trades?symbol='.$this->paitToSymbol($pair).'&limit='.BINANCETRADELIMITS;
 
 		    if (($data = $this->api->getTrades($this->paitToSymbol($pair), BINANCETRADELIMITS))) {

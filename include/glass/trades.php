@@ -65,36 +65,31 @@ class Trades {
 		return $result;
 	}
 	
-	public function lastVolumes($pair, $timeSecCount) {
+	public function lastVolumes($pair, $minCount=10) {
 		$volume = ['buy'=>0, 'sell'=>0, 'buy_persec'=>0, 'sell_persec'=>0, 'time_delta'=>0];
 		$ids = [0=>'buy', 1=>'sell'];
-
-		$timeMlsCount = $timeSecCount * 1000;
 		$vols = [0=>[], 1=>[]];
+		$delta = 0;
 
 		if (($lastIndex = count($this->history[$pair]) - 1) > 0) {
 			$lastTime = $this->history[$pair][$lastIndex]['time'];
 			for ($i=$lastIndex; $i>=0; $i--) {
 				$itm = $this->history[$pair][$i];
 				$delta = $lastTime - $itm['time'];
-				if ($delta <= $timeMlsCount) {
+				if ((count($vols[0]) < $minCount) || (count($vols[1]) < $minCount)) {
 					$isbm = $itm['isBuyerMaker'];
 					$id = $ids[$isbm];
 					$volume[$id] += $itm['qty'];
 					$vols[$isbm][] = $itm['qty'];
 					$vols[($isbm + 1) % 2][] = 0;
-
-					$volume['time_delta'] = $delta;
-				} else {
-					if ($volume['time_delta'] > 0) {
-						$volume['sell_persec'] = $volume['sell']/$volume['time_delta'] * 1000;
-						$volume['buy_persec'] = $volume['buy']/$volume['time_delta'] * 1000;
-					}
-					break;
-				}
+				} else break;
 			}
 		}
 
+		if ($volume['time_delta'] = $delta > 0) {
+			$volume['sell_persec'] = $volume['sell']/$delta * 1000;
+			$volume['buy_persec'] = $volume['buy']/$delta * 1000;
+		}
 		$volume['buy_wgt'] = varavg($vols[0], 1);
 		$volume['sell_wgt'] = varavg($vols[1], 1);
 
