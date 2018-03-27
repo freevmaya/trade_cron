@@ -133,6 +133,8 @@
                                 ($to_right_percent >= $spreedPercent)) $state = 'buy';
 
                             else if ($right_sell >= $options['SELLPOWER']) $state = 'sell';
+//                            else if (($direct_trend <= 0) && ($right_sell > $options['SELLPOWER']) && ($to_left_percent >= $spreedPercent)) $state = 'sell';
+
                             else $state = 'wait';
 
                             $echo .= 'DIRECT: '.sprintf(NFRM, $direct_s).", DIRECT_TRENDS: ".sprintf(NFRM, $direct_trend).

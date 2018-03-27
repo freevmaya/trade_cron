@@ -2,9 +2,14 @@
 class Queue {
 	protected $size;
 	protected $list;
-	function __construct($size) {
-		$this->size = $size;
-		$this->list = [];
+	function __construct($sizeOrList) {
+		if (is_array($sizeOrList)) {
+			$this->size = count($sizeOrList);
+			$this->list = $sizeOrList;
+		} else {
+			$this->size = $sizeOrList;
+			$this->list = [];
+		}
 	}
 
 	public function push($val) {

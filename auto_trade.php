@@ -106,8 +106,7 @@
 
     exit;
 */    
-
-    function checkMACD($crawler, $symbol, $options) {
+    function checkMACD($crawler, $symbol, $options, $returnCandle=false) {
         $result = false;
         $time = time();
         $candles = new Candles($crawler, $symbol, $options['CANDLEINTERVAL'] * 60, $time, 
@@ -118,20 +117,41 @@
 
         $slope = ($ema[count($ema) - 1] - $ema[0])/$ema[count($ema) - 1];
 
-//        echo "SLOPE: $slope\n";
         if ($slope > $options['MANAGER']['MINEMASLOPE']) {
-            $result = $candles->buyCheck($options['MANAGER']['MACD'], 
+            if ($candles->buyCheck($options['MANAGER']['MACD'], 
                             floatval($options['MANAGER']['buy_macd_value']), 
-                            floatval($options['MANAGER']['buy_macd_direct']));
-        }
-        $candles->dispose();        
+                            floatval($options['MANAGER']['buy_macd_direct']))) { 
+                $result = $returnCandle?$candles:true;
+            }
+        } else echo "SLOPE: $slope\n";
+
+        if (!$returnCandle) $candles->dispose();        
         return $result;
+    }
+
+    function checkPairState($crawler, $symbol, $options) {
+        if ($candles = checkMACD($crawler, $symbol, $options, true)) {
+            $volumes = $candles->getVolumes();
+            $ext     = $candles->volumeExtreme();
+            $up      = ($ext['buy'] - $volumes[count($volumes) - 1]) / $ext['buy'];
+
+            $candles->dispose();
+
+            $result = ($up >= $options['MANAGER']['BUYMORE']) && ($ext['buy'] >= $options['MANAGER']['MAXBUYVOLUME']);
+            if (!$result) 
+                echo "BUYMORE: {$up}, MAXBUYVOLUME: {$ext['buy']}\n";
+
+            return $result;
+        }
+
+        return false;
     }
 
     function readFileData($symbol) {
         $file_name = str_replace('pair', $symbol, PURCHASE_FILE);
-        if (file_exists($file_name)) $file_data = json_decode(file_get_contents($file_name), true);
-        else $file_data = ['purchase'=>null, 'profit'=>0];
+        if (file_exists($file_name)) {
+            $file_data = json_decode(file_get_contents($file_name), true);
+        } else $file_data = ['purchase'=>null, 'profit'=>0];
         return $file_data;
     }
 
@@ -183,9 +203,9 @@
         $symbol     = $symbols[$cur_index];
 
         ob_start();
-        $file_data = readFileData($symbol);
-        $trade_options = readOptions($symbol);
-        $isPurchase = $file_data['purchase'] != null;
+        $file_data      = readFileData($symbol);
+        $trade_options  = readOptions($symbol);
+        $isPurchase     = $file_data['purchase'] != null;
 
         $check_options = array_merge([
             'state'=>$isPurchase?'sell':'buy'
@@ -193,11 +213,11 @@
 
         if ($state == 'find') {
             if ($isecho > 1) echo "{$stime} check MACD {$symbol}\n";
-            if (checkMACD($crawler, $symbol, $trade_options)) {
+            if (checkPairState($crawler, $symbol, $trade_options)) {
                 $state = 'trade';
                 $wait_buy_count = 0;                
             } else {
-                if ($isecho > 1) echo "NO MACD\n";
+                if ($isecho > 1) echo "NO MACD AND VOLUMES\n";
                 $cur_index = ($cur_index + 1) % $cur_count;
             }
         } else if ($state == 'trade') {
@@ -240,8 +260,8 @@
                                                     $order = $sender->buy($symbol, $buyvol, $data['price']);//DEV
 
                                                     if ($order && !isset($order['code'])) {
-                                                        $file_data['purchase'] = ['date'=>$stime, 'symbol'=>$symbol, 'price'=>$data['price'], 
-                                                                'volume'=>$order['executedQty'], 'order'=>$order]; 
+                                                        $file_data['purchase'] = ['date'=>$stime, 'symbol'=>$symbol, 
+                                                                'price'=>$data['price'], 'volume'=>$order['executedQty'], 'order'=>$order]; 
                                                         echo $stime." BUY!!!\n";
                                                         echo $data['msg'];
                                                         writeFileData($symbol, $file_data);
