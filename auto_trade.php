@@ -108,13 +108,22 @@
 */    
 
     function checkMACD($crawler, $symbol, $options) {
+        $result = false;
         $time = time();
         $candles = new Candles($crawler, $symbol, $options['CANDLEINTERVAL'] * 60, $time, 
                                 $time - 60 * $options['CANDLEINTERVAL'] * $options['CANDLECOUNT']);
         $candles->update($time);
-        $result = $candles->buyCheck($options['MANAGER']['MACD'], 
-                        floatval($options['MANAGER']['buy_macd_value']), 
-                        floatval($options['MANAGER']['buy_macd_direct']));
+
+        $ema = $candles->ema($options['MANAGER']['EMAINTERVAL']);
+
+        $slope = ($ema[count($ema) - 1] - $ema[0])/$ema[count($ema) - 1];
+
+//        echo "SLOPE: $slope\n";
+        if ($slope > $options['MANAGER']['MINEMASLOPE']) {
+            $result = $candles->buyCheck($options['MANAGER']['MACD'], 
+                            floatval($options['MANAGER']['buy_macd_value']), 
+                            floatval($options['MANAGER']['buy_macd_direct']));
+        }
         $candles->dispose();        
         return $result;
     }
@@ -231,7 +240,7 @@
                                                     $order = $sender->buy($symbol, $buyvol, $data['price']);//DEV
 
                                                     if ($order && !isset($order['code'])) {
-                                                        $file_data['purchase'] = ['symbol'=>$symbol, 'price'=>$data['price'], 
+                                                        $file_data['purchase'] = ['date'=>$stime, 'symbol'=>$symbol, 'price'=>$data['price'], 
                                                                 'volume'=>$order['executedQty'], 'order'=>$order]; 
                                                         echo $stime." BUY!!!\n";
                                                         echo $data['msg'];
