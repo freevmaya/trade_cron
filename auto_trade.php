@@ -298,6 +298,7 @@
         $isPurchase = count($histsymb['list']) > 0;
 
         $skip = ($histsymb['skip'] > 0) || ($histsymb['profit'] < 0);
+        $all_skip = true;
 /*
         if (!$skip && (($trade_options['INGNORELOSS'] == 0) && ($histsymb['loss_total'] > 0))) {
             if ($skip = $histsymb['profit_total']/pow($histsymb['loss_total'] * 2, 1.4) < 1) {
@@ -316,8 +317,10 @@
                 echo "MACD and VOLUMES does not correspond to the condition\n{$result}";
             }
             $history[$symbol]['skip'] = $general['SKIPTIME'];
+            $all_skip = false;
         } else if ($isPurchase || (!$skip)) {
             // Если есть покупки или нет пропуска
+            $all_skip = false;
 
             if ($trades = $crawler->getTradeList([$symbol])) 
                 $orders = $crawler->getOrderList([$symbol]);
@@ -490,7 +493,8 @@
             echo $echo;
         }
 
-        if (!$skip || ($cur_count == 1)) {
+        if (!$skip || $all_skip) {
+
             cronReport($dbp, $scriptID, null);
             if (isStopScript($dbp, $scriptID, $scriptCode)) break;
             if (($dtime = $time + $WAITTIME - time()) > 0) sleep($dtime);
