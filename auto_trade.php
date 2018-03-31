@@ -231,6 +231,7 @@
     $history        = readFileData('allcoin', $defhistory);
 
     $allprofit = 0;
+
     foreach ($history as $item) {
         $allprofit += $item['profit'];
     }
@@ -239,12 +240,17 @@
 
     readConfig($config, @$params['config']);
 
+    $prev_time = 0;
+    $delta_time = 0;
+
 // Основной цикл
     while (true) {
         ob_start();
 
         $time   = time();
         $stime  = date(DATEFORMAT, $time);
+        if ($prev_time) $delta_time = $time - $prev_time;
+        $prev_time = $time;
 
         clearstatcache();
         $file_time = filectime(CONFIGFILE);
@@ -286,7 +292,7 @@
         ], $trade_options);
 
         if (!isset($history[$symbol])) $history[$symbol] = $def_coininfo;
-        else if ($history[$symbol]['skip'] > 0) $history[$symbol]['skip']--;
+        else if ($history[$symbol]['skip'] > 0) $history[$symbol]['skip'] = max($history[$symbol]['skip'] - $delta_time, 0);
 
         $histsymb = $history[$symbol];
         $isPurchase = count($histsymb['list']) > 0;
@@ -301,7 +307,7 @@
         }
 */        
 
-        if (($isecho > 1) && $skip) echo "SKIP {$history[$symbol]['skip']} CYCLES\n";
+        if (($isecho > 1) && $skip) echo "SKIP {$history[$symbol]['skip']} SEC\n";
 
         if (!$isPurchase && !$skip && 
             ($trade_options['MANAGER']['no_macd'] == 0) && is_string($result = checkPairState($crawler, $symbol, $trade_options))) {
@@ -309,7 +315,7 @@
             if ($isecho > 1) {
                 echo "MACD and VOLUMES does not correspond to the condition\n{$result}";
             }
-            $history[$symbol]['skip'] = $general['SKIPCYCLES'];
+            $history[$symbol]['skip'] = $general['SKIPTIME'];
         } else if ($isPurchase || (!$skip)) {
             // Если есть покупки или нет пропуска
 
