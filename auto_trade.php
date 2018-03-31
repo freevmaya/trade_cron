@@ -250,7 +250,7 @@
         $time   = time();
         $stime  = date(DATEFORMAT, $time);
         if ($prev_time) $delta_time = $time - $prev_time;
-        $prev_time = $time;
+        if ($cur_index == 0) $prev_time = $time;
 
         clearstatcache();
         $file_time = filectime(CONFIGFILE);
