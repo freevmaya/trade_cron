@@ -74,9 +74,8 @@
     if ($p_symbols) $symbols = explode(',', $p_symbols);
     else $symbols = json_decode(file_get_contents(PAIRFILEDATA), true);
 
-    $scriptID = basename(__FILE__).md5(implode("_", $symbols));
+    $scriptID = basename(__FILE__).($is_dev?'dev':'');
     $scriptCode = md5(time());
-    $candleMin  = 60; //min
     $WAITTIME = WAITTIME;
 
     startScript($dbp, $scriptID, $scriptCode, $WAITTIME, '', $is_dev);
@@ -431,7 +430,7 @@
                                                         'volume'=>$order['executedQty'], 'order'=>$order]; 
                                                 echo "***BUY***\n";
 
-                                                $order_str = json_encode($order, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                                                $order_str = json_encode($order);
                                                 echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
                                                 echo $data['msg'];
 
