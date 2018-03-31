@@ -65,18 +65,49 @@ class Trades {
 		return $result;
 	}
 	
-	public function lastVolumes($pair, $minCount=10) {
+	public function isPriceMore($pair, $time /* Server time */, $price) {
+		if (($lastIndex = count($this->history[$pair]) - 1) > 0) {
+			for ($i=$lastIndex; $i>=0; $i--) {
+				$itm = $this->history[$pair][$i];
+				if ($itm['time'] >= $time) {
+					if (($itm['isBuyerMaker']==0) && ($itm['price'] >= $price)) return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public function isPriceBelow($pair, $time /* Server time */, $price) {
+		if (($lastIndex = count($this->history[$pair]) - 1) > 0) {
+			for ($i=$lastIndex; $i>=0; $i--) {
+				$itm = $this->history[$pair][$i];
+				if ($itm['time'] >= $time) {
+					if (($itm['isBuyerMaker']==0) && ($itm['price'] <= $price)) return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/*
+
+		$maxTimeCount - SEC
+	*/
+	public function lastVolumes($pair, $minCount=10, $maxTimeCount=60) {
 		$volume = ['buy'=>0, 'sell'=>0, 'buy_persec'=>0, 'sell_persec'=>0, 'time_delta'=>0];
 		$ids = [0=>'buy', 1=>'sell'];
 		$vols = [0=>[], 1=>[]];
 		$delta = 0;
+		$mlsTimeCount = $maxTimeCount * 1000;
 
 		if (($lastIndex = count($this->history[$pair]) - 1) > 0) {
 			$lastTime = $this->history[$pair][$lastIndex]['time'];
 			for ($i=$lastIndex; $i>=0; $i--) {
 				$itm = $this->history[$pair][$i];
+
 				$delta = $lastTime - $itm['time'];
-				if ((count($vols[0]) < $minCount) || (count($vols[1]) < $minCount)) {
+
+				if (((count($vols[0]) < $minCount) || (count($vols[1]) < $minCount)) || ($delta < $mlsTimeCount)) {
 					$isbm = $itm['isBuyerMaker'];
 					$id = $ids[$isbm];
 					$volume[$id] += $itm['qty'];
@@ -86,9 +117,11 @@ class Trades {
 			}
 		}
 
-		if ($volume['time_delta'] = $delta > 0) {
-			$volume['sell_persec'] = $volume['sell']/$delta * 1000;
-			$volume['buy_persec'] = $volume['buy']/$delta * 1000;
+		$sec_delta = $delta / 1000;
+
+		if (($volume['time_delta'] = $sec_delta) > 0) {
+			$volume['sell_persec'] = $volume['sell']/$sec_delta;
+			$volume['buy_persec'] = $volume['buy']/$sec_delta;
 		}
 		$volume['buy_wgt'] = varavg($vols[0], 1);
 		$volume['sell_wgt'] = varavg($vols[1], 1);

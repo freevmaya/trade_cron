@@ -1,17 +1,11 @@
 <?
     class checkPair {
-        protected $directAvg;
-        protected $directAvgLong;
-        protected $trade_volumes;
         protected $tradeClass;
         protected $tradecount;
         protected $glass;
         protected $wallkf;
         function __construct($symbol, $tradeClass) {
             $this->symbol           = $symbol;
-            $this->directAvg        = new Queue(3);
-            $this->directAvgLong    = new Queue(6);
-            $this->trade_volumes    = ['buy'=>new Queue(12), 'sell'=>new Queue(12)];
             $this->tradeClass       = $tradeClass;
             $this->tradecount       = 0;
             $this->wallkf           = 0.3;
@@ -31,139 +25,104 @@
         }
 
         public function check($orders, $options=['state'=>'sell']) {
-
             $result = ['state'=>'none', 'msg'=>''];
-
-//            $timeCount = $this->tradeClass->timeCountSec($this->symbol);
             $prices    = $this->tradeClass->lastPrice($this->symbol);
 
             $echo = '';
             if ($this->tradecount == 0) $this->tradecount = $options['MINTRADECOUNT'];
 
-//            if ($timeCount > $this->tick) {
-                $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount);
-                $allvol = $volumes['buy_wgt'] + $volumes['sell_wgt'];
+            $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount, $options['TRADETIME']);
+            $allvol = $volumes['buy_wgt'] + $volumes['sell_wgt'];
 
-                //print_r($volumes);
+            if ($allvol > 0) {
 
-                if ($allvol > 0) {
+/*
+                $this->trade_volumes['buy']->push($volumes['buy']);
+                $this->trade_volumes['sell']->push($volumes['sell']);
 
-                    $this->trade_volumes['buy']->push($volumes['buy']);
-                    $this->trade_volumes['sell']->push($volumes['sell']);
+                $avgBuyVol = $this->trade_volumes['buy']->weighedAvg();
+                $avgSellVol = $this->trade_volumes['sell']->weighedAvg();
+*/                
 
-                    $avgBuyVol = $this->trade_volumes['buy']->weighedAvg();
-                    $avgSellVol = $this->trade_volumes['sell']->weighedAvg();
+                // Текущая скорость покупок и продаж в сек.
+                $buy_persec = $volumes['buy_persec']; 
+                $sell_persec = $volumes['sell_persec'];
 
-                    // Текущая скорость покупок и продаж в сек.
-                    $buy_persec = $volumes['buy_persec']; 
-                    $sell_persec = $volumes['sell_persec'];
-
-                    // Избегаем нулевой скорости
-                    $buy_persec = ($buy_persec<=0)?($sell_persec * 0.01):$buy_persec;
-                    $sell_persec = ($sell_persec<=0)?($buy_persec * 0.01):$sell_persec;
-                    $direct_speed = $buy_persec - $sell_persec;
+                // Избегаем нулевой скорости
+                $buy_persec = ($buy_persec<=0)?($sell_persec * 0.01):$buy_persec;
+                $sell_persec = ($sell_persec<=0)?($buy_persec * 0.01):$sell_persec;
+                $direct_speed = $buy_persec - $sell_persec;
 
 
-                    $echo .= "-----------------{$this->symbol}-TRADECOUNT-{$this->tradecount}------------------\n";
     //                        $echo .= 'SPEED SELL '.sprintf(NFRM, $sell_persec).', BUY '.sprintf(NFRM, $buy_persec)."\n";
 
-                    if (!(($buy_persec > 0) && ($sell_persec > 0))) {
-                        $this->tradecount += 5;
-                    } else {
+                if (!(($buy_persec > 0) && ($sell_persec > 0))) {
+                    $this->tradecount += 5;
+                } else {
 
-                        if (!$this->glass) $this->glass = new Glass($orders);
-                        else $this->glass->setOrders($orders);
-                        $price = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');//$prices[$options['state']];
+                    if (!$this->glass) $this->glass = new Glass($orders);
+                    else $this->glass->setOrders($orders);
 
+//                    $price = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');//$prices[$options['state']];
+                    //$price = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');
+                    $price = ($prices['buy'] + $prices['sell'])/2;
 
+                    $stop = $this->glass->extrapolate($buy_persec, $sell_persec, $volumes['time_delta'] * $options['EXTRAPOLATE']);
+                    $trade_direct = calcDirect($volumes['sell_wgt'], $volumes['buy_wgt']);
 
-                        $direct = $volumes['buy_wgt']/$allvol - $volumes['sell_wgt']/$allvol;
-                        $this->directAvg->push($direct);
-                        $this->directAvgLong->push($direct);
+                    $left_price     = $stop['bid']['price'];
+                    $right_price    = $stop['ask']['price'];
 
-                        $direct_s = $this->directAvgLong->weighedAvg();                        
+                    $price_direct = calcDirect($price - $left_price, $right_price - $price);
 
-                        $stop = $this->glass->extrapolate(max($buy_persec, 1), max($sell_persec, 1), $volumes['time_delta']);
-                        $hist = $this->glass->histogram(0, $price * 0.8, $price * 1.2);
+                    $spreedPercent  = 1; // Процент цены до стенки
 
-                        $d = 80;
-                        $wallkf = $this->wallkf;
+                    $spreed         = $right_price - $left_price;
 
-                        while (true) {
-                            $abs_vol = $avgBuyVol + $avgSellVol;
-                            $ask_walls = $this->glass->walls($hist['ask'], $abs_vol * $wallkf);
-                            $bid_walls = $this->glass->walls($hist['bid'], $abs_vol * $wallkf);
-                            if ((count($ask_walls) == 0) || (count($bid_walls) == 0)) {
-                                $wallkf *= 0.6;
-                            } else if ((count($ask_walls) > 5) || (count($bid_walls) > 5)) {
-                                $wallkf *= 1.4;
-                            } else break;
-                            $d--;
-                            if ($d == 0) break;
-                        } 
-                        $this->wallkf = $wallkf;
+                    $left           = min(max(($price - $left_price) / $spreed, 0), 1);
 
-                        //print_r($hist['bid']);
-                        //print_r($bid_walls);
-                        $direct_trend = $this->directAvgLong->trends();
+                    $to_right_percent   = ($right_price - $price) / $right_price * 100;
+                    $to_left_percent    = ($price - $left_price) / $price * 100;
 
-                        if ((count($ask_walls) > 0) && (count($bid_walls) > 0)) {
-                            //print_r($bid_walls);
-                            //print_r($ask_walls);
+                    $min_profit         = $options['MANAGER']['min_right_wall'] + $options['MANAGER']['commission'] * 2;
+                    $direct             = ($trade_direct * 0.3) + ($price_direct * 0.7);
 
-                            $spreedPercent  = 1; // Процент цены до стенки
+//                    $isBuy = ($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > $options['MANAGER']['min_buy_direct']);
+                    $isBuy = ($left < $options['MANAGER']['max_left_dist']) && 
+                            //($to_right_percent >= $min_profit) && 
+                            ($direct >= $options['MANAGER']['min_buy_direct']);
 
-                            $spreed         = $ask_walls[0][0] - $bid_walls[0][0];
+                   // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$options['MANAGER']['min_buy_direct']})\n";
 
-                            $left_price     = $bid_walls[0][0];
-                            $right_price    = $ask_walls[0][0];
+                    if ($isBuy && isset($options['DIMENSIONLEVELS'])) { 
+                        // Проеверяем на пересечение уровня, если левая граница на другом уровне, тогде не покупать
 
-                            $left           = min(max(($price - $left_price) / $spreed, 0), 1);
+                        $dml = $options['DIMENSIONLEVELS'];
+                        $level = ceil($price / $dml) * $dml;
 
-                            $to_right_percent   = ($right_price - $price) / $right_price * 100;
-                            $to_left_percent    = ($price - $left_price) / $price * 100;
-
-                            $left_buy = (1 - $left) + $direct_s * 0.6;
-                            $right_sell = $left - $direct_s * 0.6;
-
-                            $echo .= "LEFT_BUY: {$left_buy}, RIGHT_SELL: {$right_sell}\n";
-
-                            if (($direct_trend >= 0) && ($left < 0.8) && 
-                                ($left_buy >= $options['BUYPOWER']) && 
-                                ($to_right_percent >= $spreedPercent)) $state = 'buy';
-
-                            else if ($right_sell >= $options['SELLPOWER']) $state = 'sell';
-//                            else if (($direct_trend <= 0) && ($right_sell > $options['SELLPOWER']) && ($to_left_percent >= $spreedPercent)) $state = 'sell';
-
-                            else $state = 'wait';
-
-                            $echo .= 'DIRECT: '.sprintf(NFRM, $direct_s).", DIRECT_TRENDS: ".sprintf(NFRM, $direct_trend).
-                                    ", STATE: {$state}, TOLEFT: ".round($to_left_percent)."%, TORIGHT: ".round($to_right_percent)."%\n";
-                            $result['state'] = $state;// && 
-                            $result['price'] = $price;
-
-                            $echo .= $this->inWall($left, $price, $left_price, $right_price, $direct_s);
-/*                            
-                            $askWall = $this->glass->maxWall($hist['ask']);
-                            $bidWall = $this->glass->maxWall($hist['bid']);
-*/                            
-
-                            //$wall_ask_q->push($stop['ask']['price']);
-                            //$wall_bid_q->push($stop['bid']['price']);
-
-                            //$spreed = $askWall[2] + $bidWall[2];
-
-                            
-                        } else {
-                            $echo .= "SMALL WALLS, K: {$this->wallkf}\n";
+                        if (ceil($left_price / $dml) * $dml == $level)
+                            $state = 'buy';
+                        else {
+                            $state = 'wait';
+                            $echo .= "Intersection level: ".sprintf(NFRMS, $level)."!\n";
                         }
-                    }
-                //}
+                    } else $state = $isBuy?'buy':'wait';
+
+                    //$echo .= "TIME DELTA: {$volumes['time_delta']}\n";
+                    $echo .= "STATE: {$state}, TRADE DIRECT: ".sprintf(NFRM, $trade_direct).", PRICE DIRECT: ".sprintf(NFRM, $price_direct).
+                                        ", TOLEFT: ".sprintf(NFRMS, $to_left_percent)."%, TORIGHT: ".sprintf(NFRMS, $to_right_percent)."%\n";
+
+                    $echo .= $this->inWall($left, $price, $left_price, $right_price, $direct);    
+
+                    $result['price']        = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');
+                    $result['left_price']   = $left_price;
+                    $result['right_price']  = $right_price;
+                    $result['state']        = $state;              
+                }
             }
 
             $result['msg'] = $echo;
             return $result;
         }
     }
-
 ?>

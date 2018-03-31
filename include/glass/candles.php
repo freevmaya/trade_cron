@@ -101,6 +101,7 @@ class Candles {
 //		print_r($macd[2]);
 //		echo "MACD: ($hisState <= $maxHState) && ($direct >= $minDirect)\n";
 		$result = ($hisState <= $maxHState) && ($direct >= $minDirect);
+		if (!$result) $result = "check MACD require: ($hisState <= $maxHState) && ($direct >= $minDirect)\n";
 		foreach ($macd as $item) unset($item);
 		unset($macd);
 		

@@ -1,6 +1,7 @@
 <?
 class baseSender {
 	protected $config;
+	public $test = false;
 	function __construct($config) {
 		$this->config = $config;
 		$this->init();
@@ -25,12 +26,12 @@ class baseSender {
 		return $volume;
 	}
 
-	public function buy($pair, $volume, $price=0) {
-		return ['success'=>1, 'executedQty'=>$volume, 'price'=>$price];
+	public function buy($pair, $volume, $price=0, $take_profit=0, $stop_loss=0) {
+		return ['orderId'=>rand(0, 10000), 'symbol'=>$pair, 'success'=>1, 'executedQty'=>$volume, 'price'=>$price, 'status'=>'FILLED'];
 	}
 
 	public function sell($pair, $volume, $price=0) {
-		return ['success'=>1, 'executedQty'=>$volume, 'price'=>$price];
+		return ['orderId'=>rand(0, 10000), 'symbol'=>$pair, 'success'=>1, 'executedQty'=>$volume, 'price'=>$price, 'status'=>'FILLED'];
 	}
 
 	public function checkOrder($order) {

@@ -94,6 +94,9 @@ class API {
 		$serverTime = $this->httpRequest("v1/time")['serverTime'];
 		$this->info['timeOffset'] = $serverTime - (microtime(true)*1000);
 	}
+	public function serverTime() {
+		return (microtime(true)*1000) + $this->info['timeOffset'];
+	}
 	public function time() {
 		return $this->httpRequest("v1/time");
 	}
@@ -185,7 +188,7 @@ class API {
 			if(empty($this->api_key) ) die("signedRequest error: API Key not set!");
 			if(empty($this->api_secret) ) die("signedRequest error: API Secret not set!");
 			$base = $this->base;
-			$ts = (microtime(true)*1000) + $this->info['timeOffset'];
+			$ts = $this->serverTime();
 			$params['timestamp'] = number_format($ts,0,'.','');
 			if(isset($params['wapi'])) {
 				unset($params['wapi']);
@@ -253,8 +256,8 @@ class API {
 		}
 
 		if (!$json) {
-			echo $output."\n";
-			print_r(curl_getinfo($ch));
+			//echo $output."\n";
+			//print_r(curl_getinfo($ch));
 		}
 		curl_close($ch);
 
@@ -272,7 +275,7 @@ class API {
 			"side" => $side,
 			"type" => $type,
 			"quantity" => $quantity,
-			"recvWindow" => 60000/*,
+			"recvWindow" => 120000/*,
 			"timestamp"=> $timestamp['serverTime']*/
 		];
 
@@ -292,8 +295,6 @@ class API {
 		if ( isset($flags['newOrderRespType']) ) $opt['newOrderRespType'] = $flags['newOrderRespType'];
 
 		$qstring = ( $test == false ) ? "v3/order" : "v3/order/test";
-
-		print_r($opt);
 		return $this->httpRequest($qstring, "POST", $opt, true);
 	}
 

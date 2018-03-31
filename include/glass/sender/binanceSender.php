@@ -7,18 +7,35 @@ function binanceCallback($api, $balances) {
 class binanceSender extends baseSender {
 	private $api;
 	private $account;
+	private $info;
 	protected function init() {
 		$this->api = new Binance\API($this->config['APIKEY'], $this->config['APISECRET']);
+		$this->api->useServerTime();
 		$this->account = $this->api->account();
 		$this->info = $this->api->exchangeInfo();
 	}
 
+	protected function useServerTime() {
+		$this->api->useServerTime();
+	}
+
+	public function serverTime() {
+		return $this->api->serverTime();
+	}
 
 
 	public function balance($currency) {
 		foreach ($this->account['balances'] as $item)
 			if ($item['asset'] == $currency) return floatval($item['free']);
 		return 0;
+	}
+
+	public function addBalance($currency, $addValue) {
+		foreach ($this->account['balances'] as $item)
+			if ($item['asset'] == $currency) {
+				$item['free'] = floatval($item['free']) + $addValue;
+				break;
+			}
 	}
 
 	public function exchangeInfo($pair) {
@@ -57,15 +74,33 @@ class binanceSender extends baseSender {
 		return $volume;
 	}
 
-	public function buy($pair, $volume, $price=0) {
+	public function buy($pair, $volume, $price=0, $take_profit=0, $stop_loss=0) {
 		$symbol = str_replace('_', '', $pair);
-		$result = $this->api->buy($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+		if ($this->test) {
+			$this->api->buyTest($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+
+			$result = parent::buy($pair, $volume, $price, $take_profit, $stop_loss);
+		} else {
+			if (($price > 0) && ($take_profit > 0)) {
+				$result = $this->api->buy($symbol, $volume, 0, 'TAKE_PROFIT', [
+					'stopPrice'=>$take_profit
+				]);
+			} else {
+				$result = $this->api->buy($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+			}
+		}
+
 		return $result;
 	}
 
 	public function sell($pair, $volume, $price=0) {
 		$symbol = str_replace('_', '', $pair);
-		return $this->api->sell($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+		if ($this->test) {
+			$this->api->sellTest($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+			$result 	= parent::sell($pair, $volume, $price);
+		} else $result 	= $this->api->sell($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+
+		return $result;
 	}
 
 	public function checkOrder($order) {
@@ -73,7 +108,9 @@ class binanceSender extends baseSender {
 	}
 
 	public function cancelOrder($order) {
-		return $this->api->cancel($order['symbol'], $order['orderId']);;
+		if ($this->test) return true;
+
+		return $this->api->cancel($order['symbol'], $order['orderId']);
 	}
 }
 ?>

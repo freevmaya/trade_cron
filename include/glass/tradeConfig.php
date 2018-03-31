@@ -2,13 +2,13 @@
 class tradeConfig {
 	protected $fileName;
 	protected $data;
-	function __construct($fileName) {
-		$this->fileName = $fileName;
-		$this->readFile();
+	function __construct($fileName='') {
+		$this->readFile($fileName);
 	}
 
-	public function readFile() {
-		$this->data = (file_exists($this->fileName))?json_decode(file_get_contents($this->fileName), true):[];
+	public function readFile($fileName='') {
+		if ($fileName) $this->fileName = $fileName;
+		return $this->data = (file_exists($this->fileName))?json_decode(file_get_contents($this->fileName), true):[];
 	}
 
 	public function saveFile() {
@@ -24,5 +24,9 @@ class tradeConfig {
 		else unset($this->data[$paramName]);
 		$this->saveFile();
 	}
+
+	public function union($a_data) {
+		$this->data = union($a_data, $this->data);
+	} 
 }
 ?>

@@ -109,4 +109,16 @@
         }
         return $arr1;
     }
+
+
+    function calcDirect($left, $right) {
+        $all = $left + $right;
+        return ($right/$all) - ($left/$all);
+    }
+
+    function roundOff($v, $r=0) {
+        if ($r > 0) {
+            return round($v / $r) * $r;
+        } else return $v;
+    }
 ?>
