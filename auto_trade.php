@@ -86,9 +86,6 @@
     $crawlerName = $market_symbol.'Crawler';
     $crawler = new $crawlerName($symbols);
 
-    $senderName = $market_symbol.'Sender';
-    $sender = new $senderName(json_decode(file_get_contents(APIKEYPATH.'apikey_'.$market_symbol.'.json'), true));
-
 /*
     $baseCurs = ['BTC','ETH','BNB'];
     $list = $crawler->getTradedWith($baseCurs);
@@ -219,6 +216,9 @@
     }
 
     console::log('START '.$scriptID);
+    $senderName = $market_symbol.'Sender';
+    $sender = new $senderName(json_decode(file_get_contents(APIKEYPATH.'apikey_'.$market_symbol.'.json'), true));
+    
     $tradeClass     = new Trades();
     $prevPrice      = 0;
     $checkList      = [];

@@ -9,8 +9,7 @@ class binanceSender extends baseSender {
 	private $account;
 	private $info;
 	protected function init() {
-		$this->api = new Binance\API($this->config['APIKEY'], $this->config['APISECRET']);
-		$this->api->useServerTime();
+		$this->api = new Binance\API($this->config['APIKEY'], $this->config['APISECRET'], ['useServerTime'=>true]);
 		$this->account = $this->api->account();
 		$this->info = $this->api->exchangeInfo();
 	}
