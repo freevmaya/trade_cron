@@ -1765,4 +1765,8 @@ class API {
 	public function depthRequest($symbol) {
 		return $this->httpRequest("v1/depth", "GET", ["symbol"=>$symbol]);
 	}
+
+	public function serverTime() {
+		return (microtime(true)*1000) + $this->info['timeOffset'];
+	}
 }
