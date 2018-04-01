@@ -4,11 +4,13 @@
         protected $tradecount;
         protected $glass;
         protected $wallkf;
+        protected $pdirect;
         function __construct($symbol, $tradeClass) {
             $this->symbol           = $symbol;
             $this->tradeClass       = $tradeClass;
             $this->tradecount       = 0;
             $this->wallkf           = 0.3;
+            $this->pdirect          = new Queue(6);
         }
 
         protected function inWall($left, $price, $left_price, $right_price, $direct_s) {
@@ -73,7 +75,9 @@
                     $left_price     = $stop['bid']['price'];
                     $right_price    = $stop['ask']['price'];
 
-                    $price_direct = calcDirect($price - $left_price, $right_price - $price);
+                    //$price_direct   = calcDirect($price - $left_price, $right_price - $price);
+                    $this->pdirect->push(calcDirect($price - $left_price, $right_price - $price));
+                    $price_direct   = $this->pdirect->weighedAvg();
 
                     $spreedPercent  = 1; // Процент цены до стенки
 
