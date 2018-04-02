@@ -439,8 +439,10 @@
                                                         'volume'=>$order['executedQty'], 'order'=>$order]; 
                                                 echo "\n\n---------BUY----------\n";
 
-                                                $order_str = json_encode($order);
-                                                echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
+                                                //.$order_str = json_encode($order);
+                                                echo json_encode($purchase);
+                                                //echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
+
                                                 echo $data['msg'];
 
                                                 if (!$sender->test) {

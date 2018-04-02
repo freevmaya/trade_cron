@@ -110,6 +110,15 @@
         return $arr1;
     }
 
+    function onlyFields($obj, $fields) {
+        
+        $result = [];
+        foreach ($fields as $field)
+            $result[$field] = $obj[$field];
+
+        return $result;
+    }
+
 
     function calcDirect($left, $right) {
         $all = $left + $right;
