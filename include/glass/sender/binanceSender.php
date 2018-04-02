@@ -10,8 +10,16 @@ class binanceSender extends baseSender {
 	private $info;
 	protected function init() {
 		$this->api = new Binance\API($this->config['APIKEY'], $this->config['APISECRET'], ['useServerTime'=>true]);
-		$this->account = $this->api->account();
+		$this->resetAccount();
 		$this->info = $this->api->exchangeInfo();
+	}
+
+	protected function resetAccount() {
+		$this->account = $this->api->account();
+		if (!isset($this->account['balances'])) {
+			echo "ERROR Account response\n";
+			print_r($this->account);
+		}
 	}
 
 	protected function useServerTime() {
@@ -24,6 +32,8 @@ class binanceSender extends baseSender {
 
 
 	public function balance($currency) {
+		if (!isset($this->account['balances'])) $this->resetAccount();
+
 		foreach ($this->account['balances'] as $item)
 			if ($item['asset'] == $currency) return floatval($item['free']);
 		return 0;
