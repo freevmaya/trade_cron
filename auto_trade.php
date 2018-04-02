@@ -437,7 +437,7 @@
                                                 $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
                                                         'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
                                                         'volume'=>$order['executedQty'], 'order'=>$order]; 
-                                                echo "***BUY***\n";
+                                                echo "\n\n---------BUY----------\n";
 
                                                 $order_str = json_encode($order);
                                                 echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
@@ -476,7 +476,7 @@
                             }
                         }
 
-                    } else if ($isecho > 1) echo "skip trade section, SKIP: {$skip} OR {$countPurchase} < {$trade_options['MAXPURCHASESYMBOL']}\n";
+                    } else if ($isecho > 1) echo "skip buy section, SKIP: {$skip} OR Count purchase: {$countPurchase} < MAXPURCHASESYMBOL: {$trade_options['MAXPURCHASESYMBOL']}\n";
                     writeFileData('allcoin', $history);
                 }
             } else console::log("Empty trade or order list");
