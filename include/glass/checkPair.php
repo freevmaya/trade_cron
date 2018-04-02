@@ -26,7 +26,7 @@
                     sprintf(NFRM, $right_price)."\n";
         }
 
-        public function check($orders, $options=['state'=>'sell']) {
+        public function check($orders, $options=[]) {
             $result = ['state'=>'none', 'msg'=>''];
             $prices    = $this->tradeClass->lastPrice($this->symbol);
 
@@ -93,8 +93,10 @@
 
 //                    $isBuy = ($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > $options['MANAGER']['min_buy_direct']);
                     $isBuy = ($left < $options['MANAGER']['max_left_dist']) && 
-                            //($to_right_percent >= $min_profit) && 
+                            //($to_right_percent >= $min_profit) && РАССМАТРИВАТЬ МИНИМАЛЬНЫЙ ПРОФИТ
                             ($direct >= $options['MANAGER']['min_buy_direct']);
+                    $isSell = ($left / 1 > $options['MANAGER']['min_right_dist']) && 
+                            ($direct <= $options['MANAGER']['max_sell_direct']);
 
                    // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$options['MANAGER']['min_buy_direct']})\n";
 
@@ -110,7 +112,7 @@
                             $state = 'wait';
                             $echo .= "Intersection level: ".sprintf(NFRM, $level)."!\n";
                         }
-                    } else $state = $isBuy?'buy':'wait';
+                    } else $state = $isBuy?'buy':($isSell?'sell':'wait');
 
                     //$echo .= "TIME DELTA: {$volumes['time_delta']}\n";
                     $echo .= "STATE: {$state}, TRADE DIRECT: ".sprintf(NFRM, $trade_direct).", PRICE DIRECT: ".sprintf(NFRM, $price_direct).
