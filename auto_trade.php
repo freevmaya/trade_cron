@@ -300,12 +300,14 @@
         $skip = ($histsymb['skip'] > 0) || ($histsymb['profit'] < 0);
         $all_skip = true;
 
+/*
         if (!$skip && (($trade_options['INGNORELOSS'] == 0) && ($histsymb['loss_total'] > 0))) {
             if ($skip = $histsymb['profit_total']/pow($histsymb['loss_total'] * 2, 2) < 1) {
                 if ($isecho > 1) echo "Lots of losses\n";
                 sleep($WAITTIME);
             }
         }        
+*/        
 
         if (($isecho > 1) && $skip) echo "SKIP {$history[$symbol]['skip']} SEC\n";
 
@@ -378,6 +380,7 @@
                             $profit = $profit - $profit * $komsa;
                             $loss = ($purchase['price'] - $purchase['stop_loss']) * $purchase['volume'];
                             $loss = $loss + $loss * $komsa;
+                            $isSaleOrder = isset($purchase['sale_order']);
 
                             if ($isecho > 1) 
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
