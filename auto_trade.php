@@ -299,14 +299,13 @@
 
         $skip = ($histsymb['skip'] > 0) || ($histsymb['profit'] < 0);
         $all_skip = true;
-/*
+
         if (!$skip && (($trade_options['INGNORELOSS'] == 0) && ($histsymb['loss_total'] > 0))) {
-            if ($skip = $histsymb['profit_total']/pow($histsymb['loss_total'] * 2, 1.4) < 1) {
-                echo "Lots of losses\n";
+            if ($skip = $histsymb['profit_total']/pow($histsymb['loss_total'] * 2, 2) < 1) {
+                if ($isecho > 1) echo "Lots of losses\n";
                 sleep($WAITTIME);
             }
-        }
-*/        
+        }        
 
         if (($isecho > 1) && $skip) echo "SKIP {$history[$symbol]['skip']} SEC\n";
 
@@ -335,22 +334,45 @@
 
                     $tradeClass->addHistory($trades);
 
-                    // Для контроля продаж
                     $prices = $tradeClass->lastPrice($symbol);
                     if (!isset($checkList[$symbol])) $checkList[$symbol] = new checkPair($symbol, $tradeClass);
 
+                    // Блок продаж
                     foreach ($histsymb['list'] as $i=>$purchase) {
+                        $order = $purchase['order'];
                         $filled = true;
-                        if ($isSaleOrder = isset($purchase['sale_order'])) {
-                            $state_order = $sender->checkOrder($purchase['order']);
-                            $filled = (@$state_order['status']) == 'FILLED';
-                        } else if (!$sender->test) {
-                            $state_order = $sender->checkOrder($purchase['order']);
-                            $filled = (@$state_order['status']) == 'FILLED';
+
+                        if (!$sender->test) {
+                            if (!isset($purchase['verified'])) {
+                                
+                                // Проверяем исполение ордера на покупку
+                                $state_order = $sender->checkOrder($purchase['order']);
+                                if ($filled = ((@$state_order['status']) == 'FILLED')) {
+                                    if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !$purchase['stoploss_order']) {
+
+                                        // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
+                                        // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
+
+                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
+                                            $purchase['stoploss_order'] = $sale_order;
+                                        }
+                                    } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !$purchase['sale_order']) {
+
+                                        // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
+                                        // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
+
+                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
+                                            $purchase['sale_order'] = $sale_order;
+                                        }
+                                    }
+
+                                    $sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
+                                    $purchase['verified'] = 1;
+                                }
+                            }
                         }
 
                         if ($filled) {
-                            $order = $purchase['order'];
 
                             $profit = ($purchase['take_profit'] - $purchase['price']) * $purchase['volume'];
                             $profit = $profit - $profit * $komsa;
@@ -440,7 +462,8 @@
                                         if ($order && !isset($order['code'])) {
                                             $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
                                                     'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
-                                                    'base_volume'=>$order['executedQty'] * $data['price'], 'order'=>$order]; 
+                                                    'base_volume'=>$order['executedQty'] * $data['price'], 
+                                                    'volume'=>$order['executedQty'], 'order'=>$order];
                                             echo "\n\n---------BUY----------\n";
 
                                             //.$order_str = json_encode($order);
@@ -449,28 +472,7 @@
 
                                             echo $data['msg'];
 
-                                            if (!$sender->test) {
-                                                sleep(1);
-
-                                                if ($trade_options['MANAGER']['STOPLOSSORDER'] == 1) {
-                                                    // Если в опциях включено STOPLOSSORDER тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
-                                                    $state_order = $sender->checkOrder($order);
-                                                    if ((@$state_order['status']) == 'FILLED') {
-                                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $stop_loss)) {
-                                                            $purchase['stoploss_order'] = $sale_order;
-                                                        }
-                                                    }
-                                                } else if ($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) {
-                                                    // Если в опциях включено TAKEPROFITORDER тогда сразу выставляем лимитный ордер на продажду по цене take_profit
-                                                    if ($sale_order = sellPurchase($sender, $symbol, $purchase, $take_profit)) {
-                                                        $purchase['sale_order'] = $sale_order;
-                                                    }
-                                                }
-                                            }
-
                                             $history[$symbol]['list'][] = $purchase;
-                                            if (!$sender->test)
-                                                $sender->addBalance($baseCur, -$data['price'] * $order['executedQty']);
 
                                         } else throw new Exception("Unknown error when creating an order buy", 1);
                                     }
