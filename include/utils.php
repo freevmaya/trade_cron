@@ -111,7 +111,7 @@
     }
 
     function onlyFields($obj, $fields) {
-        
+
         $result = [];
         foreach ($fields as $field)
             $result[$field] = $obj[$field];
@@ -129,5 +129,9 @@
         if ($r > 0) {
             return round($v / $r) * $r;
         } else return $v;
+    }
+
+    function calcProfit($price, $profit_percent) {
+        return $price + $price * $profit_percent;
     }
 ?>

@@ -430,8 +430,8 @@
                                     } else {
 
                                         $take_profit = roundOff($data['price'] + 
-                                                    $data['price'] * floatval($trade_options['MANAGER']['min_percent']) + 
-                                                    $data['price'] * $komsa * 2, $trade_options['PRICEROUNDOFF']);
+                                                    $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2), 
+                                                    $trade_options['PRICEROUNDOFF']);
 
                                         $stop_loss = roundOff($data['left_price'] - $data['left_price'] * floatval($trade_options['MANAGER']['stop_loss_indent']), $trade_options['PRICEROUNDOFF']) ;
 
@@ -440,11 +440,11 @@
                                         if ($order && !isset($order['code'])) {
                                             $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
                                                     'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
-                                                    'volume'=>$order['executedQty'], 'order'=>$order]; 
+                                                    'base_volume'=>$order['executedQty'] * $data['price'], 'order'=>$order]; 
                                             echo "\n\n---------BUY----------\n";
 
                                             //.$order_str = json_encode($order);
-                                            echo json_encode($purchase);
+                                            echo json_encode($purchase)."\n";
                                             //echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
 
                                             echo $data['msg'];
@@ -474,7 +474,7 @@
 
                                         } else throw new Exception("Unknown error when creating an order buy", 1);
                                     }
-                                } else echo "Does not comply with the rule of trade\n";
+                                } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                             } 
                         } else {
                             $data = $checkList[$symbol]->check($orders[$symbol], $check_options);
