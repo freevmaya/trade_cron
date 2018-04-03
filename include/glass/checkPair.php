@@ -95,13 +95,15 @@
                     $isBuy = ($left < $options['MANAGER']['max_left_dist']) && 
                             //($to_right_percent >= $min_profit) && РАССМАТРИВАТЬ МИНИМАЛЬНЫЙ ПРОФИТ
                             ($direct >= $options['MANAGER']['min_buy_direct']);
-                    $isSell = ($left / 1 > $options['MANAGER']['min_right_dist']) && 
-                            ($direct <= $options['MANAGER']['max_sell_direct']);
+                    /*$isSell = ($left / 1 > $options['MANAGER']['min_right_dist']) && 
+                            ($direct <= $options['MANAGER']['max_sell_direct']);*/
+                            
+                    $isSell = $direct <= $options['MANAGER']['max_sell_direct'];
 
                    // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$options['MANAGER']['min_buy_direct']})\n";
 
                     if ($isBuy && isset($options['DIMENSIONLEVELS'])) { 
-                        // Проеверяем на пересечение уровня, если левая граница на другом уровне, тогде не покупать
+                        // Проверяем на пересечение уровня, если левая граница на другом уровне, тогде не покупать
 
                         $dml = $options['DIMENSIONLEVELS'];
                         $level = ceil($price / $dml) * $dml;

@@ -382,7 +382,7 @@
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
                                         ", stop loss: ".sprintf(NFRM, $purchase['stop_loss']).", cur buy price: {$prices['buy']}\n";
 
-                            if (isset($history[$symbol]['tp_area']) && 
+                            if (isset($history[$symbol]['tp_area']) || 
                                 $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'])) {
 
                                 if ($data['isSell']) {
