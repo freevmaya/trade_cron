@@ -385,6 +385,7 @@
                             if (isset($history[$symbol]['tp_area']) || 
                                 $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'])) {
 
+                                $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
                                 if ($data['isSell']) {
                                     if (isset($purchase['stoploss_order'])) {
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
