@@ -287,10 +287,6 @@
         $isecho         = isset($params['echo'])?$params['echo']:$trade_options['ECHO'];
         $sender->test   = $trade_options['MODE'] == 'TEST';
 
-        $check_options = array_merge([
-            'state'=>'buy'
-        ], $trade_options);
-
         if (!isset($history[$symbol])) $history[$symbol] = $def_coininfo;
         else if ($history[$symbol]['skip'] > 0) $history[$symbol]['skip'] = max($history[$symbol]['skip'] - $delta_time, 0);
 
@@ -385,34 +381,39 @@
                             if ($isecho > 1) 
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
                                         ", stop loss: ".sprintf(NFRM, $purchase['stop_loss']).", cur buy price: {$prices['buy']}\n";
-                            if ($tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'])) {
 
-                                if (isset($purchase['stoploss_order'])) {
-                                    $result = $sender->cancelOrder($purchase['stoploss_order']);
-                                }
-                                if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
-                                    echo "TAKE PROFIT, price: {$purchase['take_profit']}, PROFIT: {$profit}\n";
+                            if (isset($history[$symbol]['tp_area']) && 
+                                $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'])) {
 
-                                    unset($history[$symbol]['list'][$i]);
-                                    $history[$symbol]['profit'] += $profit;
-                                    $history[$symbol]['profit_total'] += $profit;
-                                    $history[$symbol]['profit_count']++;
-
-                                    if (!$sender->test) {
-                                        $vol = $purchase['take_profit'] * $purchase['volume'];
-                                        $sender->addBalance($baseCur, $vol - $vol * $komsa);
+                                if ($data['isSell']) {
+                                    if (isset($purchase['stoploss_order'])) {
+                                        $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
-                                }
+                                    if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
+                                        echo "TAKE PROFIT, price: {$purchase['take_profit']}, PROFIT: {$profit}\n";
+
+                                        unset($history[$symbol]['list'][$i]);
+                                        $history[$symbol]['profit'] += $profit;
+                                        $history[$symbol]['profit_total'] += $profit;
+                                        $history[$symbol]['profit_count']++;
+
+                                        if (!$sender->test) {
+                                            $vol = $purchase['take_profit'] * $purchase['volume'];
+                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
+                                        }
+                                    }
+                                } else $history[$symbol]['tp_area'] = 1;
 
                             } else if ($tradeClass->isPriceBelow($symbol, $purchase['time'], $purchase['stop_loss'])) {
                                 if ($trade_options['INGNORELOSS'] == 1) {
                                     if ($isecho > 1) echo "INGNORELOSS\n";
                                     $history[$symbol]['skip'] = $trade_options['SKIPIGNORELOSS'];
                                 } else {
-                                    $data = $checkList[$symbol]->check($orders[$symbol], $check_options, true);
+                                    $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
 
                                     if ($isecho > 1) echo $data['msg'];
-                                    if ($data['state'] == 'sell') {
+                                    if ($data['isSell']) {
+
                                         if ($isSaleOrder) {
                                             $result = $sender->cancelOrder($purchase['sale_order']);
                                             sellPurchase($sender, $symbol, $purchase);
@@ -441,10 +442,10 @@
                     // Если тестируем или недостаточно покупок этого символа
                     if (!$skip && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
                         if ($istrade) {
-                            $data = $checkList[$symbol]->check($orders[$symbol], $check_options);
+                            $data = $checkList[$symbol]->check($orders[$symbol], $trade_options);
                             if ($isecho > 1) echo $data['msg'];
 
-                            if ($data['state'] == 'buy') {
+                            if ($data['isBuy']) {
                                 $balance = $sender->balance($baseCur);
                                 if (($buyvol = $sender->volumeFromBuy($symbol, $data['price'], 
                                                 floatval($trade_options['BUYMINVOLS']), $komsa * 2)) > 0) { 
@@ -482,7 +483,7 @@
                                 } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                             } 
                         } else {
-                            $data = $checkList[$symbol]->check($orders[$symbol], $check_options);
+                            $data = $checkList[$symbol]->check($orders[$symbol], $trade_options);
                             if ($isecho > 1) echo $data['msg'];
                         }
                     } else if ($isecho > 1) echo "skip buy section, SKIP: {$skip} OR Count purchase: {$countPurchase} < MAXPURCHASESYMBOL: {$trade_options['MAXPURCHASESYMBOL']}\n";

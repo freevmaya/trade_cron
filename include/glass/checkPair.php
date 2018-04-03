@@ -106,24 +106,24 @@
                         $dml = $options['DIMENSIONLEVELS'];
                         $level = ceil($price / $dml) * $dml;
 
-                        if (ceil($left_price / $dml) * $dml == $level)
-                            $state = 'buy';
-                        else {
-                            $state = 'wait';
+                        if (ceil($left_price / $dml) * $dml != $level) {
                             $echo .= "Intersection level: ".sprintf(NFRM, $level)."!\n";
+                            $isBuy = false;
                         }
-                    } else $state = $isBuy?'buy':($isSell?'sell':'wait');
+                    }
 
                     //$echo .= "TIME DELTA: {$volumes['time_delta']}\n";
-                    $echo .= "STATE: {$state}, TRADE DIRECT: ".sprintf(NFRM, $trade_direct).", PRICE DIRECT: ".sprintf(NFRM, $price_direct).
-                                        ", TOLEFT: ".sprintf(NFRMS, $to_left_percent)."%, TORIGHT: ".sprintf(NFRMS, $to_right_percent)."%\n";
+                    $echo .= ($isBuy?'BUY ':'').($isSell?'SELL ':'')."TRADE DIRECT: ".sprintf(NFRM, $trade_direct).
+                            ", PRICE DIRECT: ".sprintf(NFRM, $price_direct).
+                            ", TOLEFT: ".sprintf(NFRMS, $to_left_percent)."%, TORIGHT: ".sprintf(NFRMS, $to_right_percent)."%\n";
 
                     $echo .= $this->inWall($left, $price, $left_price, $right_price, $direct);    
 
-                    $result['price']        = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');
+                    $result['price']        = $this->glass->curPrice($isBuy?'ask':'bid');
                     $result['left_price']   = $left_price;
                     $result['right_price']  = $right_price;
-                    $result['state']        = $state;              
+                    $result['isBuy']        = $isBuy;
+                    $result['isSell']       = $isSell;
                 }
             }
 
