@@ -338,7 +338,7 @@
                     // Блок продаж
                     foreach ($histsymb['list'] as $i=>$purchase) {
                         $order = $purchase['order'];
-                        $filled = true;
+                        $filled = true;                        
 
                         if (!$sender->test) {
                             if (!isset($purchase['verified'])) {
@@ -370,13 +370,13 @@
                             }
                         }
 
-                        if ($filled) {
+                        if ($filled) { // Если ордер на покупку уже сработал тогда начинаем ослеживать момент продажи
 
                             $profit = ($purchase['take_profit'] - $purchase['price']) * $purchase['volume'];
                             $profit = $profit - $profit * $komsa;
                             $loss = ($purchase['price'] - $purchase['stop_loss']) * $purchase['volume'];
                             $loss = $loss + $loss * $komsa;
-                            $isSaleOrder = isset($purchase['sale_order']);
+                            $isSaleOrder = isset($purchase['sale_order']); // Наличие лимитного ордера на продажу этой покупки
 
                             if ($isecho > 1) 
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
@@ -385,13 +385,18 @@
                             if (isset($history[$symbol]['tp_area']) || 
                                 $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'])) {
 
-                                $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
-                                if ($data['isSell']) {
+                                if (!$isSaleOrder) {// Если нет лимитного ордера на продажу, тогда отслеживаем момент продажи
+                                    $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
+                                    $isSell = $data['isSell'];
+                                } else $isSell = true;
+
+                                if ($isSell) {
                                     if (isset($purchase['stoploss_order'])) {
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
                                         echo "TAKE PROFIT, price: {$purchase['take_profit']}, PROFIT: {$profit}\n";
+                                        echo $data['msg']; 
 
                                         unset($history[$symbol]['list'][$i]);
                                         $history[$symbol]['profit'] += $profit;
@@ -421,6 +426,7 @@
                                         }
 
                                         echo "STOP LOSS orderId: {$order['orderId']}, price: {$purchase['stop_loss']}, LOSS {$loss}\n";
+                                        echo $data['msg'];
                                         unset($history[$symbol]['list'][$i]);
 
                                         $history[$symbol]['profit'] -= $loss;

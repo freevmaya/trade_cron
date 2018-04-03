@@ -23,7 +23,11 @@ class binanceCrawler extends baseCrawler {
 		} else $this->pairs = $a_pairs;
 	}
 
-	protected function getActualPairs($rightCyrrency='BTC') {
+	public function refreshExchangeInfo() {
+		$this->info = $this->api->exchangeInfo();
+	}
+
+	public function getActualPairs($rightCyrrency='BTC') {
 		$symbols = [];
 		if ($this->info) {
 			foreach ($this->info['symbols'] as $item) {
