@@ -393,6 +393,7 @@
                                     if ($isSell = $data['isSell']) {
                                         $profit = ($prices['buy'] - $purchase['price']) * $purchase['volume'];
                                         $profit = $profit - $profit * $komsa;                                    
+                                        echo $data['msg']; 
                                     }
                                 } else $isSell = true;
 
@@ -403,7 +404,6 @@
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
 
                                         echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
-                                        echo $data['msg']; 
 
                                         unset($history[$symbol]['list'][$i]);
                                         $history[$symbol]['profit'] += $profit;
