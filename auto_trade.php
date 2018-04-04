@@ -13,7 +13,7 @@
     define('WAITTIME', 5);
     define('WAITAFTERERROR', WAITTIME * 5);
     define('REMOVEINTERVAL', '1 WEEK');
-    define('PURCHASE_FILE', 'data/trade_pair.json');
+    define('PURCHASE_FILE', 'data/auto_tpair.json');
     define('DBPREF', '');
     define('DATEFORMAT', 'Y-m-d H:i:s');
     define('MAINDIR', dirname(__FILE__).'/');
@@ -228,7 +228,7 @@
     $defhistory     = [];
     foreach ($symbols as $symbol) $defhistory[$symbol] = $def_coininfo;
 //    $allcoinInfo    = readFileData('allcoin', ['history'=>$defhistory, 'state'=>[]]);
-    $history        = readFileData('allcoin', $defhistory);
+    $history        = readFileData('rade', $defhistory);
 
     $allprofit = 0;
 
@@ -494,7 +494,7 @@
                             if ($isecho > 1) echo $data['msg'];
                         }
                     } else if ($isecho > 1) echo "skip buy section, SKIP: {$skip} OR Count purchase: {$countPurchase} < MAXPURCHASESYMBOL: {$trade_options['MAXPURCHASESYMBOL']}\n";
-                    writeFileData('allcoin', $history);
+                    writeFileData('rade', $history);
                 }
             } else console::log("Empty trade or order list");
 
