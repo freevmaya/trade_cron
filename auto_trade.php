@@ -395,7 +395,10 @@
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
-                                        echo "TAKE PROFIT, price: {$purchase['take_profit']}, PROFIT: {$profit}\n";
+                                        $profit = ($prices['buy'] - $purchase['price']) * $purchase['volume'];
+                                        $profit = $profit - $profit * $komsa;
+
+                                        echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
                                         echo $data['msg']; 
 
                                         unset($history[$symbol]['list'][$i]);
