@@ -382,7 +382,7 @@
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
                                         ", stop loss: ".sprintf(NFRM, $purchase['stop_loss']).", cur buy price: {$prices['buy']}\n";
 
-                            if (isset($history[$symbol]['tp_area']) || 
+                            if (isset($history[$symbol][$i]['tp_area']) || 
                                 $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'])) {
 
                                 if (!$isSaleOrder) {// Если нет лимитного ордера на продажу, тогда отслеживаем момент продажи
@@ -408,7 +408,7 @@
                                             $sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
                                     }
-                                } else $history[$symbol]['tp_area'] = 1;
+                                } else $history[$symbol][$i]['tp_area'] = 1;
 
                             } else if ($tradeClass->isPriceBelow($symbol, $purchase['time'], $purchase['stop_loss'])) {
                                 if ($trade_options['INGNORELOSS'] == 1) {
