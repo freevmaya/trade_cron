@@ -340,33 +340,37 @@
                         $order = $purchase['order'];
                         $filled = true;                        
 
-                        if (!$sender->test) {
-                            if (!isset($purchase['verified'])) {
-                                
-                                // Проверяем исполение ордера на покупку
-                                $state_order = $sender->checkOrder($purchase['order']);
-                                if ($filled = ((@$state_order['status']) == 'FILLED')) {
-                                    if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !$purchase['stoploss_order']) {
+                        if (!isset($purchase['verified'])) {
+                            if (!$sender->test) {
+                                    
+                                    // Проверяем исполение ордера на покупку
+                                    $state_order = $sender->checkOrder($purchase['order']);
+                                    if ($filled = ((@$state_order['status']) == 'FILLED')) {
+                                        if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !$purchase['stoploss_order']) {
 
-                                        // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
-                                        // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
+                                            // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
+                                            // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
 
-                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
-                                            $purchase['stoploss_order'] = $sale_order;
+                                            if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
+                                                $purchase['stoploss_order'] = $sale_order;
+                                            }
+                                        } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !$purchase['sale_order']) {
+
+                                            // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
+                                            // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
+
+                                            if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
+                                                $purchase['sale_order'] = $sale_order;
+                                            }
                                         }
-                                    } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !$purchase['sale_order']) {
 
-                                        // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
-                                        // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
-
-                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
-                                            $purchase['sale_order'] = $sale_order;
-                                        }
+                                        $sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
+                                        $purchase['verified'] = 1;
                                     }
-
-                                    $sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
-                                    $purchase['verified'] = 1;
                                 }
+                            } else {
+                                $purchase['sale_order'] = $trade_options['MANAGER']['TAKEPROFITORDER'] == 1;
+                                $purchase['verified']   = 1;
                             }
                         }
 
@@ -387,7 +391,10 @@
 
                                 if (!$isSaleOrder) {// Если нет лимитного ордера на продажу, тогда отслеживаем момент продажи
                                     $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
-                                    $isSell = $data['isSell'];
+                                    if ($isSell = $data['isSell']) {
+                                        $profit = ($prices['buy'] - $purchase['price']) * $purchase['volume'];
+                                        $profit = $profit - $profit * $komsa;                                    
+                                    }
                                 } else $isSell = true;
 
                                 if ($isSell) {
@@ -395,8 +402,6 @@
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
-                                        $profit = ($prices['buy'] - $purchase['price']) * $purchase['volume'];
-                                        $profit = $profit - $profit * $komsa;
 
                                         echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
                                         echo $data['msg']; 
@@ -423,7 +428,7 @@
                                     if ($isecho > 1) echo $data['msg'];
                                     if ($data['isSell']) {
 
-                                        if ($isSaleOrder) {
+                                        if ($isSaleOrder && !$sender->test) {
                                             $result = $sender->cancelOrder($purchase['sale_order']);
                                             sellPurchase($sender, $symbol, $purchase);
                                         }
