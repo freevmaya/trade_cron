@@ -210,8 +210,9 @@
 
         // Если в параметрах передаем дополнительный файл конфигурации
         if ($ext_config) {
-            if ($config_extend = json_decode(file_get_contents($ext_config), true))
-               $config->union($config_extend); 
+            if ($config_extend = json_decode(file_get_contents($ext_config), true)) {
+                $config->union($config_extend); 
+            }
         }
     }
 
@@ -242,6 +243,15 @@
 
     $prev_time = 0;
     $delta_time = 0;
+
+/*
+    print_r($sender->exchangeInfo('ONT_BTC'));
+
+    if ($order = $sender->buy('ONT_BTC', 4)) {
+        $sender->cancelOrder($order);
+        echo "OK RUN BINANCE BUY ORDER!!!!!\n";
+    }
+*/    
 
 // Основной цикл
     while (true) {
@@ -346,39 +356,50 @@
                                 // Проверяем исполение ордера на покупку
                                 $state_order = $sender->checkOrder($purchase['order']);
                                 if ($filled = ((@$state_order['status']) == 'FILLED')) {
-                                    if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !$purchase['stoploss_order']) {
+                                    if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !isset($purchase['stoploss_order'])) {
 
                                         // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
                                         // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
 
                                         if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
-                                            $purchase['stoploss_order'] = $sale_order;
+                                            $history[$symbol]['list'][$i]['stoploss_order'] = $sale_order;
                                         }
-                                    } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !$purchase['sale_order']) {
+                                    } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !isset($purchase['sale_order'])) {
 
                                         // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
                                         // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
 
                                         if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
-                                            $purchase['sale_order'] = $sale_order;
+                                            $history[$symbol]['list'][$i]['sale_order'] = $sale_order;
                                         }
                                     }
 
                                     $sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
-                                    $purchase['verified'] = 1;
+                                    $history[$symbol]['list'][$i]['verified'] = 1;
+                                } else {
+                                    // Если ордер на покупку еще не сработал
+                                    $deltaTime = round(($sender->serverTime() - $purchase['time']) / 1000);
+                                    if ($deltaTime > $trade_options['BUYORDERLIVE']) {
+                                        if ($sender->cancelOrder($purchase['order'])) {
+                                            echo "CANCEL ORDER\n";
+                                            print_r($purchase['order']);
+                                            unset($history[$symbol]['list'][$i]);
+                                        }
+                                    }
                                 }
                             } else {
-                                $purchase['sale_order'] = $trade_options['MANAGER']['TAKEPROFITORDER'] == 1;
-                                $purchase['verified']   = 1;
+                                $history[$symbol]['list'][$i]['sale_order'] = $trade_options['MANAGER']['TAKEPROFITORDER'] == 1;
+                                $history[$symbol]['list'][$i]['verified']   = 1;
                             }
                         }
 
                         if ($filled) { // Если ордер на покупку уже сработал тогда начинаем ослеживать момент продажи
 
                             $profit = ($purchase['take_profit'] - $purchase['price']) * $purchase['volume'];
-                            $profit = $profit - $profit * $komsa;
+                            $profit = $sender->roundPrice($symbol, $profit - $profit * $komsa);
                             $loss = ($purchase['price'] - $purchase['stop_loss']) * $purchase['volume'];
-                            $loss = $loss + $loss * $komsa;
+                            $loss = $sender->roundPrice($symbol, $loss + $loss * $komsa);
+
                             $isSaleOrder = isset($purchase['sale_order']); // Наличие лимитного ордера на продажу этой покупки
 
                             if ($isecho > 1) 
@@ -492,7 +513,7 @@
 
                                             $history[$symbol]['list'][] = $purchase;
 
-                                        } else throw new Exception("Unknown error when creating an order buy", 1);
+                                        } else throw new Exception("Unknown error when creating an order buy, result: ".print_r($order, true), 1);
                                     }
                                 } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                             } 

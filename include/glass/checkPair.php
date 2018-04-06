@@ -89,7 +89,9 @@
                     $to_left_percent    = ($price - $left_price) / $price * 100;
 
                     $min_profit         = $options['MANAGER']['min_right_wall'] + $options['MANAGER']['commission'] * 2;
-                    $direct             = ($trade_direct * 0.4) + ($price_direct * 0.6);
+
+                    $rate               = $options['MANAGER']['direct_rate'];
+                    $direct             = ($trade_direct * (1 - $rate)) + ($price_direct * $rate);
 
 //                    $isBuy = ($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > $options['MANAGER']['min_buy_direct']);
                     $isBuy = ($left < $options['MANAGER']['max_left_dist']) && 

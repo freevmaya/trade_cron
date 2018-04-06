@@ -23,7 +23,7 @@ namespace Binance;
 class API {
    protected $base = 'https://api.binance.com/api/'; // /< REST endpoint for the currency exchange
    protected $wapi = 'https://api.binance.com/wapi/'; // /< REST endpoint for the withdrawals
-	 protected $stream = 'wss://stream.binance.com:9443/ws/'; // /< Endpoint for establishing websocket connections
+   protected $stream = 'wss://stream.binance.com:9443/ws/'; // /< Endpoint for establishing websocket connections
    protected $api_key; // /< API key that you created in the binance website member area
    protected $api_secret; // /< API secret that was given to you when you created the api key
    protected $depthCache = []; // /< Websockets depth cache
@@ -40,7 +40,9 @@ class API {
    public $subscriptions = []; // /< View all websocket subscriptions
    public $balances = []; // /< binace balances from the last run
    public $btc_value = 0.00; // /< value of available assets
-   public $btc_total = 0.00; // /< value of available onOrder assets
+   public $btc_total = 0.00;
+
+   // /< value of available onOrder assets
    
    /**
     * Constructor for the class, There are 4 ways to contruct the class:
@@ -150,7 +152,7 @@ class API {
     * @param $symbol string the currency symbol
     * @param $quantity string the quantity required
     * @param $price string price per unit you want to spend
-    * @param $type array config
+    * @param $type string config
     * @param $flags array config
     * @return array with error message or empty or the order details
     */
@@ -270,6 +272,7 @@ class API {
     * @param $symbol string the currency symbol
     * @param $orderid string the orderid to cancel
     * @return array with error message or the order details
+    * @throws \Exception
     */
    public function cancel( string $symbol, $orderid ) {
       return $this->httpRequest( "v3/order", "DELETE", [ 
@@ -287,6 +290,7 @@ class API {
     * @param $symbol string the currency symbol
     * @param $orderid string the orderid to cancel
     * @return array with error message or the order details
+    * @throws \Exception
     */
    public function orderStatus( string $symbol, $orderid ) {
       return $this->httpRequest( "v3/order", "GET", [ 
@@ -303,6 +307,7 @@ class API {
     *
     * @param $symbol string the currency symbol
     * @return array with error message or the order details
+    * @throws \Exception
     */
    public function openOrders( string $symbol = null ) {
       $params = [];
@@ -323,6 +328,7 @@ class API {
     * @param $limit int the amount of orders returned
     * @param $fromOrderId string return the orders from this order onwards
     * @return array with error message or array of orderDetails array
+    * @throws \Exception
     */
    public function orders( string $symbol, int $limit = 500, int $fromOrderId = 1 ) {
       return $this->httpRequest( "v3/allOrders", "GET", [ 
@@ -344,6 +350,7 @@ class API {
     * @param $limit int the amount of orders returned
     * @param $fromTradeId int return the orders from this order onwards
     * @return array with error message or array of orderDetails array
+    * @throws \Exception
     */
    public function history( string $symbol, int $limit = 500, int $fromTradeId = 1 ) {
       return $this->httpRequest( "v3/myTrades", "GET", [ 
@@ -359,6 +366,7 @@ class API {
     * $api->useServerTime();
     *
     * @return null
+    * @throws \Exception
     */
    public function useServerTime() {
       $serverTime = $this->httpRequest( "v1/time" )[ 'serverTime' ];
@@ -371,6 +379,7 @@ class API {
     * $time = $api->time();
     *
     * @return array with error message or array with server time key
+    * @throws \Exception
     */
    public function time() {
       return $this->httpRequest( "v1/time" );
@@ -382,6 +391,7 @@ class API {
     * $info = $api->exchangeInfo();
     *
     * @return array with error message or exchange info array
+    * @throws \Exception
     */
    public function exchangeInfo() {
       return $this->httpRequest( "v1/exchangeInfo" );
@@ -405,6 +415,7 @@ class API {
     * @param $amount double the amount of the asset to transfer
     * @param $addressTag string adtional transactionid required by some assets
     * @return array with error message or array transaction
+    * @throws \Exception
     */
    public function withdraw( string $asset, string $address, $amount, $addressTag = null ) {
       $options = [ 
@@ -427,6 +438,7 @@ class API {
     *
     * @param $asset string the currency such as BTC
     * @return array with error message or array deposit address information
+    * @throws \Exception
     */
    public function depositAddress( string $asset ) {
       $params = [ 
@@ -445,6 +457,7 @@ class API {
     *
     * @param $asset string empty or the currency such as BTC
     * @return array with error message or array deposit history information
+    * @throws \Exception
     */
    public function depositHistory( string $asset = null ) {
       $params = [ 
@@ -465,6 +478,7 @@ class API {
     *
     * @param $asset string empty or the currency such as BTC
     * @return array with error message or array deposit history information
+    * @throws \Exception
     */
    public function withdrawHistory( string $asset = null ) {
       $params = [ 
@@ -482,6 +496,7 @@ class API {
     * $ticker = $api->prices();
     *
     * @return array with error message or array of all the currencies prices
+    * @throws \Exception
     */
    public function prices() {
       return $this->priceData( $this->httpRequest( "v3/ticker/price" ) );
@@ -493,6 +508,7 @@ class API {
     * $ticker = $api->bookPrices();
     *
     * @return array with error message or array of all the book prices
+    * @throws \Exception
     */
    public function bookPrices() {
       return $this->bookPriceData( $this->httpRequest( "v3/ticker/bookTicker" ) );
@@ -504,6 +520,7 @@ class API {
     * $account = $api->account();
     *
     * @return array with error message or array of all the account information
+    * @throws \Exception
     */
    public function account() {
       return $this->httpRequest( "v3/account", "GET", [], true );
@@ -516,8 +533,9 @@ class API {
     *
     * @param $symbol (optional) symbol to get the previous day change for
     * @return array with error message or array of prevDay change
+    * @throws \Exception
     */
-   public function prevDay( string $symbol ) {
+   public function prevDay( string $symbol = null ) {
       $additionalData = [];
       if( is_null( $symbol ) == false ) {
          $additionalData = [ 
@@ -534,6 +552,7 @@ class API {
     *
     * @param $symbol string the symbol to get the trade information for
     * @return array with error message or array of market history
+    * @throws \Exception
     */
    public function aggTrades( string $symbol ) {
       return $this->tradesData( $this->httpRequest( "v1/aggTrades", "GET", [ 
@@ -548,10 +567,11 @@ class API {
     *
     * @param $symbol string the symbol to get the depth information for
     * @return array with error message or array of market depth
+    * @throws \Exception
     */
    public function depth( string $symbol ) {
       if( isset( $symbol ) == false || is_string( $symbol ) == false ) {
-         echo "asset: expected bool false, " . gettype( $asset ) . " given" . PHP_EOL;
+         echo "asset: expected bool false, " . gettype( $symbol ) . " given" . PHP_EOL;
       }
       $json = $this->httpRequest( "v1/depth", "GET", [ 
             "symbol" => $symbol 
@@ -568,8 +588,9 @@ class API {
     *
     * $balances = $api->balances($ticker);
     *
-    * @param $priceData array of the symbols balances are required for
+    * @param bool $priceData array of the symbols balances are required for
     * @return array with error message or array of balances
+    * @throws \Exception
     */
    public function balances( $priceData = false ) {
       if( is_array( $priceData ) == false )
@@ -644,32 +665,17 @@ class API {
     * @see sell()
     * @see marketBuy()
     * @see marketSell() $this->httpRequest( "https://api.binance.com/api/v1/ticker/24hr");
-    *     
+    *
     * @param $url string the endpoint to query, typically includes query string
     * @param $method string this should be typically GET, POST or DELETE
     * @param $params array addtional options for the request
     * @param $signed bool true or false sign the request with api secret
     * @return array containing the response
+    * @throws \Exception
     */
    private function httpRequest( string $url, string $method = "GET", array $params = [], bool $signed = false ) {
       if( function_exists( 'curl_init' ) == false ) {
-         die( "Sorry cURL is not installed!" );
-      }
-      
-      if( is_string( $url ) == false ) {
-         echo "warning: url expected string got " . gettype( $url ) . PHP_EOL;
-      }
-      
-      if( is_string( $method ) == false ) {
-         echo "warning: method expected string got " . gettype( $method ) . PHP_EOL;
-      }
-      
-      if( is_array( $params ) == false ) {
-         echo "warning: params expected array got " . gettype( $params ) . PHP_EOL;
-      }
-      
-      if( is_bool( $signed ) == false ) {
-         echo "warning: signed expected bool got " . gettype( $signed ) . PHP_EOL;
+         throw new \Exception( "Sorry cURL is not installed!" );
       }
       
       $ch = curl_init();
@@ -679,9 +685,9 @@ class API {
       // signed with params
       if( $signed == true ) {
          if( empty( $this->api_key ) )
-            die( "signedRequest error: API Key not set!" );
+            throw new \Exception( "signedRequest error: API Key not set!" );
          if( empty( $this->api_secret ) )
-            die( "signedRequest error: API Secret not set!" );
+            throw new \Exception( "signedRequest error: API Secret not set!" );
          $base = $this->base;
          $ts = ( microtime( true ) * 1000 ) + $this->info[ 'timeOffset' ];
          $params[ 'timestamp' ] = number_format( $ts, 0, '.', '' );
@@ -691,7 +697,10 @@ class API {
          }
          $query = http_build_query( $params, '', '&' );
          $signature = hash_hmac( 'sha256', $query, $this->api_secret );
-         $endpoint = $base . $url . '?' . $query . '&signature=' . $signature;
+         $endpoint = $base.$url;
+
+         if ($method == "POST") $query .= '&signature='.$signature;
+         else $endpoint .= '?'.$query.'&signature='.$signature;
          curl_setopt( $ch, CURLOPT_URL, $endpoint );
          curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 
                'X-MBX-APIKEY: ' . $this->api_key 
@@ -712,7 +721,7 @@ class API {
       // Post and postfields
       if( $method == "POST" ) {
          curl_setopt( $ch, CURLOPT_POST, true );
-         // curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+         curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
       }
       // Delete Method
       if( $method == "DELETE" ) {
@@ -730,17 +739,23 @@ class API {
       curl_setopt( $ch, CURLOPT_HEADER, false );
       curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
       curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
+      curl_setopt( $ch, CURLINFO_HEADER_OUT, true); //DEV
       $output = curl_exec( $ch );
       // Check if any error occurred
       if( curl_errno( $ch ) > 0 ) {
          echo 'Curl error: ' . curl_error( $ch ) . "\n";
          return [];
       }
-      curl_close( $ch );
       $json = json_decode( $output, true );
-      if( isset( $json[ 'msg' ] ) ) {
-         echo "signedRequest error: {$output}" . PHP_EOL;
+      if(isset( $json[ 'msg' ] ) || !$json) {
+         echo "signedRequest error:\n{$output}".PHP_EOL;
+         $info = curl_getinfo($ch);
+         echo "response info: ".PHP_EOL;
+         print_r($info);
+         echo "url: {$url}".PHP_EOL."params:";
+         print_r($params);
       }
+      curl_close( $ch );
       $this->transfered += strlen( $output );
       $this->requestCount++;
       return $json;
@@ -754,7 +769,7 @@ class API {
     * @see sell()
     * @see marketBuy()
     * @see marketSell() $this->httpRequest( "https://api.binance.com/api/v1/ticker/24hr");
-    *     
+    *
     * @param $side string typically "BUY" or "SELL"
     * @param $symbol string to buy or sell
     * @param $quantity string in the order
@@ -763,6 +778,7 @@ class API {
     * @param $flags array additional transaction options
     * @param $test bool whether to test or not, test only validates the query
     * @return array containing the response
+    * @throws \Exception
     */
    public function order( string $side, string $symbol, $quantity, $price, string $type = "LIMIT", array $flags = [], bool $test = false ) {
       $opt = [ 
@@ -770,7 +786,7 @@ class API {
             "side" => $side,
             "type" => $type,
             "quantity" => $quantity,
-            "recvWindow" => 120000 
+            "recvWindow" => 60000 
       ];
       
       // someone has preformated there 8 decimal point double already
@@ -780,32 +796,12 @@ class API {
          $price = number_format( $price, 8, '.', '' );
       }
       
-      if( is_string( $side ) == false ) {
-         echo "warning: side expected string got " . gettype( $side ) . PHP_EOL;
-      }
-      
-      if( is_string( $symbol ) == false ) {
-         echo "warning: symbol expected string got " . gettype( $symbol ) . PHP_EOL;
-      }
-      
       if( is_numeric( $quantity ) == false ) {
          echo "warning: quantity expected numeric got " . gettype( $quantity ) . PHP_EOL;
       }
       
       if( is_string( $price ) == false ) {
          echo "warning: price expected string got " . gettype( $price ) . PHP_EOL;
-      }
-      
-      if( is_string( $type ) == false ) {
-         echo "warning: type expected string got " . gettype( $type ) . PHP_EOL;
-      }
-      
-      if( is_array( $flags ) == false ) {
-         echo "warning: flags expected array got " . gettype( $flags ) . PHP_EOL;
-      }
-      
-      if( is_bool( $test ) == false ) {
-         echo "warning: test expected bool got " . gettype( $test ) . PHP_EOL;
       }
       
       if( $type === "LIMIT" || $type === "STOP_LOSS_LIMIT" || $type === "TAKE_PROFIT_LIMIT" ) {
@@ -841,16 +837,9 @@ class API {
     * @param $startTime string request candle information starting from here
     * @param $endTime string request candle information ending here
     * @return array containing the response
+    * @throws \Exception
     */
    public function candlesticks( string $symbol, string $interval = "5m", int $limit = null, $startTime = null, $endTime = null ) {
-      if( is_string( $symbol ) == false ) {
-         echo "warning: symbol expected string got " . gettype( $symbol ) . PHP_EOL;
-      }
-      
-      if( is_string( $interval ) == false ) {
-         echo "warning: interval expected string got " . gettype( $interval ) . PHP_EOL;
-      }
-      
       if( !isset( $this->charts[ $symbol ] ) ) {
          $this->charts[ $symbol ] = [];
       }
@@ -968,7 +957,7 @@ class API {
     * @param $json object data to convert
     * @return array
     */
-   private function tickerStreamHandler( object $json ) {
+   private function tickerStreamHandler( \stdClass $json ) {
       return [ 
             "eventType" => $json->e,
             "eventTime" => $json->E,
@@ -1001,10 +990,10 @@ class API {
     *
     * $data = $this->executionHandler( $json );
     *
-    * @param $json object data to convert
+    * @param \stdClass $json object data to convert
     * @return array
     */
-   private function executionHandler( object $json ) {
+   private function executionHandler( \stdClass $json ) {
       return [ 
             "symbol" => $json->s,
             "side" => $json->S,
@@ -1307,8 +1296,6 @@ class API {
     *
     * $this->depthHandler($json);
     *
-    * @param $symbol string to sort
-    * @param $interval string time
     * @param $json array of depth bids and asks
     * @return null
     */
@@ -1335,10 +1322,10 @@ class API {
     *
     * @param $symbol string to sort
     * @param $interval string time
-    * @param $json object time
+    * @param \stdClass $json object time
     * @return null
     */
-   private function chartHandler( string $symbol, string $interval, object $json ) {
+   private function chartHandler( string $symbol, string $interval, \stdClass $json ) {
       if( !$this->info[ $symbol ][ $interval ][ 'firstOpen' ] ) { // Wait for /kline to finish loading
          $this->chartQueue[ $symbol ][ $interval ][] = $json;
          return;
@@ -1423,8 +1410,16 @@ class API {
                   "asks" => [] 
             ];
          $this->info[ $symbol ][ 'firstUpdate' ] = 0;
-         $connector( $this->stream . strtolower( $symbol ) . '@depth' )->then( function ( $ws ) use ($callback, $symbol, $loop ) {
-            $ws->on( 'message', function ( $data ) use ($ws, $callback ) {
+         $endpoint = strtolower( $symbol ) . '@depthCache';
+         $this->subscriptions[ $endpoint ] = true;
+         
+         $connector( $this->stream . strtolower( $symbol ) . '@depth' )->then( function ( $ws ) use ($callback, $symbol, $loop, $endpoint ) {
+            $ws->on( 'message', function ( $data ) use ($ws, $callback, $loop, $endpoint ) {
+               if( $this->subscriptions[ $endpoint ] === false ) {
+                  //$this->subscriptions[$endpoint] = null;
+                  $loop->stop();
+                  return; //return $ws->close();
+               }
                $json = json_decode( $data, true );
                $symbol = $json[ 's' ];
                if( $this->info[ $symbol ][ 'firstUpdate' ] == 0 ) {
@@ -1438,12 +1433,13 @@ class API {
                echo "depthCache({$symbol}) WebSocket Connection closed! ({$code} - {$reason})" . PHP_EOL;
                $loop->stop();
             } );
-         }, function ( $e ) use ($loop ) {
+         }, function ( $e ) use ($loop, $symbol ) {
             echo "depthCache({$symbol})) Could not connect: {$e->getMessage()}" . PHP_EOL;
             $loop->stop();
          } );
          $this->depth( $symbol );
          foreach( $this->depthQueue[ $symbol ] as $data ) {
+            //TODO:: WTF ??? where is json and what should be in it ??
             $this->depthHandler( $json );
          }
          $this->depthQueue[ $symbol ] = [];
@@ -1460,7 +1456,7 @@ class API {
     * print_r($trades);
     * });
     *
-    * @param $symbol string optional symbol
+    * @param $symbols
     * @param $callback callable closure
     * @return null
     */
@@ -1476,8 +1472,17 @@ class API {
          if( !isset( $this->info[ $symbol ] ) )
             $this->info[ $symbol ] = [];
          // $this->info[$symbol]['tradesCallback'] = $callback;
-         $connector( $this->stream . strtolower( $symbol ) . '@aggTrade' )->then( function ( $ws ) use ($callback, $symbol, $loop ) {
-            $ws->on( 'message', function ( $data ) use ($ws, $callback ) {
+         
+         $endpoint = strtolower( $symbol ) . '@trades';
+         $this->subscriptions[ $endpoint ] = true;
+         
+         $connector( $this->stream . strtolower( $symbol ) . '@aggTrade' )->then( function ( $ws ) use ($callback, $symbol, $loop, $endpoint ) {
+            $ws->on( 'message', function ( $data ) use ($ws, $callback, $loop, $endpoint ) {
+               if( $this->subscriptions[ $endpoint ] === false ) {
+                  //$this->subscriptions[$endpoint] = null;
+                  $loop->stop();
+                  return; //return $ws->close();
+               }
                $json = json_decode( $data, true );
                $symbol = $json[ 's' ];
                $price = $json[ 'p' ];
@@ -1497,7 +1502,7 @@ class API {
                echo "trades({$symbol}) WebSocket Connection closed! ({$code} - {$reason})" . PHP_EOL;
                $loop->stop();
             } );
-         }, function ( $e ) use ($loop ) {
+         }, function ( $e ) use ($loop, $symbol ) {
             echo "trades({$symbol}) Could not connect: {$e->getMessage()}" . PHP_EOL;
             $loop->stop();
          } );
@@ -1518,8 +1523,17 @@ class API {
     */
    public function ticker( $symbol, Callable $callback ) {
       $endpoint = $symbol ? strtolower( $symbol ) . '@ticker' : '!ticker@arr';
-      \Ratchet\Client\connect( $this->stream . $endpoint )->then( function ( $ws ) use ($callback, $symbol ) {
-         $ws->on( 'message', function ( $data ) use ($ws, $callback, $symbol ) {
+      $this->subscriptions[ $endpoint ] = true;
+      
+      // @codeCoverageIgnoreStart
+      // phpunit can't cover async function
+      \Ratchet\Client\connect( $this->stream . $endpoint )->then( function ( $ws ) use ($callback, $symbol, $endpoint ) {
+         $ws->on( 'message', function ( $data ) use ($ws, $callback, $symbol, $endpoint ) {
+            if( $this->subscriptions[ $endpoint ] === false ) {
+               //$this->subscriptions[$endpoint] = null;
+               $ws->close();
+               return; //return $ws->close();
+            }
             $json = json_decode( $data );
             if( $symbol ) {
                call_user_func( $callback, $this, $symbol, $this->tickerStreamHandler( $json ) );
@@ -1538,6 +1552,7 @@ class API {
       }, function ( $e ) {
          echo "ticker: Could not connect: {$e->getMessage()}" . PHP_EOL;
       } );
+      // @codeCoverageIgnoreEnd
    }
 
    /**
@@ -1552,6 +1567,7 @@ class API {
     * @param $interval string time inteval
     * @param $callback callable closure
     * @return null
+    * @throws \Exception
     */
    public function chart( $symbols, string $interval = "30m", Callable $callback ) {
       if( !is_array( $symbols ) )
@@ -1575,12 +1591,13 @@ class API {
          $this->info[ $symbol ][ $interval ][ 'firstOpen' ] = 0;
          // $this->info[$symbol]['chartCallback'.$interval] = $callback;
          $endpoint = strtolower( $symbol ) . '@kline_' . $interval;
-         $this->subscriptions[$endpoint] = true;
-         $connector( $this->stream . $endpoint )->then( function ( $ws ) use ( $callback, $symbol, $loop, $endpoint ) {
-            $ws->on( 'message', function ( $data ) use ( $ws, $loop, $callback, $endpoint ) {
-               if ( $this->subscriptions[$endpoint] === false ) {
+         $this->subscriptions[ $endpoint ] = true;
+         $connector( $this->stream . $endpoint )->then( function ( $ws ) use ($callback, $symbol, $loop, $endpoint, $interval ) {
+            $ws->on( 'message', function ( $data ) use ($ws, $loop, $callback, $endpoint ) {
+               if( $this->subscriptions[ $endpoint ] === false ) {
                   //$this->subscriptions[$endpoint] = null;
-                  return;//return $ws->close();
+                  $loop->stop();
+                  return; //return $ws->close();
                }
                $json = json_decode( $data );
                $chart = $json->k;
@@ -1589,11 +1606,11 @@ class API {
                $this->chartHandler( $symbol, $interval, $json );
                call_user_func( $callback, $this, $symbol, $this->charts[ $symbol ][ $interval ] );
             } );
-            $ws->on( 'close', function ( $code = null, $reason = null ) use ( $symbol, $loop ) {
+            $ws->on( 'close', function ( $code = null, $reason = null ) use ($symbol, $loop, $interval ) {
                echo "chart({$symbol},{$interval}) WebSocket Connection closed! ({$code} - {$reason})" . PHP_EOL;
                $loop->stop();
             } );
-         }, function ( $e ) use ( $loop, $symbol, $interval ) {
+         }, function ( $e ) use ($loop, $symbol, $interval ) {
             echo "chart({$symbol},{$interval})) Could not connect: {$e->getMessage()}" . PHP_EOL;
             $loop->stop();
          } );
@@ -1608,7 +1625,6 @@ class API {
       $loop->run();
    }
 
-
    /**
     * terminate Terminates websocket endpoints. View endpoints first: print_r($api->subscriptions)
     *
@@ -1616,11 +1632,10 @@ class API {
     *
     * @return null
     */
-   public function terminate($endpoint) {
+   public function terminate( $endpoint ) {
       // check if $this->subscriptions[$endpoint] is true otherwise error
-      $this->subscriptions[$endpoint] = false;
+      $this->subscriptions[ $endpoint ] = false;
    }
-
 
    /**
     * keepAlive Keep-alive function for userDataStream
@@ -1672,16 +1687,27 @@ class API {
     * $api->userData($balance_update, $order_update);
     *
     * @param $balance_callback callable function
-    * @param $execution_callback callable function
+    * @param bool $execution_callback callable function
     * @return null
+    * @throws \Exception
     */
    public function userData( &$balance_callback, &$execution_callback = false ) {
       $response = $this->httpRequest( "v1/userDataStream", "POST", [] );
       $listenKey = $this->options[ 'listenKey' ] = $response[ 'listenKey' ];
       $this->info[ 'balanceCallback' ] = $balance_callback;
       $this->info[ 'executionCallback' ] = $execution_callback;
+      
+      $this->subscriptions[ '@userdata' ] = true;
+      
+      // @codeCoverageIgnoreStart
+      // phpunit can't cover async function
       \Ratchet\Client\connect( $this->stream . $listenKey )->then( function ( $ws ) {
          $ws->on( 'message', function ( $data ) use ($ws ) {
+            if( $this->subscriptions[ '@userdata' ] === false ) {
+               //$this->subscriptions[$endpoint] = null;
+               $ws->close();
+               return; //return $ws->close();
+            }
             $json = json_decode( $data );
             $type = $json->e;
             if( $type == "outboundAccountInfo" ) {
@@ -1701,6 +1727,7 @@ class API {
       }, function ( $e ) {
          echo "userData: Could not connect: {$e->getMessage()}" . PHP_EOL;
       } );
+      // @codeCoverageIgnoreEnd
    }
 
    /**
@@ -1714,8 +1741,18 @@ class API {
     * @return null
     */
    public function miniTicker( Callable $callback ) {
-      \Ratchet\Client\connect( 'wss://stream2.binance.com:9443/ws/!miniTicker@arr@1000ms' )->then( function ( $ws ) use ($callback ) {
-         $ws->on( 'message', function ( $data ) use ($ws, $callback ) {
+      $endpoint = '@miniticker';
+      $this->subscriptions[ $endpoint ] = true;
+      
+      // @codeCoverageIgnoreStart
+      // phpunit can't cover async function
+      \Ratchet\Client\connect( 'wss://stream2.binance.com:9443/ws/!miniTicker@arr@1000ms' )->then( function ( $ws ) use ($callback, $endpoint ) {
+         $ws->on( 'message', function ( $data ) use ($ws, $callback, $endpoint ) {
+            if( $this->subscriptions[ $endpoint ] === false ) {
+               //$this->subscriptions[$endpoint] = null;
+               $ws->close();
+               return; //return $ws->close();
+            }
             $json = json_decode( $data, true );
             $markets = [];
             foreach( $json as $obj ) {
@@ -1738,35 +1775,37 @@ class API {
       }, function ( $e ) {
          echo "miniticker: Could not connect: {$e->getMessage()}" . PHP_EOL;
       } );
+      // @codeCoverageIgnoreEnd
    }
 
 //VF inc.
 
 
 
-	//1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
-	public function candles($symbol, $interval = "5m", $limit = null, $startTime= null, $endTime = null) {
-		if ( !isset($this->charts[$symbol]) ) $this->charts[$symbol] = [];
-		$opt = [
-		    "symbol" => $symbol,
-		    "interval" => $interval
-		];
-		if ($limit) $opt["limit"] = $limit;
-		if ($startTime) $opt["startTime"] = $startTime;
-		if ($endTime) $opt["endTime"] = $endTime;
+  //1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
+  public function candles($symbol, $interval = "5m", $limit = null, $startTime= null, $endTime = null) {
+    if ( !isset($this->charts[$symbol]) ) $this->charts[$symbol] = [];
+    $opt = [
+        "symbol" => $symbol,
+        "interval" => $interval
+    ];
+    if ($limit) $opt["limit"] = $limit;
+    if ($startTime) $opt["startTime"] = $startTime;
+    if ($endTime) $opt["endTime"] = $endTime;
 
-		return $this->httpRequest("v1/klines", "GET", $opt);
-	}   
+    return $this->httpRequest("v1/klines", "GET", $opt);
+  }   
 
-	public function getTrades($symbol, $limit) {
-		return $this->httpRequest("v1/trades", "GET", ["symbol"=>$symbol, "limit"=>$limit]);
-	}
+  public function getTrades($symbol, $limit) {
+    return $this->httpRequest("v1/trades", "GET", ["symbol"=>$symbol, "limit"=>$limit]);
+  }
 
-	public function depthRequest($symbol) {
-		return $this->httpRequest("v1/depth", "GET", ["symbol"=>$symbol]);
-	}
+  public function depthRequest($symbol) {
+    return $this->httpRequest("v1/depth", "GET", ["symbol"=>$symbol]);
+  }
 
-	public function serverTime() {
-		return (microtime(true)*1000) + $this->info['timeOffset'];
-	}
+  public function serverTime() {
+    return (microtime(true)*1000) + $this->info['timeOffset'];
+  }
+   
 }
