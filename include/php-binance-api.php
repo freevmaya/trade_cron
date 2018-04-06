@@ -747,7 +747,7 @@ class API {
          return [];
       }
       $json = json_decode( $output, true );
-      if(isset( $json[ 'msg' ] ) || !$json) {
+      if(isset( $json[ 'msg' ]) || !$json) {
          echo "signedRequest error:\n{$output}".PHP_EOL;
          $info = curl_getinfo($ch);
          echo "response info: ".PHP_EOL;

@@ -101,7 +101,7 @@ class binanceSender extends baseSender {
 	public function buy($pair, $volume, $price=0, $take_profit=0, $stop_loss=0) {
 		$symbol = str_replace('_', '', $pair);
 		if ($this->test) {
-			$this->api->buyTest($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+			//$this->api->buyTest($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
 
 			$result = parent::buy($symbol, $volume, $price, $take_profit, $stop_loss);
 		} else {
@@ -120,7 +120,7 @@ class binanceSender extends baseSender {
 	public function sell($pair, $volume, $price=0) {
 		$symbol = str_replace('_', '', $pair);
 		if ($this->test) {
-			$this->api->sellTest($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
+			//$this->api->sellTest($symbol, $volume, $price, ($price==0)?'MARKET':'LIMIT');
 			$result 	= parent::sell($symbol, $volume, $price);
 		} else {
 			$result 	= $this->api->sell($symbol, $volume, $this->roundPrice($symbol, $price), ($price==0)?'MARKET':'LIMIT');
