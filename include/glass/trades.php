@@ -65,12 +65,16 @@ class Trades {
 		return $result;
 	}
 	
-	public function isPriceMore($pair, $time /* Server time */, $price) {
+	public function isPriceMore($pair, $time /* Server time */, $price, &$report) {
 		if (($lastIndex = count($this->history[$pair]) - 1) > 0) {
 			for ($i=$lastIndex; $i>=0; $i--) {
 				$itm = $this->history[$pair][$i];
 				if ($itm['time'] >= $time) {
-					if (($itm['isBuyerMaker']==0) && ($itm['price'] >= $price)) return true;
+					$tmp_report = date(DATEFORMAT, $itm['time'] / 1000).' '.$itm['qty'].' '.$itm['price'];
+					if (($itm['isBuyerMaker']==0) && ($itm['price'] >= $price)) {
+						$report = $tmp_report;
+						return true;
+					}
 				}
 			}
 		}

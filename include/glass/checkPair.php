@@ -108,9 +108,9 @@
                         // Проверяем на пересечение уровня, если левая граница на другом уровне, тогде не покупать
 
                         $dml = $options['DIMENSIONLEVELS'];
-                        $level = ceil($price / $dml) * $dml;
+                        $level = floor($price / $dml) * $dml;
 
-                        if (ceil($left_price / $dml) * $dml != $level) {
+                        if (floor($left_price / $dml) * $dml != $level) {
                             $echo .= "Intersection level: ".sprintf(NFRM, $level)."!\n";
                             $isBuy = false;
                         }

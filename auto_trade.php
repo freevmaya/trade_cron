@@ -406,8 +406,10 @@
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
                                         ", stop loss: ".sprintf(NFRM, $purchase['stop_loss']).", cur buy price: {$prices['buy']}\n";
 
+                            // tp_area - Индикатор того что цена продаж уже зашла в TAKEPROFIT зону
+                            $buy_trade = '';
                             if (isset($history[$symbol][$i]['tp_area']) || 
-                                $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'])) {
+                                $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'], $buy_trade)) {
 
                                 if (!$isSaleOrder) {// Если нет лимитного ордера на продажу, тогда отслеживаем момент продажи
                                     $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
@@ -423,7 +425,7 @@
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
-
+                                        echo "SELL PURCHASE IN: {$buy_trade}\n";
                                         echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
 
                                         unset($history[$symbol]['list'][$i]);
@@ -473,7 +475,7 @@
                     }
 
                     $countPurchase = count($histsymb['list']);
-
+                    // Блок покупок
                     // Если тестируем или недостаточно покупок этого символа
                     if (!$skip && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
                         if ($istrade) {
