@@ -75,6 +75,24 @@
                     $left_price     = $stop['bid']['price'];
                     $right_price    = $stop['ask']['price'];
 
+                    if (isset($options['DIMENSIONLEVELS'])) { 
+                        // Проверяем на пересечение уровня
+
+                        $dml            = $options['DIMENSIONLEVELS'];
+                        $bottom_level   = floor($price / $dml) * $dml;
+                        $top_level      = ceil($price / $dml) * $dml;
+
+                        if ($left_price < $bottom_level) {
+                            $left_price = $bottom_level;
+                            $echo .= "Correct left!\n";
+                        } 
+                        if ($right_price > $top_level) {
+                            $right_price = $top_level;
+                            $echo .= "Correct right!\n";
+                        }
+                    }
+
+
                     //$price_direct   = calcDirect($price - $left_price, $right_price - $price);
                     $this->pdirect->push(calcDirect($price - $left_price, $right_price - $price));
                     $price_direct   = $this->pdirect->weighedAvg();
@@ -103,18 +121,6 @@
                     $isSell = $direct <= $options['MANAGER']['max_sell_direct'];
 
                    // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$options['MANAGER']['min_buy_direct']})\n";
-
-                    if ($isBuy && isset($options['DIMENSIONLEVELS'])) { 
-                        // Проверяем на пересечение уровня, если левая граница на другом уровне, тогде не покупать
-
-                        $dml = $options['DIMENSIONLEVELS'];
-                        $level = floor($price / $dml) * $dml;
-
-                        if (floor($left_price / $dml) * $dml != $level) {
-                            $echo .= "Intersection level: ".sprintf(NFRM, $level)."!\n";
-                            $isBuy = false;
-                        }
-                    }
 
                     //$echo .= "TIME DELTA: {$volumes['time_delta']}\n";
                     $echo .= ($isBuy?'BUY ':'').($isSell?'SELL ':'')."TRADE DIRECT: ".sprintf(NFRM, $trade_direct).
