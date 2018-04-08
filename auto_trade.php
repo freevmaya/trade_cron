@@ -408,7 +408,7 @@
 
                             // tp_area - Индикатор того что цена продаж уже зашла в TAKEPROFIT зону
                             $buy_trade = '';
-                            if (isset($history[$symbol][$i]['tp_area']) || 
+                            if (isset($history[$symbol]['list'][$i]['tp_area']) || 
                                 $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'], $buy_trade)) {
 
                                 if (!$isSaleOrder) {// Если нет лимитного ордера на продажу, тогда отслеживаем момент продажи
@@ -438,7 +438,7 @@
                                             $sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
                                     }
-                                } else $history[$symbol][$i]['tp_area'] = 1;
+                                } else $history[$symbol]['list'][$i]['tp_area'] = 1;
 
                             } else if ($tradeClass->isPriceBelow($symbol, $purchase['time'], $purchase['stop_loss'])) {
                                 if ($trade_options['INGNORELOSS'] == 1) {
