@@ -492,11 +492,11 @@
                                         echo "Not enough balance. Require: {$require}, available: {$balance}\n";
                                     } else {
 
-                                        $take_profit = roundOff($data['price'] + 
-                                                    $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2), 
-                                                    $trade_options['PRICEROUNDOFF']);
+                                        $take_profit = $sender->roundPrice($symbol, $data['price'] + 
+                                                    $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2));
 
-                                        $stop_loss = roundOff($data['left_price'] - $data['left_price'] * floatval($trade_options['MANAGER']['stop_loss_indent']), $trade_options['PRICEROUNDOFF']) ;
+                                        $stop_loss = $sender->roundPrice($symbol, $data['left_price'] - $data['left_price'] * 
+                                                    floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
 
                                         $order = $sender->buy($symbol, $buyvol, $data['price']);//DEV
 
