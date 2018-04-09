@@ -433,10 +433,10 @@
                                         $profit = $profit - $profit * $komsa;                                    
                                         echo $data['msg']; 
                                     }
-                                } else {
+                                } else if (!$sender->test) {
                                     $state_order = $sender->checkOrder($purchase['sale_order']);
                                     $isSell      = $status == 'FILLED';
-                                }
+                                } else $isSell = true;
 
                                 if ($isSell) {
                                     if (isset($purchase['stoploss_order']) && !$sender->test) {
