@@ -21,6 +21,7 @@
     define('NFRMS', "%01.2f");
     define('MAXWAITTRADE', 60);
     define('PAIRFILEDATA', 'data/auto_trade_pairs.json');
+    define('DEFAULTMARKET', 'binance');
 
     if (!isset($argv[1])) {
         echo "Name market no found\n";
@@ -33,7 +34,7 @@
         $params[$a[0]] = isset($a[1])?$a[1]:true;
     }
 
-    $market_symbol  = $params['m'];                 // Маркет
+    $market_symbol  = isset($params['m'])?$params['m']:DEFAULTMARKET;                 // Маркет
     $p_symbols      = @$params['s'];                // symbol
     $istrade        = isset($params['td'])?$params['td']:false;
 
@@ -524,7 +525,7 @@
                                             $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
                                                     'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
                                                     'base_volume'=>$order['executedQty'] * $data['price'], 
-                                                    'volume'=>$order['executedQty'], 'order'=>$order];
+                                                    'volume'=>$order['executedQty'], 'order'=>$order, 'test'=>$sender->test];
                                             echo "\n\n---------BUY----------\n";
 
                                             //.$order_str = json_encode($order);
