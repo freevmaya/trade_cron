@@ -14,7 +14,7 @@ class binanceSender extends baseSender {
 		$this->info = $this->api->exchangeInfo();
 	}
 
-	protected function resetAccount() {
+	public function resetAccount() {
 		$this->account = $this->api->account();
 		if (!isset($this->account['balances'])) {
 			echo "ERROR Account response\n";
@@ -136,7 +136,9 @@ class binanceSender extends baseSender {
 	public function cancelOrder($order) {
 		if ($this->test) return true;
 
-		return $this->api->cancel($order['symbol'], $order['orderId']);
+		$result = $this->api->cancel($order['symbol'], $order['orderId']);
+        $this->resetAccount();
+        return $result;
 	}
 }
 ?>

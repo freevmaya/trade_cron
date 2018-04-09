@@ -375,7 +375,8 @@
                                         }
                                     }
 
-                                    $sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
+                                    //$sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
+                                    $sender->resetAccount();
                                     $history[$symbol]['list'][$i]['verified'] = 1;
                                 } else {
                                     // Если ордер на покупку еще не сработал
@@ -389,6 +390,7 @@
                                             unset($history[$symbol]['list'][$i]);
                                             */
                                             $history[$symbol]['skip'] = $general['SKIPTIME_CHECK'];
+                                            $sender->resetAccount();
                                         } else {
                                             if ($sender->cancelOrder($purchase['order'])) {
                                                 echo "CANCEL ORDER\n";
@@ -449,7 +451,8 @@
 
                                         if (!$sender->test) {
                                             $vol = $purchase['take_profit'] * $purchase['volume'];
-                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
+                                            $sender->resetAccount();
+//                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
                                     }
                                 } else $history[$symbol]['list'][$i]['tp_area'] = 1;
@@ -478,7 +481,8 @@
                                         $history[$symbol]['loss_count']++;
                                         if (!$sender->test) {
                                             $vol = $purchase['stop_loss'] * $purchase['volume'];
-                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
+                                            $sender->resetAccount();
+                                            //$sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
 
                                         $history[$symbol]['skip'] = $trade_options['SKIPAFTERLOSS'] * $history[$symbol]['loss_count']; // Если
