@@ -382,10 +382,13 @@
                                     $deltaTime = round(($sender->serverTime() - $purchase['time']) / 1000);
                                     if ($deltaTime > $trade_options['BUYORDERLIVE']) {
                                         if ($status == "PARTIALLY_FILLED") { // Если частично исполнен
+                                            /*
                                             echo "ERASE PURCHASE, ORDER STATUS: '{$status}'\n";
                                             if (!isset($history[$symbol]['past_parts'])) $history[$symbol]['past_parts'] = [];
                                             $history[$symbol]['past_parts'][] = $purchase;
                                             unset($history[$symbol]['list'][$i]);
+                                            */
+                                            $history[$symbol]['skip'] = $general['SKIPTIME_CHECK'];
                                         } else {
                                             if ($sender->cancelOrder($purchase['order'])) {
                                                 echo "CANCEL ORDER\n";
