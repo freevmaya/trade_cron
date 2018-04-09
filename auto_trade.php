@@ -354,8 +354,9 @@
                             if (!$sender->test) {
                                     
                                 // Проверяем исполение ордера на покупку
-                                $state_order = $sender->checkOrder($purchase['order']);
-                                if ($filled = ((@$state_order['status']) == 'FILLED')) {
+                                $state_order    = $sender->checkOrder($purchase['order']);
+                                $status         = @$state_order['status'];
+                                if ($filled = ($status == 'FILLED')) {
                                     if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !isset($purchase['stoploss_order'])) {
 
                                         // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
@@ -380,10 +381,17 @@
                                     // Если ордер на покупку еще не сработал
                                     $deltaTime = round(($sender->serverTime() - $purchase['time']) / 1000);
                                     if ($deltaTime > $trade_options['BUYORDERLIVE']) {
-                                        if ($sender->cancelOrder($purchase['order'])) {
-                                            echo "CANCEL ORDER\n";
-                                            print_r($purchase['order']);
+                                        if ($status == "PARTIALLY_FILLED") { // Если частично исполнен
+                                            echo "ERASE PURCHASE, ORDER STATUS: '{$status}'\n";
+                                            if (!isset($history[$symbol]['past_parts'])) $history[$symbol]['past_parts'] = [];
+                                            $history[$symbol]['past_parts'][] = $purchase;
                                             unset($history[$symbol]['list'][$i]);
+                                        } else {
+                                            if ($sender->cancelOrder($purchase['order'])) {
+                                                echo "CANCEL ORDER\n";
+                                                print_r($purchase['order']);
+                                                unset($history[$symbol]['list'][$i]);
+                                            }
                                         }
                                     }
                                 }
