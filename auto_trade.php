@@ -357,26 +357,28 @@
                                 $state_order    = $sender->checkOrder($purchase['order']);
                                 $status         = @$state_order['status'];
                                 if ($filled = ($status == 'FILLED')) {
-                                    if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !isset($purchase['stoploss_order'])) {
+                                    if (!$sender->test) {
+                                        if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !isset($purchase['stoploss_order'])) {
 
-                                        // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
-                                        // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
+                                            // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
+                                            // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
 
-                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
-                                            $history[$symbol]['list'][$i]['stoploss_order'] = $sale_order;
+                                            if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
+                                                $history[$symbol]['list'][$i]['stoploss_order'] = $sale_order;
+                                            }
+                                        } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !isset($purchase['sale_order'])) {
+
+                                            // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
+                                            // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
+
+                                            if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
+                                                $history[$symbol]['list'][$i]['sale_order'] = $sale_order;
+                                            }
                                         }
-                                    } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !isset($purchase['sale_order'])) {
 
-                                        // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
-                                        // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
-
-                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
-                                            $history[$symbol]['list'][$i]['sale_order'] = $sale_order;
-                                        }
+                                        //$sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
+                                        $sender->resetAccount();
                                     }
-
-                                    //$sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
-                                    $sender->resetAccount();
                                     $history[$symbol]['list'][$i]['verified'] = 1;
                                 } else {
                                     // Если ордер на покупку еще не сработал
@@ -437,7 +439,7 @@
                                 }
 
                                 if ($isSell) {
-                                    if (isset($purchase['stoploss_order'])) {
+                                    if (isset($purchase['stoploss_order']) && !$sender->test) {
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
