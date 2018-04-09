@@ -435,7 +435,7 @@
                                     }
                                 } else if (!$sender->test) {
                                     $state_order = $sender->checkOrder($purchase['sale_order']);
-                                    $isSell      = $status == 'FILLED';
+                                    $isSell      = $state_order['status'] == 'FILLED';
                                 } else $isSell = true;
 
                                 if ($isSell) {
