@@ -56,8 +56,10 @@ class Candles {
 				$this->time = $ntime;
 			}
 		} else {
+			/*
 			if ($updateData = $this->crawler->candles($this->symbol, $this->ivStr(), $this->time, $this->time, 1))
 				$this->data[count($this->data) - 1] = $updateData[0];
+			*/
 		}
 	}
 
