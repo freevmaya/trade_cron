@@ -237,7 +237,7 @@
     if ($history) {
         foreach ($history as $pair=>$item) {
             $allprofit += $item['profit'];
-            if (array_search($pair, $symbols) === false) $symbols[] = $pair;
+            if ((cound($item['list']) > 0) && (array_search($pair, $symbols) === false)) $symbols[] = $pair;
         }
     }
 
