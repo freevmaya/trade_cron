@@ -355,34 +355,32 @@
                         $filled = true;                        
 
                         if (!isset($purchase['verified'])) {
-                            if (!$sender->test) {
+                            if (!$purchase['test']) {
                                     
                                 // Проверяем исполение ордера на покупку
                                 $state_order    = $sender->checkOrder($purchase['order']);
                                 $status         = @$state_order['status'];
                                 if ($filled = ($status == 'FILLED')) {
-                                    if (!$sender->test) {
-                                        if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !isset($purchase['stoploss_order'])) {
+                                    if (($trade_options['MANAGER']['STOPLOSSORDER'] == 1) && !isset($purchase['stoploss_order'])) {
 
-                                            // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
-                                            // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
+                                        // Если в опциях включено STOPLOSSORDER и нет ордера на продажу по цене stop_loss
+                                        // тогда сразу выставляем лимитный ордер на продажду по цене stop_loss
 
-                                            if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
-                                                $history[$symbol]['list'][$i]['stoploss_order'] = $sale_order;
-                                            }
-                                        } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !isset($purchase['sale_order'])) {
-
-                                            // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
-                                            // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
-
-                                            if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
-                                                $history[$symbol]['list'][$i]['sale_order'] = $sale_order;
-                                            }
+                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['stop_loss'])) {
+                                            $history[$symbol]['list'][$i]['stoploss_order'] = $sale_order;
                                         }
+                                    } else if (($trade_options['MANAGER']['TAKEPROFITORDER'] == 1) && !isset($purchase['sale_order'])) {
 
-                                        //$sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
-                                        $sender->resetAccount();
+                                        // Если в опциях включено TAKEPROFITORDER и нет ордера на продажу по цене take_profit
+                                        // тогда сразу выставляем лимитный ордер на продажду по цене take_profit
+
+                                        if ($sale_order = sellPurchase($sender, $symbol, $purchase, $purchase['take_profit'])) {
+                                            $history[$symbol]['list'][$i]['sale_order'] = $sale_order;
+                                        }
                                     }
+
+                                    //$sender->addBalance($baseCur, -$purchase['price'] * $order['executedQty']);
+                                    $sender->resetAccount();
                                     $history[$symbol]['list'][$i]['verified'] = 1;
                                 } else {
                                     // Если ордер на покупку еще не сработал
@@ -437,13 +435,13 @@
                                         $profit = $profit - $profit * $komsa;                                    
                                         echo $data['msg']; 
                                     }
-                                } else if (!$sender->test) {
+                                } else if (!$purchase['test']) {
                                     $state_order = $sender->checkOrder($purchase['sale_order']);
                                     $isSell      = (@$state_order['status'] == 'FILLED') || ($state_order == null);
                                 } else $isSell = true;
 
                                 if ($isSell) {
-                                    if (isset($purchase['stoploss_order']) && !$sender->test) {
+                                    if (isset($purchase['stoploss_order']) && !$purchase['test']) {
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
@@ -455,7 +453,7 @@
                                         $history[$symbol]['profit_total'] += $profit;
                                         $history[$symbol]['profit_count']++;
 
-                                        if (!$sender->test) {
+                                        if (!$purchase['test']) {
                                             $vol = $purchase['take_profit'] * $purchase['volume'];
                                             $sender->resetAccount();
 //                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
@@ -473,7 +471,7 @@
                                     if ($isecho > 1) echo $data['msg'];
                                     if ($data['isSell']) {
 
-                                        if ($isSaleOrder && !$sender->test) {
+                                        if ($isSaleOrder && !$purchase['test']) {
                                             $result = $sender->cancelOrder($purchase['sale_order']);
                                             sellPurchase($sender, $symbol, $purchase);
                                         }
@@ -485,7 +483,7 @@
                                         $history[$symbol]['profit'] -= $loss;
                                         $history[$symbol]['loss_total'] += $loss;
                                         $history[$symbol]['loss_count']++;
-                                        if (!$sender->test) {
+                                        if (!$purchase['test']) {
                                             $vol = $purchase['stop_loss'] * $purchase['volume'];
                                             $sender->resetAccount();
                                             //$sender->addBalance($baseCur, $vol - $vol * $komsa);
