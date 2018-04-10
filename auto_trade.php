@@ -234,8 +234,11 @@
 
     $allprofit = 0;
 
-    foreach ($history as $item) {
-        $allprofit += $item['profit'];
+    if ($history) {
+        foreach ($history as $pair=>$item) {
+            $allprofit += $item['profit'];
+            if (array_search($pair, $symbols) === false) $symbols[] = $pair;
+        }
     }
 
     echo "TOTAL PROFIT: ".sprintf(NFRM, $allprofit),"\n";

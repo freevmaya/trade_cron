@@ -44,7 +44,12 @@ class binanceCrawler extends baseCrawler {
 
 	public function getInfo($symbol) {
 		foreach ($this->info['symbols'] as $item) {
-			if ($item['symbol'] == $symbol) return $item;
+			if ($item['symbol'] == $symbol) {
+				foreach ($item['filters'] as $filter) {
+					$item['filters'][$filter['filterType']] = $filter;
+				}
+				return $item;
+			}
 		}
 	}
 
