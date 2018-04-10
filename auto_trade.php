@@ -483,6 +483,7 @@
                                         $history[$symbol]['profit'] -= $loss;
                                         $history[$symbol]['loss_total'] += $loss;
                                         $history[$symbol]['loss_count']++;
+                                        $history[$symbol]['last_stop_loss'] = $stime;
                                         if (!$purchase['test']) {
                                             $vol = $purchase['stop_loss'] * $purchase['volume'];
                                             $sender->resetAccount();
