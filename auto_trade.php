@@ -307,7 +307,11 @@
         $histsymb = $history[$symbol];
         $isPurchase = count($histsymb['list']) > 0;
 
-        $skip = ($histsymb['skip'] > 0) || ($histsymb['profit'] < 0);
+        $skip = ($histsymb['skip'] > 0);
+        if (($histsymb['profit'] < 0) && isset($history[$symbol]['last_stop_loss'])) {
+            $delta_time = $time - strtotime($history[$symbol]['last_stop_loss']);
+            $skip = $delta_time <= $general['LASTLOSSWAIT'];
+        }
         $all_skip = true;
 
 /*
