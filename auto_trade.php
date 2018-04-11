@@ -421,7 +421,7 @@
                             $loss = ($purchase['price'] - $purchase['stop_loss']) * $purchase['volume'];
                             $loss = $sender->roundPrice($symbol, $loss + $loss * $komsa);
 
-                            $isSaleOrder = isset($purchase['sale_order']); // Наличие лимитного ордера на продажу этой покупки
+                            $isSaleOrder = isset($purchase['sale_order']) && $purchase['sale_order']; // Наличие лимитного ордера на продажу этой покупки
 
                             if ($isecho > 1) 
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
