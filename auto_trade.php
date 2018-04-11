@@ -232,16 +232,18 @@
 //    $allcoinInfo    = readFileData('allcoin', ['history'=>$defhistory, 'state'=>[]]);
     $history        = readFileData('rade', $defhistory);
 
-    $allprofit = 0;
+    $allprofit = [];
 
     if ($history) {
         foreach ($history as $pair=>$item) {
-            $allprofit += $item['profit'];
+            $ap = explode('_', $pair); $pix = $ap[1];
+            if (!isset($allprofit[$pix])) $allprofit[$pix] = 0;
+            $allprofit[$pix] += $item['profit'];
             if ((count($item['list']) > 0) && (array_search($pair, $symbols) === false)) $symbols[] = $pair;
         }
     }
 
-    echo "TOTAL PROFIT: ".sprintf(NFRM, $allprofit),"\n";
+    echo "TOTAL PROFIT: ".print_r($allprofit, true),"\n";
 
     readConfig($config, @$params['config']);
 
