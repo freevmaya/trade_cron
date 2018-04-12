@@ -104,7 +104,7 @@
 
     exit;
 */    
-    function checkMACD($crawler, $symbol, $options, $returnCandle=false) {
+    function checkMACD_BB($crawler, $symbol, $options, $returnCandle=false) {
         $result = false;
         $time = time();
         $candles = new Candles($crawler, $symbol, $options['CANDLEINTERVAL'] * 60, $time, 
@@ -114,7 +114,7 @@
         // Проверяем восходящуюю EMA, см. параметры EMAINTERVAL и MINEMASLOPE. EMAINTERVAL - число, либо "none"
 
         $interval = $options['MANAGER']['EMAINTERVAL'];
-        if ($interval != 'none') {
+        if ($interval) {
 
             $ema    = $candles->ema($interval);
             $slope  = ($ema[count($ema) - 1] - $ema[0])/$ema[count($ema) - 1]; 
@@ -124,10 +124,16 @@
 
         } else $result = true;
 
-        if (!is_string($result) && $result) {
+        if (!is_string($result) && $result && $options['MANAGER']['MACD']) {
             if (!is_string($result = $candles->buyCheck($options['MANAGER']['MACD'], 
                             floatval($options['MANAGER']['buy_macd_value']), 
                             floatval($options['MANAGER']['buy_macd_direct'])))) { 
+                $result = $returnCandle?$candles:true;
+            }
+        }
+
+        if (!is_string($result) && $result && ($options['BB'])) {
+            if (!is_string($result = $candles->checkBB($options['BB'], 0, $options['BB']['BUY_LIMIT']))) { 
                 $result = $returnCandle?$candles:true;
             }
         }
@@ -137,7 +143,7 @@
     }
 
     function checkPairState($crawler, $symbol, $options) {
-        if ($result = checkMACD($crawler, $symbol, $options, true)) {
+        if ($result = checkMACD_BB($crawler, $symbol, $options, true)) {
             if (is_string($result)) 
                 return $result;
             $candles = $result;
@@ -188,6 +194,8 @@
         $optionsAll     = $config->get('options', []);
 
         if (isset($optionsAll[$symbol])) $trade_options = union($trade_options, $optionsAll[$symbol]);
+
+        //print_r($trade_options);
         return $trade_options;
     }
 
@@ -327,11 +335,10 @@
 
         if (($isecho > 1) && $skip) echo "SKIP {$history[$symbol]['skip']} SEC\n";
 
-        if (!$isPurchase && !$skip && 
-            ($trade_options['MANAGER']['no_macd'] == 0) && is_string($result = checkPairState($crawler, $symbol, $trade_options))) {
+        if (!$isPurchase && !$skip && is_string($result = checkPairState($crawler, $symbol, $trade_options))) {
 
             if ($isecho > 1) {
-                echo "MACD and VOLUMES does not correspond to the condition\n{$result}";
+                echo "MACD, Bollinger bands does not correspond to the condition\n{$result}";
             }
             $history[$symbol]['skip'] = $general['SKIPTIME'];
             $all_skip = false;

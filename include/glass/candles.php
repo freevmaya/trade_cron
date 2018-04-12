@@ -67,6 +67,26 @@ class Candles {
 		return Math::ema($this->getData($data_index), $smoonInterval, $start);
 	}
 
+	public function bb($smoonInterval=20, $data_index=4, $d=2) {
+		$data 	= $this->getData($data_index);
+		$ma 	= Math::ma($data, $smoonInterval, 0);
+
+		$result = [];
+		$i = 0;
+		foreach ($ma as $sma) {
+			$sum = 0;
+			for ($n=$i; $n<$i+$smoonInterval; $n++) {
+				$sum += pow($data[$n] - $sma, 2);
+			}
+			//echo $sma.' '.$sum."\n";
+			$stdDev = sqrt($sum/$smoonInterval);
+			$result[] = [$sma - $d * $stdDev, $sma + $d * $stdDev]; 
+			$i++;
+		}
+
+		return $result;
+	}
+
 	public function getVolumes() {
 		return $this->getData(5);
 	} 
@@ -107,6 +127,24 @@ class Candles {
 		foreach ($macd as $item) unset($item);
 		unset($macd);
 		
+		return $result;
+	}
+
+	public function checkBB($BBConf, $minLimit=0, $maxLimit=1) {
+		$data_index = $BBConf['EMA'][1];
+		$last_close = $this->data[count($this->data) - 1][$data_index];
+
+		$bb = $this->bb($BBConf['EMA'][0], $data_index, $BBConf['D']);
+
+		$last_bb = $bb[count($bb) - 1];
+		unset($bb);
+
+		$pos = ($last_close - $last_bb[0])/($last_bb[1] - $last_bb[0]);
+		//echo $pos.' '.$last_close.' '.print_r($last_bb, true)."\n";
+
+		if (($pos >= $minLimit) && ($pos <= $maxLimit)) $result = true;
+		else $result = "CHECK BB: {$minLimit} => {$pos} <= {$maxLimit}";
+
 		return $result;
 	}
 

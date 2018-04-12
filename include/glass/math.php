@@ -13,6 +13,17 @@ class Math {
 		return Math::sum($list, $start, $count)/$count; 
 	}
 
+	public static function ma($list, $smoonInterval, $start=0) {
+		$count 	= count($list);
+		$result = [];
+		$i = $start;
+		while ($i + $smoonInterval <= $count) {
+			$result[] = Math::sum($list, $i, $smoonInterval) / $smoonInterval;
+			$i++;
+		}
+		return $result;
+	} 
+
 	public static function ema($list, $smoonInterval, $start=0) {
 		$end = count($list) - 1;
 		$result = [];
