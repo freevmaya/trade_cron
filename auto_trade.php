@@ -221,6 +221,7 @@
         if ($ext_config) {
             if ($config_extend = json_decode(file_get_contents($ext_config), true)) {
                 $config->union($config_extend); 
+//                print_r($config->get('options'));
             }
         }
     }

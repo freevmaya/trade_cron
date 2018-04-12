@@ -26,7 +26,7 @@ class tradeConfig {
 	}
 
 	public function union($a_data) {
-		$this->data = union($a_data, $this->data);
+		$this->data = union($this->data, $a_data);
 	} 
 }
 ?>

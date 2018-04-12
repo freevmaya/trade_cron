@@ -92,48 +92,51 @@
                         }
                     }
 
-
-                    //$price_direct   = calcDirect($price - $left_price, $right_price - $price);
-                    $this->pdirect->push(calcDirect($price - $left_price, $right_price - $price));
-                    $price_direct   = $this->pdirect->weighedAvg();
-
-                    $spreedPercent  = 1; // Процент цены до стенки
-
-                    $spreed         = $right_price - $left_price;
-
-                    $left           = min(max(($price - $left_price) / $spreed, 0), 1);
-
-                    $to_right_percent   = ($right_price - $price) / $right_price * 100;
-                    $to_left_percent    = ($price - $left_price) / $price * 100;
-
-                    $min_profit         = $options['MANAGER']['min_right_wall'] + $options['MANAGER']['commission'] * 2;
-
-                    $rate               = $options['MANAGER']['direct_rate'];
-                    $direct             = ($trade_direct * (1 - $rate)) + ($price_direct * $rate);
-
-//                    $isBuy = ($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > $options['MANAGER']['min_buy_direct']);
-                    $isBuy = ($left < $options['MANAGER']['max_left_dist']) && 
-                            //($to_right_percent >= $min_profit) && РАССМАТРИВАТЬ МИНИМАЛЬНЫЙ ПРОФИТ
-                            ($direct >= $options['MANAGER']['min_buy_direct']);
-                    /*$isSell = ($left / 1 > $options['MANAGER']['min_right_dist']) && 
-                            ($direct <= $options['MANAGER']['max_sell_direct']);*/
-                            
-                    $isSell = $direct <= $options['MANAGER']['max_sell_direct'];
-
-                   // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$options['MANAGER']['min_buy_direct']})\n";
-
-                    //$echo .= "TIME DELTA: {$volumes['time_delta']}\n";
-                    $echo .= ($isBuy?'BUY ':'').($isSell?'SELL ':'')."TRADE DIRECT: ".sprintf(NFRM, $trade_direct).
-                            ", PRICE DIRECT: ".sprintf(NFRM, $price_direct).
-                            ", TOLEFT: ".sprintf(NFRMS, $to_left_percent)."%, TORIGHT: ".sprintf(NFRMS, $to_right_percent)."%\n";
-
-                    $echo .= $this->inWall($left, $price, $left_price, $right_price, $direct);    
-
-                    $result['price']        = $this->glass->curPrice($isBuy?'ask':'bid');
                     $result['left_price']   = $left_price;
                     $result['right_price']  = $right_price;
-                    $result['isBuy']        = $isBuy;
-                    $result['isSell']       = $isSell;
+
+                    $spreed         = $right_price - $left_price;
+                    if ($spreed > 0) {
+
+                        //$price_direct   = calcDirect($price - $left_price, $right_price - $price);
+                        $this->pdirect->push(calcDirect($price - $left_price, $right_price - $price));
+                        $price_direct   = $this->pdirect->weighedAvg();
+
+                        $spreedPercent  = 1; // Процент цены до стенки
+
+
+                        $left           = min(max(($price - $left_price) / $spreed, 0), 1);
+
+                        $to_right_percent   = ($right_price - $price) / $right_price * 100;
+                        $to_left_percent    = ($price - $left_price) / $price * 100;
+
+                        $min_profit         = $options['MANAGER']['min_right_wall'] + $options['MANAGER']['commission'] * 2;
+
+                        $rate               = $options['MANAGER']['direct_rate'];
+                        $direct             = ($trade_direct * (1 - $rate)) + ($price_direct * $rate);
+
+    //                    $isBuy = ($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > $options['MANAGER']['min_buy_direct']);
+                        $isBuy = ($left < $options['MANAGER']['max_left_dist']) && 
+                                //($to_right_percent >= $min_profit) && РАССМАТРИВАТЬ МИНИМАЛЬНЫЙ ПРОФИТ
+                                ($direct >= $options['MANAGER']['min_buy_direct']);
+                        /*$isSell = ($left / 1 > $options['MANAGER']['min_right_dist']) && 
+                                ($direct <= $options['MANAGER']['max_sell_direct']);*/
+                                
+                        $isSell = $direct <= $options['MANAGER']['max_sell_direct'];
+
+                       // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$options['MANAGER']['min_buy_direct']})\n";
+
+                        //$echo .= "TIME DELTA: {$volumes['time_delta']}\n";
+                        $echo .= ($isBuy?'BUY ':'').($isSell?'SELL ':'')."TRADE DIRECT: ".sprintf(NFRM, $trade_direct).
+                                ", PRICE DIRECT: ".sprintf(NFRM, $price_direct).
+                                ", TOLEFT: ".sprintf(NFRMS, $to_left_percent)."%, TORIGHT: ".sprintf(NFRMS, $to_right_percent)."%\n";
+
+                        $echo .= $this->inWall($left, $price, $left_price, $right_price, $direct);    
+
+                        $result['price']        = $this->glass->curPrice($isBuy?'ask':'bid');
+                        $result['isBuy']        = $isBuy;
+                        $result['isSell']       = $isSell;
+                    } else $echo = "Increase EXTRAPOLATE!\n";
                 }
             }
 
