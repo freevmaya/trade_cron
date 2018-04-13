@@ -5,11 +5,11 @@ class Candles {
 	protected $symbol;
 	protected $startTime=0;
 	function __construct($crawler, $symbol, $intervalSec, $time, $startTime=0) {
-		$this->crawler = $crawler;
+		$this->crawler 	= $crawler;
 		$this->interval	= $intervalSec;
-		$this->time = $this->cnvTime($time);
-		$this->data = null;
-		$this->symbol = $symbol;
+		$this->time 	= $this->cnvTime($time);
+		$this->data 	= null;
+		$this->symbol 	= $symbol;
 
 		$this->start($this->cnvTime($startTime));
 	}

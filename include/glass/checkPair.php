@@ -19,12 +19,18 @@
             $this->extrapolate      = is_numeric($this->options['EXTRAPOLATE'])?$this->options['EXTRAPOLATE']:1;
         }
 
-        function checkMACD_BB($returnCandle=false) {
-            $result = false;
-            $time = time();
+        private function resetCandles() {
+            if ($this->candles) $this->candles->dispose();
+            
+            $time   = time();
             $this->candles = new Candles($this->crawler, $this->symbol, $this->options['CANDLEINTERVAL'] * 60, $time, 
                                     $time - 60 * $this->options['CANDLEINTERVAL'] * $this->options['CANDLECOUNT']);
             $this->candles->update($time);
+        }
+
+        function checkMACD_BB($returnCandle=false) {
+            $result = false;
+            $this->resetCandles();
 
             // Проверяем восходящуюю EMA, см. параметры EMAINTERVAL и MINEMASLOPE. EMAINTERVAL - число, либо "none"
 
@@ -52,7 +58,18 @@
                 }
             }
 
-            if (!$returnCandle) $this->candles->dispose();        
+            //if (!$returnCandle) $this->candles->dispose();        
+            return $result;
+        }
+
+        public function lastVolumes($count = 3) {
+            if (!$this->candles) $this->resetCandles();
+
+            $volues = $this->candles->getData(5);
+            $vcount = count($volues);
+            $result = [];
+            for ($i=$vcount - 1; $i>=$vcount - $count; $i--)
+                $result[] = $volues[$i];
             return $result;
         }
 

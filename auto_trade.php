@@ -523,6 +523,7 @@
 
                                             //.$order_str = json_encode($order);
                                             echo json_encode($purchase)."\n";
+                                            echo "VOLUMES: [".implode(',', $checkList[$symbol]->lastVolumes())."]\n";
                                             //echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
 
                                             echo $data['msg'];
@@ -534,8 +535,11 @@
                                 } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                             } 
                         } else {
-                            $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
-                            if ($isecho > 1) echo $data['msg'];
+                            if ($isecho > 1) {
+                                $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
+                                echo "VOLUMES: [".implode(',', $checkList[$symbol]->lastVolumes())."]\n";
+                                echo $data['msg'];
+                            }
                         }
                     } else if ($isecho > 1) echo "skip buy section, SKIP: {$skip} OR Count purchase: {$countPurchase} < MAXPURCHASESYMBOL: {$trade_options['MAXPURCHASESYMBOL']}\n";
                     writeFileData('rade', $history);
