@@ -21,7 +21,7 @@
 
         private function resetCandles() {
             if ($this->candles) $this->candles->dispose();
-            
+
             $time   = time();
             $this->candles = new Candles($this->crawler, $this->symbol, $this->options['CANDLEINTERVAL'] * 60, $time, 
                                     $time - 60 * $this->options['CANDLEINTERVAL'] * $this->options['CANDLECOUNT']);
@@ -128,6 +128,7 @@
 //                    $price = $this->glass->curPrice($this->options['state']=='buy'?'ask':'bid');//$prices[$this->options['state']];
                     //$price = $this->glass->curPrice($this->options['state']=='buy'?'ask':'bid');
                     $price = ($prices['buy'] + $prices['sell'])/2;
+                    $correct_count = 0;
 
                     do {
                         $auto = $this->options['EXTRAPOLATE'] == 'AUTO';
@@ -159,9 +160,11 @@
                         $spred         = $right_price - $left_price;
                         $spred_percent = $spred / $price;
 
-                        if ($auto && ($spred_percent < $this->options['MINSPRED'])) 
+                        if ($auto && ($spred_percent < $this->options['MINSPRED'])) {
+                            $correct_count++;
+                            if ($correct_count > 10) break;
                             $this->extrapolate += 1;
-                        else break;
+                        } else break;
 
                     } while ($auto);
 
