@@ -292,7 +292,7 @@
         $skip = ($histsymb['skip'] > 0);
         if (($histsymb['profit'] < 0) && isset($history[$symbol]['last_stop_loss'])) {
             $delta_time = $time - strtotime($history[$symbol]['last_stop_loss']);
-            if ($skip = $delta_time <= $general['LASTLOSSWAIT']) {
+            if ($skip = $delta_tim:e <= $general['LASTLOSSWAIT']) {
                 echo "LAST LOSS {$history[$symbol]['last_stop_loss']}\n";
             }
         }
@@ -435,7 +435,6 @@
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
                                         echo "SELL PURCHASE IN: {$buy_trade}\n";
                                         echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
-                                        echo totalProfit($history);
 
                                         unset($history[$symbol]['list'][$i]);
                                         $history[$symbol]['profit'] += $profit;
@@ -447,6 +446,7 @@
                                             $sender->resetAccount();
 //                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
+                                        echo totalProfit($history);
                                     }
                                 } else $history[$symbol]['list'][$i]['tp_area'] = 1;
 
@@ -467,7 +467,6 @@
 
                                         echo "STOP LOSS orderId: {$order['orderId']}, price: {$purchase['stop_loss']}, LOSS {$loss}\n";
                                         echo $data['msg'];
-                                        echo totalProfit($history);
 
                                         unset($history[$symbol]['list'][$i]);
 
@@ -480,6 +479,7 @@
                                             $sender->resetAccount();
                                             //$sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
+                                        echo totalProfit($history);
 
                                         $history[$symbol]['skip'] = $trade_options['SKIPAFTERLOSS'] * $history[$symbol]['loss_count']; // Если
                                     }
