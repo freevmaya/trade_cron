@@ -168,6 +168,10 @@
             $sender->cancelOrder($sell_order);
             $sell_order = null;
         }
+        if (isset($sell_order['code'])) {
+            echo $sell_order['msg'];
+            $sell_order = null;
+        }
         return $sell_order;
     }
 
