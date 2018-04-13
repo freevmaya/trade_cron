@@ -68,7 +68,7 @@
             $volues = $this->candles->getData(5);
             $vcount = count($volues);
             $result = [];
-            for ($i=$vcount - 1; $i>=$vcount - $count; $i--)
+            for ($i=$vcount - $count; $i<$vcount; $i++)
                 $result[] = $volues[$i];
             return $result;
         }
