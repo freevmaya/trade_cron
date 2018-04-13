@@ -749,11 +749,13 @@ class API {
       $json = json_decode( $output, true );
       if(isset( $json[ 'msg' ]) || !$json) {
          echo "signedRequest error:\n{$output}".PHP_EOL;
+         /*
          $info = curl_getinfo($ch);
          echo "response info: ".PHP_EOL;
          print_r($info);
          echo "url: {$url}".PHP_EOL."params:";
          print_r($params);
+         */
       }
       curl_close( $ch );
       $this->transfered += strlen( $output );

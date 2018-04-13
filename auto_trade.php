@@ -530,7 +530,12 @@
 
                                             $history[$symbol]['list'][] = $purchase;
 
-                                        } else throw new Exception("Unknown error when creating an order buy, result: ".print_r($order, true), 1);
+                                        } else {
+                                            if ($order['code'] == -2010) {
+                                                $history[$symbol]['skip'] = $general['SKIPTIME'];
+                                                echo $order['msg'];
+                                            } else echo "Error when creating an order buy, result: ".print_r($order, true)."\n";
+                                        }
                                     }
                                 } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                             } 
