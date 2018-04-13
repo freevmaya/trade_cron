@@ -292,7 +292,7 @@
         $skip = ($histsymb['skip'] > 0);
         if (($histsymb['profit'] < 0) && isset($history[$symbol]['last_stop_loss'])) {
             $delta_time = $time - strtotime($history[$symbol]['last_stop_loss']);
-            if ($skip = $delta_tim:e <= $general['LASTLOSSWAIT']) {
+            if ($skip = $delta_time <= $general['LASTLOSSWAIT']) {
                 echo "LAST LOSS {$history[$symbol]['last_stop_loss']}\n";
             }
         }
