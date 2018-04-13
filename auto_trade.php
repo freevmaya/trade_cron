@@ -226,6 +226,20 @@
         }
     }
 
+    function totalProfit($history) {
+        $allprofit = [];
+
+        if ($history) {
+            foreach ($history as $pair=>$item) {
+                $ap = explode('_', $pair); $pix = $ap[1];
+                if (!isset($allprofit[$pix])) $allprofit[$pix] = 0;
+                $allprofit[$pix] += $item['profit'];
+            }
+        }
+
+        return "TOTAL PROFIT: ".print_r($allprofit, true)."\n";
+    }
+
     console::log('START '.$scriptID);
     $senderName = $market_symbol.'Sender';
     $sender = new $senderName(json_decode(file_get_contents(APIKEYPATH.'apikey_'.$market_symbol.'.json'), true));
@@ -241,18 +255,13 @@
 //    $allcoinInfo    = readFileData('allcoin', ['history'=>$defhistory, 'state'=>[]]);
     $history        = readFileData('rade', $defhistory);
 
-    $allprofit = [];
-
     if ($history) {
         foreach ($history as $pair=>$item) {
-            $ap = explode('_', $pair); $pix = $ap[1];
-            if (!isset($allprofit[$pix])) $allprofit[$pix] = 0;
-            $allprofit[$pix] += $item['profit'];
             if ((count($item['list']) > 0) && (array_search($pair, $symbols) === false)) $symbols[] = $pair;
         }
     }
 
-    echo "TOTAL PROFIT: ".print_r($allprofit, true),"\n";
+    echo totalProfit($history);
 
     readConfig($config, @$params['config']);
 
@@ -461,6 +470,7 @@
                                     if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
                                         echo "SELL PURCHASE IN: {$buy_trade}\n";
                                         echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
+                                        echo totalProfit($history);
 
                                         unset($history[$symbol]['list'][$i]);
                                         $history[$symbol]['profit'] += $profit;
@@ -492,6 +502,8 @@
 
                                         echo "STOP LOSS orderId: {$order['orderId']}, price: {$purchase['stop_loss']}, LOSS {$loss}\n";
                                         echo $data['msg'];
+                                        echo totalProfit($history);
+
                                         unset($history[$symbol]['list'][$i]);
 
                                         $history[$symbol]['profit'] -= $loss;
