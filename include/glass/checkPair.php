@@ -1,16 +1,59 @@
 <?
     class checkPair {
         protected $tradeClass;
+        protected $options;
+        protected $crawler;
         protected $tradecount;
         protected $glass;
         protected $wallkf;
         protected $pdirect;
-        function __construct($symbol, $tradeClass) {
+        protected $candles;
+        function __construct($symbol, &$tradeClass, &$crawler, $options) {
             $this->symbol           = $symbol;
             $this->tradeClass       = $tradeClass;
+            $this->crawler          = $crawler;
+            $this->options          = $options;
             $this->tradecount       = 0;
             $this->wallkf           = 0.3;
             $this->pdirect          = new Queue(6);
+            $this->extrapolate      = is_numeric($this->options['EXTRAPOLATE'])?$this->options['EXTRAPOLATE']:1;
+        }
+
+        function checkMACD_BB($returnCandle=false) {
+            $result = false;
+            $time = time();
+            $this->candles = new Candles($this->crawler, $this->symbol, $this->options['CANDLEINTERVAL'] * 60, $time, 
+                                    $time - 60 * $this->options['CANDLEINTERVAL'] * $this->options['CANDLECOUNT']);
+            $this->candles->update($time);
+
+            // Проверяем восходящуюю EMA, см. параметры EMAINTERVAL и MINEMASLOPE. EMAINTERVAL - число, либо "none"
+
+            $interval = $this->options['MANAGER']['EMAINTERVAL'];
+            if ($interval) {
+                $ema    = $this->candles->ema($interval);
+                $slope  = ($ema[count($ema) - 1] - $ema[0])/$ema[count($ema) - 1]; 
+                if ($slope >= $this->options['MANAGER']['MINEMASLOPE'])
+                    $result = true;
+                else $result = "SLOPE: $slope\n";
+
+            } else $result = true;
+
+            if (!is_string($result) && $result && $this->options['MANAGER']['MACD']) {
+                if (!is_string($result = $this->candles->buyCheck($this->options['MANAGER']['MACD'], 
+                                floatval($this->options['MANAGER']['buy_macd_value']), 
+                                floatval($this->options['MANAGER']['buy_macd_direct'])))) { 
+                    $result = $returnCandle?$this->candles:true;
+                }
+            }
+
+            if (!is_string($result) && $result && ($this->options['BB'])) {
+                if (!is_string($result = $this->candles->checkBB($this->options['BB'], 0, $this->options['BB']['BUY_LIMIT']))) { 
+                    $result = $returnCandle?$this->candles:true;
+                }
+            }
+
+            if (!$returnCandle) $this->candles->dispose();        
+            return $result;
         }
 
         protected function inWall($left, $price, $left_price, $right_price, $direct_s) {
@@ -26,14 +69,14 @@
                     sprintf(NFRM, $right_price)."\n";
         }
 
-        public function check($orders, $options=[]) {
+        public function glassCheck($orders) {
             $result = ['state'=>'none', 'msg'=>''];
             $prices    = $this->tradeClass->lastPrice($this->symbol);
 
             $echo = '';
-            if ($this->tradecount == 0) $this->tradecount = $options['MINTRADECOUNT'];
+            if ($this->tradecount == 0) $this->tradecount = $this->options['MINTRADECOUNT'];
 
-            $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount, $options['TRADETIME']);
+            $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount, $this->options['TRADETIME']);
             $allvol = $volumes['buy_wgt'] + $volumes['sell_wgt'];
 
             if ($allvol > 0) {
@@ -65,71 +108,81 @@
                     if (!$this->glass) $this->glass = new Glass($orders);
                     else $this->glass->setOrders($orders);
 
-//                    $price = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');//$prices[$options['state']];
-                    //$price = $this->glass->curPrice($options['state']=='buy'?'ask':'bid');
+//                    $price = $this->glass->curPrice($this->options['state']=='buy'?'ask':'bid');//$prices[$this->options['state']];
+                    //$price = $this->glass->curPrice($this->options['state']=='buy'?'ask':'bid');
                     $price = ($prices['buy'] + $prices['sell'])/2;
 
-                    $stop = $this->glass->extrapolate($buy_persec, $sell_persec, $volumes['time_delta'] * $options['EXTRAPOLATE']);
-                    $trade_direct = calcDirect($volumes['sell_wgt'], $volumes['buy_wgt']);
+                    do {
+                        $auto = $this->options['EXTRAPOLATE'] == 'AUTO';
+                        $stop = $this->glass->extrapolate($buy_persec, $sell_persec, $volumes['time_delta'] * $this->extrapolate);
+                        $trade_direct = calcDirect($volumes['sell_wgt'], $volumes['buy_wgt']);
 
-                    $left_price     = $stop['bid']['price'];
-                    $right_price    = $stop['ask']['price'];
+                        $left_price     = $stop['bid']['price'];
+                        $right_price    = $stop['ask']['price'];
 
-                    if (isset($options['DIMENSIONLEVELS'])) { 
-                        // Проверяем на пересечение уровня
+                        if (isset($this->options['DIMENSIONLEVELS'])) { 
+                            // Проверяем на пересечение уровня
 
-                        $dml            = $options['DIMENSIONLEVELS'];
-                        $bottom_level   = floor($price / $dml) * $dml;
-                        $top_level      = ceil($price / $dml) * $dml;
+                            $dml            = $this->options['DIMENSIONLEVELS'];
+                            $bottom_level   = floor($price / $dml) * $dml;
+                            $top_level      = ceil($price / $dml) * $dml;
 
-                        if ($left_price < $bottom_level) {
-                            $left_price = $bottom_level;
-                            $echo .= "Correct left!\n";
-                        } 
-                        if ($right_price > $top_level) {
-                            $right_price = $top_level;
-                            $echo .= "Correct right!\n";
+                            if ($left_price < $bottom_level) {
+                                $left_price = $bottom_level;
+                                $echo .= "Correct left!\n";
+                            } 
+                            if ($right_price > $top_level) {
+                                $right_price = $top_level;
+                                $echo .= "Correct right!\n";
+                            }
                         }
-                    }
 
-                    $result['left_price']   = $left_price;
-                    $result['right_price']  = $right_price;
+                        $result['left_price']   = $left_price;
+                        $result['right_price']  = $right_price;
+                        $spred         = $right_price - $left_price;
+                        $spred_percent = $spred / $price;
 
-                    $spreed         = $right_price - $left_price;
-                    if ($spreed > 0) {
+                        if ($auto && ($spred_percent < $this->options['MINSPRED'])) 
+                            $this->extrapolate += 1;
+                        else break;
+
+                    } while ($auto);
+
+
+                    if ($spred > 0) {
 
                         //$price_direct   = calcDirect($price - $left_price, $right_price - $price);
                         $this->pdirect->push(calcDirect($price - $left_price, $right_price - $price));
                         $price_direct   = $this->pdirect->weighedAvg();
 
-                        $spreedPercent  = 1; // Процент цены до стенки
+                        $spredPercent  = 1; // Процент цены до стенки
 
 
-                        $left           = min(max(($price - $left_price) / $spreed, 0), 1);
+                        $left           = min(max(($price - $left_price) / $spred, 0), 1);
 
                         $to_right_percent   = ($right_price - $price) / $right_price * 100;
                         $to_left_percent    = ($price - $left_price) / $price * 100;
 
-                        $min_profit         = $options['MANAGER']['min_right_wall'] + $options['MANAGER']['commission'] * 2;
+                        $min_profit         = $this->options['MANAGER']['min_right_wall'] + $this->options['MANAGER']['commission'] * 2;
 
-                        $rate               = $options['MANAGER']['direct_rate'];
+                        $rate               = $this->options['MANAGER']['direct_rate'];
                         $direct             = ($trade_direct * (1 - $rate)) + ($price_direct * $rate);
 
-    //                    $isBuy = ($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > $options['MANAGER']['min_buy_direct']);
-                        $isBuy = ($left < $options['MANAGER']['max_left_dist']) && 
+    //                    $isBuy = ($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > $this->options['MANAGER']['min_buy_direct']);
+                        $isBuy = ($left < $this->options['MANAGER']['max_left_dist']) && 
                                 //($to_right_percent >= $min_profit) && РАССМАТРИВАТЬ МИНИМАЛЬНЫЙ ПРОФИТ
-                                ($direct >= $options['MANAGER']['min_buy_direct']);
-                        /*$isSell = ($left / 1 > $options['MANAGER']['min_right_dist']) && 
-                                ($direct <= $options['MANAGER']['max_sell_direct']);*/
+                                ($direct >= $this->options['MANAGER']['min_buy_direct']);
+                        /*$isSell = ($left / 1 > $this->options['MANAGER']['min_right_dist']) && 
+                                ($direct <= $this->options['MANAGER']['max_sell_direct']);*/
                                 
-                        $isSell = $direct <= $options['MANAGER']['max_sell_direct'];
+                        $isSell = $direct <= $this->options['MANAGER']['max_sell_direct'];
 
-                       // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$options['MANAGER']['min_buy_direct']})\n";
+                       // $echo .= "($left < 0.4) && ($to_right_percent >= $min_profit) && ($direct > {$this->options['MANAGER']['min_buy_direct']})\n";
 
                         //$echo .= "TIME DELTA: {$volumes['time_delta']}\n";
                         $echo .= ($isBuy?'BUY ':'').($isSell?'SELL ':'')."TRADE DIRECT: ".sprintf(NFRM, $trade_direct).
                                 ", PRICE DIRECT: ".sprintf(NFRM, $price_direct).
-                                ", TOLEFT: ".sprintf(NFRMS, $to_left_percent)."%, TORIGHT: ".sprintf(NFRMS, $to_right_percent)."%\n";
+                                ", SPRED: ".sprintf(NFRMS, $spred_percent * 100)."%, EXTRAPOLATE: ".$this->extrapolate."\n";
 
                         $echo .= $this->inWall($left, $price, $left_price, $right_price, $direct);    
 

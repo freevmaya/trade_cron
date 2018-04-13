@@ -104,44 +104,6 @@
 
     exit;
 */    
-    function checkMACD_BB($crawler, $symbol, $options, $returnCandle=false) {
-        $result = false;
-        $time = time();
-        $candles = new Candles($crawler, $symbol, $options['CANDLEINTERVAL'] * 60, $time, 
-                                $time - 60 * $options['CANDLEINTERVAL'] * $options['CANDLECOUNT']);
-        $candles->update($time);
-
-        // Проверяем восходящуюю EMA, см. параметры EMAINTERVAL и MINEMASLOPE. EMAINTERVAL - число, либо "none"
-
-        $interval = $options['MANAGER']['EMAINTERVAL'];
-        if ($interval) {
-
-            $ema    = $candles->ema($interval);
-            $slope  = ($ema[count($ema) - 1] - $ema[0])/$ema[count($ema) - 1]; 
-            if ($slope >= $options['MANAGER']['MINEMASLOPE'])
-                $result = true;
-            else $result = "SLOPE: $slope\n";
-
-        } else $result = true;
-
-        if (!is_string($result) && $result && $options['MANAGER']['MACD']) {
-            if (!is_string($result = $candles->buyCheck($options['MANAGER']['MACD'], 
-                            floatval($options['MANAGER']['buy_macd_value']), 
-                            floatval($options['MANAGER']['buy_macd_direct'])))) { 
-                $result = $returnCandle?$candles:true;
-            }
-        }
-
-        if (!is_string($result) && $result && ($options['BB'])) {
-            if (!is_string($result = $candles->checkBB($options['BB'], 0, $options['BB']['BUY_LIMIT']))) { 
-                $result = $returnCandle?$candles:true;
-            }
-        }
-
-        if (!$returnCandle) $candles->dispose();        
-        return $result;
-    }
-
     function checkPairState($crawler, $symbol, $options) {
         if ($result = checkMACD_BB($crawler, $symbol, $options, true)) {
             if (is_string($result)) 
@@ -345,7 +307,9 @@
 
         if (($isecho > 1) && $skip) echo "SKIP {$history[$symbol]['skip']} SEC\n";
 
-        if (!$isPurchase && !$skip && is_string($result = checkPairState($crawler, $symbol, $trade_options))) {
+        if (!isset($checkList[$symbol])) $checkList[$symbol] = new checkPair($symbol, $tradeClass, $crawler, $trade_options);
+
+        if (!$isPurchase && !$skip && is_string($result = $checkList[$symbol]->checkMACD_BB())) {
 
             if ($isecho > 1) {
                 echo "MACD, Bollinger bands does not correspond to the condition\n{$result}";
@@ -370,7 +334,6 @@
                     $tradeClass->addHistory($trades);
 
                     $prices = $tradeClass->lastPrice($symbol);
-                    if (!isset($checkList[$symbol])) $checkList[$symbol] = new checkPair($symbol, $tradeClass);
 
                     // Блок продаж
                     foreach ($histsymb['list'] as $i=>$purchase) {
@@ -452,7 +415,7 @@
                                 $tradeClass->isPriceMore($symbol, $purchase['time'], $purchase['take_profit'], $buy_trade)) {
 
                                 if (!$isSaleOrder) {// Если нет лимитного ордера на продажу, тогда отслеживаем момент продажи
-                                    $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
+                                    $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
                                     if ($isSell = $data['isSell']) {
                                         $profit = ($prices['buy'] - $purchase['price']) * $purchase['volume'];
                                         $profit = $profit - $profit * $komsa;                                    
@@ -490,7 +453,7 @@
                                     if ($isecho > 1) echo "INGNORELOSS\n";
                                     $history[$symbol]['skip'] = $trade_options['SKIPIGNORELOSS'];
                                 } else {
-                                    $data = $checkList[$symbol]->check($orders[$symbol], $trade_options, true);
+                                    $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
 
                                     if ($isecho > 1) echo $data['msg'];
                                     if ($data['isSell']) {
@@ -526,9 +489,9 @@
                     $countPurchase = count($histsymb['list']);
                     // Блок покупок
                     // Если тестируем или недостаточно покупок этого символа
-                    if (!$skip && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
+                    if (!$skip && $trade_options['CANBUY'] && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
                         if ($istrade) {
-                            $data = $checkList[$symbol]->check($orders[$symbol], $trade_options);
+                            $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
                             if ($isecho > 1) echo $data['msg'];
 
                             if ($data['isBuy']) {
@@ -569,7 +532,7 @@
                                 } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                             } 
                         } else {
-                            $data = $checkList[$symbol]->check($orders[$symbol], $trade_options);
+                            $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
                             if ($isecho > 1) echo $data['msg'];
                         }
                     } else if ($isecho > 1) echo "skip buy section, SKIP: {$skip} OR Count purchase: {$countPurchase} < MAXPURCHASESYMBOL: {$trade_options['MAXPURCHASESYMBOL']}\n";
