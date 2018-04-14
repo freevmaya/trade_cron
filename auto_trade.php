@@ -429,7 +429,9 @@
                                     }
                                 } else if (!$purchase['test']) {
                                     $state_order = $sender->checkOrder($purchase['sale_order']);
-                                    $isSell      = (@$state_order['status'] == 'FILLED') || ($state_order == null);
+                                    $st = @$state_order['status'];
+                                    
+                                    $isSell      = ($st == 'FILLED') || ($st == 'CANCELED') || ($state_order == null);
                                 } else $isSell = true;
 
                                 if ($isSell) {
@@ -485,7 +487,7 @@
                                             $history[$symbol]['loss_count']++;
                                             $history[$symbol]['last_stop_loss'] = $stime;
                                             if (!$purchase['test']) $sender->resetAccount();
-                                            
+
                                             echo totalProfit($history);
                                         } else echo "FAIL STOP LOSS!!!";
 
