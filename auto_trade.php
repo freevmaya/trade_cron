@@ -510,6 +510,7 @@
 
                                     if (!$sender->test && ($balance < $require)) {
                                         echo "Not enough balance. Require: {$require}, available: {$balance}\n";
+                                        $history[$symbol]['skip'] = $general['SKIPTIME'];
                                     } else {
 
                                         $take_profit = $sender->roundPrice($symbol, $data['price'] + 
