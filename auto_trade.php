@@ -466,11 +466,16 @@
 
                                         if ($isSaleOrder && !$purchase['test']) {
                                             if ($sender->cancelOrder($purchase['sale_order']))
-                                                $isSell = sellPurchase($sender, $symbol, $purchase);
-                                        } else $isSell = true;
+                                                $sell_order = sellPurchase($sender, $symbol, $purchase);
+                                        } else $sell_order = true;
 
-                                        if ($isSell) {
-                                            echo "STOP LOSS orderId: {$order['orderId']}, price: {$purchase['stop_loss']}, LOSS {$loss}\n";
+                                        if ($sell_order) {
+                                            if (is_object($sell_order)) {
+                                                $price = $sell_order['price'];
+                                                $loss = $purchase['base_volume'] - $sell_order['executedQty'] * $price;
+                                            } else $price = $purchase['stop_loss'];
+
+                                            echo "STOP LOSS orderId: {$order['orderId']}, price: {$price}, LOSS {$loss}\n";
                                             echo $data['msg'];
 
                                             unset($history[$symbol]['list'][$i]);
@@ -479,11 +484,8 @@
                                             $history[$symbol]['loss_total'] += $loss;
                                             $history[$symbol]['loss_count']++;
                                             $history[$symbol]['last_stop_loss'] = $stime;
-                                            if (!$purchase['test']) {
-                                                $vol = $purchase['stop_loss'] * $purchase['volume'];
-                                                $sender->resetAccount();
-                                                //$sender->addBalance($baseCur, $vol - $vol * $komsa);
-                                            }
+                                            if (!$purchase['test']) $sender->resetAccount();
+                                            
                                             echo totalProfit($history);
                                         } else echo "FAIL STOP LOSS!!!";
 
