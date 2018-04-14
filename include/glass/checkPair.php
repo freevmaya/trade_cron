@@ -130,6 +130,9 @@
                     $price = ($prices['buy'] + $prices['sell'])/2;
                     $correct_count = 0;
 
+                    $min_spred = $this->options['MINSPRED'];
+                    $max_spred = $min_spred * 2;
+
                     do {
                         $auto = $this->options['EXTRAPOLATE'] == 'AUTO';
                         $stop = $this->glass->extrapolate($buy_persec, $sell_persec, $volumes['time_delta'] * $this->extrapolate);
@@ -160,10 +163,14 @@
                         $spred         = $right_price - $left_price;
                         $spred_percent = $spred / $price;
 
-                        if ($auto && ($spred_percent < $this->options['MINSPRED'])) {
+                        if ($auto) {
                             $correct_count++;
                             if ($correct_count > 10) break;
-                            $this->extrapolate += 1;
+
+                            if ($spred_percent < $min_spred) $this->extrapolate += 1;
+                            else if ($spred_percent > $max_spred) $this->extrapolate -= 1;
+                            else break;
+
                         } else break;
 
                     } while ($auto);
