@@ -523,8 +523,7 @@
                                         if ($order && !isset($order['code'])) {
                                             $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
                                                     'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
-                                                    'base_volume'=>$order['executedQty'] * $data['price'], 
-                                                    'volume'=>$order['executedQty'], 'order'=>$order, 'test'=>$sender->test];
+                                                    'base_volume'=>$require, 'volume'=>$buyvol, 'order'=>$order, 'test'=>$sender->test];
                                             echo "\n\n---------BUY----------\n";
 
                                             //.$order_str = json_encode($order);
