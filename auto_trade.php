@@ -297,7 +297,7 @@
         if (($histsymb['profit'] < 0) && isset($history[$symbol]['last_stop_loss'])) {
             $delta_time = $time - strtotime($history[$symbol]['last_stop_loss']);
             if ($skip = $delta_time <= $general['LASTLOSSWAIT']) {
-                echo "LAST LOSS {$history[$symbol]['last_stop_loss']}\n";
+                if ($isecho > 1) echo "LAST LOSS {$history[$symbol]['last_stop_loss']}\n";
             }
         }
         $all_skip = true;
@@ -409,7 +409,7 @@
                             $loss = ($purchase['price'] - $purchase['stop_loss']) * $purchase['volume'];
                             $loss = $sender->roundPrice($symbol, $loss + $loss * $komsa);
 
-                            $isSaleOrder = isset($purchase['sale_order']) && $purchase['sale_order']; // Наличие лимитного ордера на продажу этой покупки
+                            $isSaleOrder = (@$purchase['sale_order']) && (@$purchase['sale_order']["orderId"]); // Наличие лимитного ордера на продажу этой покупки
 
                             if ($isecho > 1) 
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
@@ -465,25 +465,27 @@
                                     if ($data['isSell']) {
 
                                         if ($isSaleOrder && !$purchase['test']) {
-                                            $result = $sender->cancelOrder($purchase['sale_order']);
-                                            sellPurchase($sender, $symbol, $purchase);
-                                        }
+                                            if ($sender->cancelOrder($purchase['sale_order']))
+                                                $isSell = sellPurchase($sender, $symbol, $purchase);
+                                        } else $isSell = true;
 
-                                        echo "STOP LOSS orderId: {$order['orderId']}, price: {$purchase['stop_loss']}, LOSS {$loss}\n";
-                                        echo $data['msg'];
+                                        if ($isSell) {
+                                            echo "STOP LOSS orderId: {$order['orderId']}, price: {$purchase['stop_loss']}, LOSS {$loss}\n";
+                                            echo $data['msg'];
 
-                                        unset($history[$symbol]['list'][$i]);
+                                            unset($history[$symbol]['list'][$i]);
 
-                                        $history[$symbol]['profit'] -= $loss;
-                                        $history[$symbol]['loss_total'] += $loss;
-                                        $history[$symbol]['loss_count']++;
-                                        $history[$symbol]['last_stop_loss'] = $stime;
-                                        if (!$purchase['test']) {
-                                            $vol = $purchase['stop_loss'] * $purchase['volume'];
-                                            $sender->resetAccount();
-                                            //$sender->addBalance($baseCur, $vol - $vol * $komsa);
-                                        }
-                                        echo totalProfit($history);
+                                            $history[$symbol]['profit'] -= $loss;
+                                            $history[$symbol]['loss_total'] += $loss;
+                                            $history[$symbol]['loss_count']++;
+                                            $history[$symbol]['last_stop_loss'] = $stime;
+                                            if (!$purchase['test']) {
+                                                $vol = $purchase['stop_loss'] * $purchase['volume'];
+                                                $sender->resetAccount();
+                                                //$sender->addBalance($baseCur, $vol - $vol * $komsa);
+                                            }
+                                            echo totalProfit($history);
+                                        } else echo "FAIL STOP LOSS!!!";
 
                                         $history[$symbol]['skip'] = $trade_options['SKIPAFTERLOSS'] * $history[$symbol]['loss_count']; // Если
                                     }
@@ -551,11 +553,11 @@
                             }
                         }
                     } else if ($isecho > 1) echo "skip buy section, SKIP: {$skip} OR Count purchase: {$countPurchase} < MAXPURCHASESYMBOL: {$trade_options['MAXPURCHASESYMBOL']}\n";
-                    writeFileData('rade', $history);
                 }
             } else console::log("Empty trade or order list");
 
         }
+        writeFileData('rade', $history);
 
         $cur_index = ($cur_index + 1) % $cur_count;
 
