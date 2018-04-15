@@ -402,9 +402,9 @@
                         if ($filled) { // Если ордер на покупку уже сработал тогда начинаем ослеживать момент продажи
 
                             $profit = ($purchase['take_profit'] - $purchase['price']) * $purchase['volume'];
-                            $profit = $sender->roundPrice($symbol, $profit - $profit * $komsa);
+                            $profit = $profit - $profit * $komsa;
                             $loss = ($purchase['price'] - $purchase['stop_loss']) * $purchase['volume'];
-                            $loss = $sender->roundPrice($symbol, $loss + $loss * $komsa);
+                            $loss = $loss + $loss * $komsa;
 
                             $isSaleOrder = (@$purchase['sale_order']) && (@$purchase['sale_order']["orderId"]); // Наличие лимитного ордера на продажу этой покупки
 
@@ -517,8 +517,13 @@
                                         $take_profit = $sender->roundPrice($symbol, $data['price'] + 
                                                     $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2));
 
+                                        $stop_loss = $sender->roundPrice($symbol, $data['price'] - $data['price'] * 
+                                                    floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
+
+/*                                      Стоплосс от левой стенки
                                         $stop_loss = $sender->roundPrice($symbol, $data['left_price'] - $data['left_price'] * 
                                                     floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
+*/                                                    
 
                                         $order = $sender->buy($symbol, $buyvol, $data['price']);//DEV
 
