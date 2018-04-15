@@ -87,7 +87,7 @@
         }
 
         public function glassCheck($orders) {
-            $result = ['state'=>'none', 'msg'=>''];
+            $result = ['state'=>'none', 'msg'=>'', 'isSell'=>false, 'isBuy'=>false];
             $prices    = $this->tradeClass->lastPrice($this->symbol);
 
             $echo = '';
@@ -96,7 +96,9 @@
             $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount, $this->options['TRADETIME']);
             $allvol = $volumes['buy_wgt'] + $volumes['sell_wgt'];
 
-            if ($allvol > 0) {
+            if ($allvol <= 0) {
+                $echo = "SMALL VOLUMES\n";
+            } else {
 
 /*
                 $this->trade_volumes['buy']->push($volumes['buy']);
