@@ -80,7 +80,7 @@ class Candles {
 			}
 			//echo $sma.' '.$sum."\n";
 			$stdDev = sqrt($sum/$smoonInterval);
-			$result[] = [$sma - $d * $stdDev, $sma + $d * $stdDev]; 
+			$result[] = [$sma - $d * $stdDev, $sma + $d * $stdDev, $sma]; 
 			$i++;
 		}
 
@@ -130,17 +130,26 @@ class Candles {
 		return $result;
 	}
 
-	public function checkBB($BBConf, $minLimit=0, $maxLimit=1) {
+	public function checkBB($BBConf) {
 		$data_index = $BBConf['EMA'][1];
 		$last_close = $this->data[count($this->data) - 1][$data_index];
 
 		$bb = $this->bb($BBConf['EMA'][0], $data_index, $BBConf['D']);
 
-		$last_bb = $bb[count($bb) - 1];
+		$last_idx = count($bb) - 1;
+		$first_idx = count($bb) - 10;
+		$last_bb = $bb[$last_idx];
+
+		$slope = max(0, min(1, ($bb[$last_idx][2] - $bb[$first_idx][2]) / $bb[$first_idx][2] / count($bb) * 1750 + 0.5));
+//		echo $bb[$last_idx][2].'-'.$bb[$first_idx][2]." BB SLOPE: ".$slope."\n";
+
 		unset($bb);
 
 		$pos = ($last_close - $last_bb[0])/($last_bb[1] - $last_bb[0]);
 		//echo $pos.' '.$last_close.' '.print_r($last_bb, true)."\n";
+
+		$minLimit = 0;
+		$maxLimit = $BBConf['BUY_LIMIT'][1] + ($BBConf['BUY_LIMIT'][0] - $BBConf['BUY_LIMIT'][1]) * $slope;
 
 		if (($pos >= $minLimit) && ($pos <= $maxLimit)) $result = true;
 		else $result = "CHECK BB: {$minLimit} => {$pos} <= {$maxLimit}";

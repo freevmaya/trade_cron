@@ -53,7 +53,7 @@
             }
 
             if (!is_string($result) && $result && ($this->options['BB'])) {
-                if (!is_string($result = $this->candles->checkBB($this->options['BB'], 0, $this->options['BB']['BUY_LIMIT']))) { 
+                if (!is_string($result = $this->candles->checkBB($this->options['BB']))) { 
                     $result = $returnCandle?$this->candles:true;
                 }
             }
