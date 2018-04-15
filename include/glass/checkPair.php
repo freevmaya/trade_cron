@@ -96,7 +96,7 @@
             $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount, $this->options['TRADETIME']);
             $allvol = $volumes['buy_wgt'] + $volumes['sell_wgt'];
 
-            if ($allvol <= 0) {
+            if (($allvol <= 0) || ($volume['time_delta'] == 0)) {
                 $echo = "SMALL VOLUMES\n";
             } else {
 
