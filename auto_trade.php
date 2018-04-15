@@ -300,7 +300,6 @@
                 if ($isecho > 1) echo "LAST LOSS {$history[$symbol]['last_stop_loss']}\n";
             }
         }
-        $all_skip = true;
 
 /*
         if (!$skip && (($trade_options['INGNORELOSS'] == 0) && ($histsymb['loss_total'] > 0))) {
@@ -321,10 +320,8 @@
                 echo "MACD, Bollinger bands does not correspond to the condition\n{$result}";
             }
             $history[$symbol]['skip'] = $general['SKIPTIME'];
-            $all_skip = false;
         } else if ($isPurchase || (!$skip)) {
             // Если есть покупки или нет пропуска
-            $all_skip = false;
 
             if ($trades = $crawler->getTradeList([$symbol])) 
                 $orders = $crawler->getOrderList([$symbol]);
@@ -563,6 +560,13 @@
         }
         writeFileData('rade', $history);
 
+        $all_skip = 0;
+        if ($cur_index==$cur_count - 1) { // Под конец перечисляния всех символов, определяем необходимость задержки
+            for ($i=0; $i<$cur_count;$i++)
+                if ($history[$symbols[$i]]['skip'] > 0) {
+                    $all_skip++;   
+                }
+        }
         $cur_index = ($cur_index + 1) % $cur_count;
 
         $echo = ob_get_contents();
@@ -573,7 +577,7 @@
             echo $echo;
         }
 
-        if (!$skip || $all_skip) {
+        if (!$skip || ($all_skip == $cur_count)) {
 
             cronReport($dbp, $scriptID, null);
             if (isStopScript($dbp, $scriptID, $scriptCode)) break;
