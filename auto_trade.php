@@ -405,7 +405,8 @@
                             $loss = ($purchase['price'] - $purchase['stop_loss']) * $purchase['volume'];
                             $loss = $loss + $loss * $komsa;
 
-                            $isSaleOrder = (@$purchase['sale_order']) && (@$purchase['sale_order']["orderId"]); // Наличие лимитного ордера на продажу этой покупки
+                            // Наличие лимитного ордера на продажу этой покупки
+                            $isSaleOrder = (@$purchase['sale_order']) && ($purchase['test'] || (@$purchase['sale_order']["orderId"])); 
 
                             if ($isecho > 1) 
                                 echo "CHECK take profit: ".sprintf(NFRM, $purchase['take_profit']).
