@@ -164,12 +164,11 @@
     function sellPurchase($sender, $symbol, $purchase, $price=0) {
         $sell_order = null;
         $sell_order = $sender->sell($symbol, $purchase['volume'], $price); // Продаем по рынку если price == 0
-        if (($price == 0) && (!($selled = ($sell_order['status'] == 'FILLED')))) {
-            $sender->cancelOrder($sell_order);
-            $sell_order = null;
-        }
         if (isset($sell_order['code'])) {
             echo $sell_order['msg'];
+            $sell_order = null;
+        } else if (($price == 0) && (!($selled = ($sell_order['status'] == 'FILLED')))) {
+            $sender->cancelOrder($sell_order);
             $sell_order = null;
         }
         return $sell_order;
