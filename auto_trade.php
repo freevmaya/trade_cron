@@ -569,9 +569,7 @@
                                     } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                                 } 
                             } else {
-                                if ($isecho > 1) {
-                                    echo "SMALL GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
-                                }
+                                echo "SMALL GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
                             }
                         } else {
                             if ($isecho > 1) {
