@@ -232,6 +232,7 @@
 
     $prev_time = 0;
     $delta_time = 0;
+    $gcandle = null;
 
 /*
     print_r($sender->exchangeInfo('ONT_BTC'));
@@ -285,6 +286,19 @@
         $komsa          = floatval($commission[$baseCur]);
         $isecho         = isset($params['echo'])?$params['echo']:$trade_options['ECHO'];
         $sender->test   = $trade_options['MODE'] == 'TEST';
+
+        if (($cur_index == 0) && ($general['GSYMBOL'])) {
+            $gsdata = $general['GSYMBOL'];
+
+            if (!$gcandle) $gcandle = new Candles($crawler, $gsdata['NAME'], 
+                                                $gsdata['CANDLEINTERVAL'] * 60, $time, 
+                                    $time - 60 * $gsdata['CANDLEINTERVAL'] * $gsdata['CANDLECOUNT']);
+            $gcandle->update($time);
+
+            $gc_data = $gcandle->getData();
+            $candle = $gc_data[count($gc_data) - 1];
+            $GPriceDirect = ($candle[4] - $candle[1]) / $candle[4] * 100;
+        }
 
         if (!isset($history[$symbol])) $history[$symbol] = $def_coininfo;
         else if ($history[$symbol]['skip'] > 0) $history[$symbol]['skip'] = max($history[$symbol]['skip'] - $delta_time, 0);
@@ -502,57 +516,63 @@
                     // Если тестируем или недостаточно покупок этого символа
                     if (!$skip && $trade_options['CANBUY'] && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
                         if ($istrade) {
-                            $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
-                            if ($isecho > 1) echo $data['msg'];
+                            if ($GPriceDirect >= $general['GSYMBOL']['MINDIRECT']) {
+                                $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
+                                if ($isecho > 1) echo $data['msg'];
 
-                            if ($data['isBuy']) {
-                                $balance = $sender->balance($baseCur);
-                                if (($buyvol = $sender->volumeFromBuy($symbol, $data['price'], 
-                                                floatval($trade_options['BUYMINVOLS']), $komsa * 2)) > 0) { 
-                                    $require = $buyvol * $data['price'];
+                                if ($data['isBuy']) {
+                                    $balance = $sender->balance($baseCur);
+                                    if (($buyvol = $sender->volumeFromBuy($symbol, $data['price'], 
+                                                    floatval($trade_options['BUYMINVOLS']), $komsa * 2)) > 0) { 
+                                        $require = $buyvol * $data['price'];
 
-                                    if (!$sender->test && ($balance < $require)) {
-                                        echo "Not enough balance. Require: {$require}, available: {$balance}\n";
-                                        $history[$symbol]['skip'] = $general['SKIPTIME'];
-                                    } else {
-
-                                        $take_profit = $sender->roundPrice($symbol, $data['price'] + 
-                                                    $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2));
-
-                                        $stop_loss = $sender->roundPrice($symbol, $data['price'] - $data['price'] * 
-                                                    floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
-
-/*                                      Стоплосс от левой стенки
-                                        $stop_loss = $sender->roundPrice($symbol, $data['left_price'] - $data['left_price'] * 
-                                                    floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
-*/                                                    
-
-                                        $order = $sender->buy($symbol, $buyvol, $data['price']);//DEV
-
-                                        if ($order && !isset($order['code'])) {
-                                            $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
-                                                    'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
-                                                    'base_volume'=>$require, 'volume'=>$buyvol, 'order'=>$order, 'test'=>$sender->test];
-                                            echo "\n\n---------BUY----------\n";
-
-                                            //.$order_str = json_encode($order);
-                                            echo json_encode($purchase)."\n";
-                                            echo "VOLUMES: [".implode(',', $checkList[$symbol]->lastVolumes())."]\n";
-                                            //echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
-
-                                            echo $data['msg'];
-
-                                            $history[$symbol]['list'][] = $purchase;
-
+                                        if (!$sender->test && ($balance < $require)) {
+                                            echo "Not enough balance. Require: {$require}, available: {$balance}\n";
+                                            $history[$symbol]['skip'] = $general['SKIPTIME'];
                                         } else {
-                                            if ($order['code'] == -2010) {
-                                                $history[$symbol]['skip'] = $general['SKIPTIME'];
-                                                echo $order['msg'];
-                                            } else echo "Error when creating an order buy, result: ".print_r($order, true)."\n";
+
+                                            $take_profit = $sender->roundPrice($symbol, $data['price'] + 
+                                                        $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2));
+
+                                            $stop_loss = $sender->roundPrice($symbol, $data['price'] - $data['price'] * 
+                                                        floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
+
+    /*                                      Стоплосс от левой стенки
+                                            $stop_loss = $sender->roundPrice($symbol, $data['left_price'] - $data['left_price'] * 
+                                                        floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
+    */                                                    
+
+                                            $order = $sender->buy($symbol, $buyvol, $data['price']);//DEV
+
+                                            if ($order && !isset($order['code'])) {
+                                                $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
+                                                        'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
+                                                        'base_volume'=>$require, 'volume'=>$buyvol, 'order'=>$order, 'test'=>$sender->test];
+                                                echo "\n\n---------BUY----------\n";
+
+                                                //.$order_str = json_encode($order);
+                                                echo json_encode($purchase)."\n";
+                                                echo "VOLUMES: [".implode(',', $checkList[$symbol]->lastVolumes())."]\n";
+                                                //echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
+
+                                                echo $data['msg'];
+
+                                                $history[$symbol]['list'][] = $purchase;
+
+                                            } else {
+                                                if ($order['code'] == -2010) {
+                                                    $history[$symbol]['skip'] = $general['SKIPTIME'];
+                                                    echo $order['msg'];
+                                                } else echo "Error when creating an order buy, result: ".print_r($order, true)."\n";
+                                            }
                                         }
-                                    }
-                                } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
-                            } 
+                                    } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
+                                } 
+                            } else {
+                                if ($isecho > 1) {
+                                    echo "SMALL GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
+                                }
+                            }
                         } else {
                             if ($isecho > 1) {
                                 $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
