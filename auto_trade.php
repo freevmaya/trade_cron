@@ -464,8 +464,10 @@
                                     if ($data['isSell']) {
 
                                         if ($isSaleOrder && !$purchase['test']) {
-                                            if ($sender->cancelOrder($purchase['sale_order']))
+                                            if ($sender->cancelOrder($purchase['sale_order'])) {
                                                 $sell_order = sellPurchase($sender, $symbol, $purchase);
+                                                print_r($sell_order);
+                                            }
                                         } else $sell_order = true;
 
                                         if ($sell_order) {
