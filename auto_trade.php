@@ -298,6 +298,8 @@
             $gc_data = $gcandle->getData();
             $candle = $gc_data[count($gc_data) - 1];
             $GPriceDirect = ($candle[4] - $candle[1]) / $candle[4] * 100;
+
+            if ($isecho > 1) echo "GPriceDirect: {$GPriceDirect}\n";
         }
 
         if (!isset($history[$symbol])) $history[$symbol] = $def_coininfo;
@@ -569,7 +571,7 @@
                                     } else if ($isecho > 1) echo "Does not comply with the rule of trade\n";
                                 } 
                             } else {
-                                echo "SMALL GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
+                                if ($isecho > 1) echo "SMALL GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
                             }
                         } else {
                             if ($isecho > 1) {
