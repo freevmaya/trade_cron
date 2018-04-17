@@ -96,7 +96,7 @@
             $volumes = $this->tradeClass->lastVolumes($this->symbol, $this->tradecount, $this->options['TRADETIME']);
             $allvol = $volumes['buy_wgt'] + $volumes['sell_wgt'];
 
-            if (($allvol <= 0) || ($volumes['time_delta'] == 0) || ($allvol == 0)) {
+            if (($allvol <= 0) || ($volumes['time_delta'] <= 0) || ($volumes['buy_persec'] <= 0) || ($volumes['sell_persec'] <= 0)) {
                 $echo = "SMALL VOLUMES\n";
             } else {
 
@@ -113,8 +113,10 @@
                 $sell_persec = $volumes['sell_persec'];
 
                 // Избегаем нулевой скорости
+                /*
                 $buy_persec = ($buy_persec<=0)?($sell_persec * 0.01):$buy_persec;
                 $sell_persec = ($sell_persec<=0)?($buy_persec * 0.01):$sell_persec;
+                */
                 $direct_speed = $buy_persec - $sell_persec;
 
 
@@ -170,7 +172,7 @@
                             if ($correct_count > 10) break;
 
                             if ($spred_percent < $min_spred) $this->extrapolate += 1;
-                            else if ($spred_percent > $max_spred) $this->extrapolate -= 1;
+                            else if (($spred_percent > $max_spred) && ($this->extrapolate > 1)) $this->extrapolate -= 1;
                             else break;
 
                         } else break;
