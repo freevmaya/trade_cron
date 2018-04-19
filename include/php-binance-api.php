@@ -747,9 +747,13 @@ class API {
          return [];
       }
       $json = json_decode( $output, true );
-      if(isset( $json[ 'msg' ]) || !$json) {
+      curl_close($ch);
+
+      if(isset($json['msg']) || !$json) {
          echo "signedRequest error:\n{$output}".PHP_EOL;
          /*
+         if (isset($json['code']))
+            throw new Exception("Error API {$json['code']}", 1);            
          $info = curl_getinfo($ch);
          echo "response info: ".PHP_EOL;
          print_r($info);
@@ -757,8 +761,11 @@ class API {
          print_r($params);
          */
       }
-      curl_close( $ch );
-      $this->transfered += strlen( $output );
+      $len = strlen($output);
+      if ($len == 0) {
+        throw new Exception("Empty response data", 1); 
+      }
+      $this->transfered += strlen($output);
       $this->requestCount++;
       return $json;
    }

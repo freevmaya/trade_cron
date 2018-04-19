@@ -208,6 +208,10 @@
     console::log('START '.$scriptID);
     $senderName = $market_symbol.'Sender';
     $sender = new $senderName(json_decode(file_get_contents(APIKEYPATH.'apikey_'.$market_symbol.'.json'), true));
+
+    $account = $sender->getAccount();
+
+    if (!$account || isset($account['code'])) throw new Exception("Error API ".(@$account['code']), 1);
     
     $tradeClass     = new Trades();
     $prevPrice      = 0;
@@ -447,11 +451,11 @@
                                     $isSell      = ($st == 'FILLED') || ($st == 'CANCELED') || ($state_order == null);
                                 } else $isSell = true;
 
-                                if ($isSell) {
-                                    if (isset($purchase['stoploss_order']) && !$purchase['test']) {
+                                if ($isSell) { // Если продано или можно продавать
+                                    if (isset($purchase['stoploss_order']) && !$purchase['test']) { // Отменяем стоп-лосс ордер если он есть
                                         $result = $sender->cancelOrder($purchase['stoploss_order']);
                                     }
-                                    if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) {
+                                    if ($isSaleOrder || sellPurchase($sender, $symbol, $purchase)) { // Если нет ордера продажи тогда продаем и очищаем информацию о попупке
                                         echo "SELL PURCHASE IN: {$buy_trade}\n";
                                         echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
 
@@ -467,7 +471,10 @@
                                         }
                                         echo totalProfit($history);
                                     }
-                                } else $history[$symbol]['list'][$i]['tp_area'] = 1;
+                                } else {
+                                    $history[$symbol]['list'][$i]['tp_area'] = 1;
+                                    $history[$symbol]['skip'] = $general['SKIPTIME_CHECK'];
+                                }
 
                             } else if ($tradeClass->isPriceBelow($symbol, $purchase['time'], $purchase['stop_loss'])) {
                                 if ($trade_options['INGNORELOSS'] == 1) {

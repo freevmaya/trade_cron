@@ -22,6 +22,10 @@ class binanceSender extends baseSender {
 		}
 	}
 
+	public function getAccount() {
+		return $this->account;
+	}
+
 	protected function useServerTime() {
 		$this->api->useServerTime();
 	}
