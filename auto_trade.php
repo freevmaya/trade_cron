@@ -535,13 +535,18 @@
                                                     floatval($trade_options['BUYMINVOLS']), $komsa * 2)) > 0) { 
                                         $require = $buyvol * $data['price'];
 
-                                        if (!$sender->test && ($balance < $require)) {
+                                        if (!$sender->test && ($balance < $require)) {// && ($balance < $trade_options['MANAGER']['reserve'])) {
                                             echo "Not enough balance. Require: {$require}, available: {$balance}\n";
                                             $history[$symbol]['skip'] = $general['SKIPTIME'];
                                         } else {
 
-                                            $take_profit = $sender->roundPrice($symbol, $data['price'] + 
-                                                        $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2));
+                                            $tmp_price = $data['price'] + $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2);
+
+                                            if (($trade_options['MANAGER']['take_profit_bb'] != 0) && ($lastBB = $checkList[$symbol]->getLastBBChannel())) {
+                                                $tmp_price = max($lastBB[1] + $lastBB[1] * $trade_options['MANAGER']['take_profit_bb'], $tmp_price);
+                                            }
+
+                                            $take_profit = $sender->roundPrice($symbol, $tmp_price);
 
                                             $stop_loss = $sender->roundPrice($symbol, $data['price'] - $data['price'] * 
                                                         floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
