@@ -29,7 +29,7 @@
             $this->candles->update($time);
         }
 
-        public function checkMACD_BB($returnCandle=false) {
+        public function checkMACD_BB($returnCandle=false, $commission=0) {
             $result = false;
             $this->resetCandles();
 
@@ -56,10 +56,11 @@
             if (!is_string($result) && $result && ($this->options['BB'])) {
                 if (!is_string($result = $this->candles->checkBB($this->options['BB']))) { 
                     $this->lastBBChannel = $result;
-                    $percent = ($result[1] - $result[2])/$result[2];
+                    $percent = ($result[1] - $result[2])/$result[2] - $this->options['MANAGER']['min_percent'];
 
                     // Если до верхней границы полосы боллинжера расстояние больше или равно мин. проценту профита
-                    if ($percent >= $this->options['MANAGER']['min_percent']) {
+
+                    if ($percent >= $this->options['MANAGER']['min_percent'] + $commission) {
                         $result = $returnCandle?$this->candles:true;
                     } else $result = false;
                 }

@@ -104,37 +104,6 @@
 
     exit;
 */    
-    function checkPairState($crawler, $symbol, $options) {
-        if ($result = checkMACD_BB($crawler, $symbol, $options, true)) {
-            if (is_string($result)) 
-                return $result;
-            $candles = $result;
-
-            /*
-
-            $volumes    = $candles->getVolumes();
-            $buyVol     = $candles->getData(9);             // Список объемов покупок   
-            $sellVol    = Math::suba($volumes, $buyVol);    // Список объемов продаж
-
-            echo $buyVol[count($buyVol) - 1].' '.$sellVol[count($sellVol) - 1]."\n";
-
-            $buy        = varavg($buyVol, -1);
-            $sell       = varavg($sellVol, -1);
-
-
-            $upDirect   = calcDirect($sell, $buy);
-            $candles->dispose();
-
-            $result = $upDirect >= $options['MANAGER']['VOLDIRECT'];
-            if (!$result) 
-                $result = "Require VOLDIRECT {$upDirect} >= {$options['MANAGER']['VOLDIRECT']}\n";
-            */
-
-            return $result;
-        }
-
-        return false;
-    }
 
     function readFileData($symbol, $defaultData=['purchase'=>null, 'profit'=>0]) {
         $file_name = str_replace('pair', $symbol, PURCHASE_FILE);
@@ -333,7 +302,7 @@
 
         if (!isset($checkList[$symbol])) $checkList[$symbol] = new checkPair($symbol, $tradeClass, $crawler, $trade_options);
 
-        if (!$isPurchase && !$skip && is_string($result = $checkList[$symbol]->checkMACD_BB())) {
+        if (!$isPurchase && !$skip && is_string($result = $checkList[$symbol]->checkMACD_BB(false, $komsa * 2))) {
 
             if ($isecho > 1) {
                 echo "MACD, Bollinger bands does not correspond to the condition\n{$result}";
