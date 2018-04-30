@@ -12,7 +12,6 @@ class binanceSender extends baseSender {
 	protected function init() {
 		$this->api = new Binance\API($this->config['APIKEY'], $this->config['APISECRET'], ['useServerTime'=>true]);
 		$this->resetAccount();
-		$this->resetPrices();
 		$this->info = $this->api->exchangeInfo();
 	}
 
@@ -31,6 +30,8 @@ class binanceSender extends baseSender {
 	public function calcBalance($currency='BTC') {
 		$balance = 0;
 		if (isset($this->account['balances'])) {
+			if (!$this->lastPrices) $this->resetPrices();
+			
 			foreach ($this->account['balances'] as $item) {
 				if (($vol = $item['free'] + $item['locked']) > 0) {
 					$asset = $item['asset'];

@@ -172,6 +172,8 @@
             }
         }
 
+        $sender->resetPrices();
+        
         return "TOTAL PROFIT: ".print_r($allprofit, true)."\nBALANCE TO {$currency}: ".sprintf(NFRM, $sender->calcBalance($currency));
     }
 
