@@ -130,6 +130,7 @@ class Candles {
 		return $result;
 	}
 
+	//Если тек. цена проходит проверку, тогда возвращает [min, max, тек.цена] - где границы полосы боллинджера. Т.е. мин и макс цены в тек. канале
 	public function checkBB($BBConf) {
 		$data_index = $BBConf['EMA'][1];
 		$last_close = $this->data[count($this->data) - 1][$data_index];
@@ -151,7 +152,7 @@ class Candles {
 		$minLimit = 0;
 		$maxLimit = $BBConf['BUY_LIMIT'][1] + ($BBConf['BUY_LIMIT'][0] - $BBConf['BUY_LIMIT'][1]) * $slope;
 
-		if (($pos >= $minLimit) && ($pos <= $maxLimit)) $result = true;
+		if (($pos >= $minLimit) && ($pos <= $maxLimit)) $result = $last_bb;
 		else $result = "CHECK BB: {$minLimit} => {$pos} <= {$maxLimit}";
 
 		return $result;

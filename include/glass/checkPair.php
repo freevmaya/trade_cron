@@ -8,6 +8,7 @@
         protected $wallkf;
         protected $pdirect;
         protected $candles;
+        protected $lastBBChannel;
         function __construct($symbol, &$tradeClass, &$crawler, $options) {
             $this->symbol           = $symbol;
             $this->tradeClass       = $tradeClass;
@@ -28,7 +29,7 @@
             $this->candles->update($time);
         }
 
-        function checkMACD_BB($returnCandle=false) {
+        public function checkMACD_BB($returnCandle=false) {
             $result = false;
             $this->resetCandles();
 
@@ -54,12 +55,22 @@
 
             if (!is_string($result) && $result && ($this->options['BB'])) {
                 if (!is_string($result = $this->candles->checkBB($this->options['BB']))) { 
-                    $result = $returnCandle?$this->candles:true;
+                    $this->lastBBChannel = $result;
+                    $percent = ($result[1] - $result[2])/$result[2];
+
+                    // Если до верхней границы полосы боллинжера расстояние больше или равно мин. проценту профита
+                    if ($percent >= $this->options['MANAGER']['min_percent']) {
+                        $result = $returnCandle?$this->candles:true;
+                    } else $result = false;
                 }
             }
 
             //if (!$returnCandle) $this->candles->dispose();        
             return $result;
+        }
+
+        public function getLastBBChannel() {
+            return $this->lastBBChannel;
         }
 
         public function lastVolumes($count = 3) {
