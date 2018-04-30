@@ -8,9 +8,11 @@ class binanceSender extends baseSender {
 	private $api;
 	private $account;
 	private $info;
+	private $lastPrices;
 	protected function init() {
 		$this->api = new Binance\API($this->config['APIKEY'], $this->config['APISECRET'], ['useServerTime'=>true]);
 		$this->resetAccount();
+		$this->resetPrices();
 		$this->info = $this->api->exchangeInfo();
 	}
 
@@ -20,6 +22,32 @@ class binanceSender extends baseSender {
 			echo "ERROR Account response\n";
 			print_r($this->account);
 		}
+	}
+
+	public function resetPrices() {
+		$this->lastPrices = $this->api->prices();
+	}
+
+	public function calcBalance($currency='BTC') {
+		$balance = 0;
+		if (isset($this->account['balances'])) {
+			foreach ($this->account['balances'] as $item) {
+				if (($vol = $item['free'] + $item['locked']) > 0) {
+					$asset = $item['asset'];
+					$pair = $asset.$currency;
+					if ($asset == $currency) $balance += $vol;
+					else if (isset($this->lastPrices[$pair])) {
+						$balance += $this->lastPrices[$pair] * $vol;
+					} else {
+						$pair = $currency.$asset;
+						if (isset($this->lastPrices[$pair])) {
+							$balance += $vol / $this->lastPrices[$pair];
+						}
+					}
+				}
+			}
+		}
+		return $balance;
 	}
 
 	public function getAccount() {

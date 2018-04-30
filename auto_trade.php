@@ -160,7 +160,8 @@
         }
     }
 
-    function totalProfit($history) {
+    function totalProfit($history, $currency="BNB") {
+        GLOBAL $sender;
         $allprofit = [];
 
         if ($history) {
@@ -171,7 +172,7 @@
             }
         }
 
-        return "TOTAL PROFIT: ".print_r($allprofit, true)."\n";
+        return "TOTAL PROFIT: ".print_r($allprofit, true)."\nBALANCE TO {$currency}: ".sprintf(NFRM, $sender->calcBalance($currency));
     }
 
     console::log('START '.$scriptID);
@@ -199,9 +200,9 @@
         }
     }
 
-    echo totalProfit($history);
-
     readConfig($config, @$params['config']);
+    $general        = $config->get('general');
+    echo totalProfit($history, $general['ASSET']);
 
     $prev_time = 0;
     $delta_time = 0;
@@ -438,7 +439,7 @@
                                             $sender->resetAccount();
 //                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
-                                        echo totalProfit($history);
+                                        echo totalProfit($history, $general['ASSET']);
                                     }
                                 } else {
                                     $history[$symbol]['list'][$i]['tp_area'] = 1;
@@ -479,7 +480,7 @@
                                             $history[$symbol]['last_stop_loss'] = $stime;
                                             if (!$purchase['test']) $sender->resetAccount();
 
-                                            echo totalProfit($history);
+                                            echo totalProfit($history, $general['ASSET']);
                                         } else echo "FAIL STOP LOSS!!!";
 
                                         $history[$symbol]['skip'] = $trade_options['SKIPAFTERLOSS'] * $history[$symbol]['loss_count']; // Если
