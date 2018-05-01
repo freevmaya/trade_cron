@@ -493,7 +493,7 @@
                             }
 
                             if (!$is_buy) {
-                                if ($isecho > -1) echo "DEPOSIT USE {$use_percent}, REQUIRE LESS {$use_require}\n";
+                                if ($isecho > 1) echo "DEPOSIT USE {$use_percent}, REQUIRE LESS {$use_require}\n";
                                 $history[$symbol]['skip'] = $general['SKIPTIME'];
                             }
 
