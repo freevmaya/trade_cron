@@ -519,6 +519,7 @@
 
                             if (!$is_buy) {
                                 echo "DEPOSIT USE {$use_percent}, REQUIRE LESS {$use_require}\n";
+                                $history[$symbol]['skip'] = $general['SKIPTIME'];
                             }
 
                             $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
