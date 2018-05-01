@@ -504,7 +504,8 @@
                         $is_buy = $istrade && ($GPriceDirect >= $general['GSYMBOL']['MINDIRECT']); // Если основная пара, BTCUSD в плюсе 
                         if ($is_buy) {
                             $buy_volume      = floatval($trade_options['BUYMINVOLS']);
-                            $use_percent     = 1 - $sender->balance($baseCur)/$sender->calcBalance($baseCur); // Процент использования депозита
+                            $balance         = $sender->balance($baseCur);
+                            $use_percent     = 1 - $balance/$sender->calcBalance($baseCur); // Процент использования депозита
                             $use_require     = $trade_options['USEDEPOSIT'][$countPurchase];
 
                             $is_buy = $use_percent < $use_require; 
