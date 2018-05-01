@@ -488,8 +488,6 @@
                                 // Если цена просела ниже REBUYDRAWDOWN - процент просадки, то определяем возможность дозакупки монеты
 
                                 $min_price = getMinPrice($histsymb['list']);
-
-                                if ($isecho > -1) echo "MINPRICE: $min_price\n";
                                 $is_buy = $is_buy && ($min_price - $min_price * $trade_options['REBUYDRAWDOWN'] > $prices['sell']);
                                 $buy_volume = $histsymb['list'][0]['base_volume'] * 1.5; // Увеличиваем объем дозакупа в 1.5 раз
                             }
