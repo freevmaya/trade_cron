@@ -3,8 +3,6 @@ class Glass extends timeObject {
 	protected $orders;
 	function __construct($a_orders) {
         parent::__construct(time());
-
-        $this->history = new orderHistory(5);
 		$this->setOrders($a_orders);        
 	}
 
