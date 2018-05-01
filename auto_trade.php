@@ -517,7 +517,7 @@
                                 $buy_volume *= 1.5; // Увеличиваем объем дозакупа в 1.5 раз
                             }
 
-                            if (!$is_buy && ($isecho > 1)) {
+                            if (!$is_buy) {
                                 echo "DEPOSIT USE {$use_percent}, REQUIRE LESS {$use_require}\n";
                             }
 
