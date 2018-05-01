@@ -357,7 +357,8 @@
                                             if ($sender->cancelOrder($purchase['order'])) {
                                                 echo "CANCEL ORDER\n";
                                                 print_r($purchase['order']);
-                                                unset($history[$symbol]['list'][$i]);
+                                                array_splice($history[$symbol]['list'], $i, 1);
+
                                             }
                                         }
                                     }
@@ -409,7 +410,8 @@
                                         echo "SELL PURCHASE IN: {$buy_trade}\n";
                                         echo "TAKE PROFIT, price: {$prices['buy']}, PROFIT: {$profit}\n";
 
-                                        unset($history[$symbol]['list'][$i]);
+                                        array_splice($history[$symbol]['list'], $i, 1);
+
                                         $history[$symbol]['profit'] += $profit;
                                         $history[$symbol]['profit_total'] += $profit;
                                         $history[$symbol]['profit_count']++;
@@ -452,7 +454,7 @@
                                             echo "STOP LOSS orderId: {$order['orderId']}, price: {$price}, LOSS {$loss}\n";
                                             echo $data['msg'];
 
-                                            unset($history[$symbol]['list'][$i]);
+                                            array_splice($history[$symbol]['list'], $i, 1);
 
                                             $history[$symbol]['profit'] -= $loss;
                                             $history[$symbol]['loss_total'] += $loss;
@@ -487,13 +489,13 @@
 
                                 $min_price = getMinPrice($histsymb['list']);
 
-                                echo "MINPRICE: $min_price\n";
+                                if ($isecho > -1) echo "MINPRICE: $min_price\n";
                                 $is_buy = $is_buy && ($min_price - $min_price * $trade_options['REBUYDRAWDOWN'] > $prices['sell']);
                                 $buy_volume = $histsymb['list'][0]['base_volume'] * 1.5; // Увеличиваем объем дозакупа в 1.5 раз
                             }
 
                             if (!$is_buy) {
-                                echo "DEPOSIT USE {$use_percent}, REQUIRE LESS {$use_require}\n";
+                                if ($isecho > -1) echo "DEPOSIT USE {$use_percent}, REQUIRE LESS {$use_require}\n";
                                 $history[$symbol]['skip'] = $general['SKIPTIME'];
                             }
 
@@ -524,7 +526,7 @@
                                                 echo "ERROR CANCEL SALE ORDER\n";
                                                 print_r($lastpur['sale_order']);
                                             }
-                                            unset($history[$symbol]['list'][0]); // Стираем данные о старом ордере продажи
+                                            array_splice($history[$symbol]['list'], 0, 1); // Стираем данные о старом ордере продажи
                                         } else {
                                             $data_price  = $data['price'];
                                             $allVolume   = $buyvol;
