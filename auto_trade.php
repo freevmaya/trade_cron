@@ -85,24 +85,6 @@
     
     $startTime = strtotime('NOW');
 
-/*
-    $baseCurs = ['BTC','ETH','BNB'];
-    $list = $crawler->getTradedWith($baseCurs);
-
-    $pairs = [];
-    foreach ($baseCurs as $rcur)
-        foreach ($list as $lcur) {
-            $ticker = $crawler->ticker($lcur.$rcur);
-            if ($ticker['priceChangePercent'] > 0) $pairs[] = $ticker;
-            if (count($pairs) > 20) break;
-            usleep(1000);
-        }
-
-    print_r($pairs);
-
-    exit;
-*/    
-
     function readFileData($symbol, $defaultData=['purchase'=>null, 'profit'=>0]) {
         $file_name = str_replace('pair', $symbol, PURCHASE_FILE);
         if (file_exists($file_name)) {
@@ -297,15 +279,6 @@
             }
         }
 
-/*
-        if (!$skip && (($trade_options['INGNORELOSS'] == 0) && ($histsymb['loss_total'] > 0))) {
-            if ($skip = $histsymb['profit_total']/pow($histsymb['loss_total'] * 2, 2) < 1) {
-                if ($isecho > 1) echo "Lots of losses\n";
-                sleep($WAITTIME);
-            }
-        }        
-*/        
-
         if (($isecho > 1) && $skip) echo "SKIP {$history[$symbol]['skip']} SEC\n";
 
         if (!isset($checkList[$symbol])) $checkList[$symbol] = new checkPair($symbol, $tradeClass, $crawler, $trade_options);
@@ -395,7 +368,7 @@
                             }
                         }
 
-                        if ($filled) { // Если ордер на покупку уже сработал тогда начинаем ослеживать момент продажи
+                        if ($filled && !$skip) { // Если ордер на покупку уже сработал тогда начинаем ослеживать момент продажи
 
                             $profit = ($purchase['take_profit'] - $purchase['price']) * $purchase['volume'];
                             $profit = $profit - $profit * $komsa;
@@ -513,9 +486,10 @@
                                 // Если цена просела ниже REBUYDRAWDOWN - процент просадки, то определяем возможность дозакупки монеты
 
                                 $min_price = getMinPrice($histsymb['list']);
-                                $is_buy = ($use_percent < $use_require) && 
-                                            ($min_price - $min_price * $trade_options['REBUYDRAWDOWN'] <= $prices['sell']);
-                                $buy_volume *= 1.5; // Увеличиваем объем дозакупа в 1.5 раз
+
+                                echo "MINPRICE: $min_price\n";
+                                $is_buy = $is_buy && ($min_price - $min_price * $trade_options['REBUYDRAWDOWN'] > $prices['sell']);
+                                $buy_volume = $histsymb['list'][0]['base_volume'] * 1.5; // Увеличиваем объем дозакупа в 1.5 раз
                             }
 
                             if (!$is_buy) {
@@ -536,35 +510,46 @@
                                         $history[$symbol]['skip'] = $general['SKIPTIME'];
                                     } else {
 
-                                        $tmp_price = $data['price'] + $data['price'] * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2);
+                                        // Если у нас уже есть покупка
+                                        if ($countPurchase > 0) {
+                                            $lastpur    = $histsymb['list'][0];
+                                            $allVolume  = $lastpur['volume'] + $buyvol;         // Совокупный объем покупки
+                                            $allRequire    = $lastpur['base_volume'] + $require;   // Совокупный объем покупки в базовой валюте
+
+                                            //Взвешанная средняя цена для расчета цены продажи
+                                            $data_price  = ($lastpur['price'] * $lastpur['volume'] + $data['price'] * $buyvol) / $allVolume;
+
+                                            // Если есть ордер продажи тогда отменяем его
+                                            if (isset($lastpur['sale_order']) && !$sender->cancelOrder($lastpur['sale_order'])) {
+                                                echo "ERROR CANCEL SALE ORDER\n";
+                                                print_r($lastpur['sale_order']);
+                                            }
+                                            unset($history[$symbol]['list'][0]); // Стираем данные о старом ордере продажи
+                                        } else {
+                                            $data_price  = $data['price'];
+                                            $allVolume   = $buyvol;
+                                            $allRequire  = $require;
+                                        }
+
+                                        $tmp_price = $data_price + $data_price * (floatval($trade_options['MANAGER']['min_percent']) + $komsa * 2);
 
                                         if (($trade_options['MANAGER']['take_profit_bb'] != 0) && ($lastBB = $checkList[$symbol]->getLastBBChannel())) {
                                             $tmp_price = max($lastBB[1] + $lastBB[1] * $trade_options['MANAGER']['take_profit_bb'], $tmp_price);
                                         }
 
                                         $take_profit = $sender->roundPrice($symbol, $tmp_price);
-
-                                        $stop_loss = $sender->roundPrice($symbol, $data['price'] - $data['price'] * 
+                                        $stop_loss = $sender->roundPrice($symbol, $data_price - $data_price * 
                                                     floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
-
-/*                                      Стоплосс от левой стенки
-                                        $stop_loss = $sender->roundPrice($symbol, $data['left_price'] - $data['left_price'] * 
-                                                    floatval($trade_options['MANAGER']['stop_loss_indent'])) ;
-*/                                                    
 
                                         $order = $sender->buy($symbol, $buyvol, $data['price']);//DEV
 
                                         if ($order && !isset($order['code'])) {
                                             $purchase = ['date'=>$stime, 'time'=>$sender->serverTime(), 'symbol'=>$symbol, 
-                                                    'take_profit'=>$take_profit, 'price'=>$data['price'], 'stop_loss'=>$stop_loss,
-                                                    'base_volume'=>$require, 'volume'=>$buyvol, 'order'=>$order, 'test'=>$sender->test];
+                                                    'take_profit'=>$take_profit, 'price'=>$data_price, 'stop_loss'=>$stop_loss,
+                                                    'base_volume'=>$allRequire, 'volume'=>$allVolume, 'order'=>$order, 'test'=>$sender->test];
                                             echo "\n\n---------BUY----------\n";
-
-                                            //.$order_str = json_encode($order);
                                             echo json_encode($purchase)."\n";
                                             echo "VOLUMES: [".implode(',', $checkList[$symbol]->lastVolumes())."]\n";
-                                            //echo "take_profit: {$take_profit}, price: {$data['price']}, stop_loss: {$stop_loss}, volume: {$order['executedQty']}, order: {$order_str}\n";
-
                                             echo $data['msg'];
 
                                             $history[$symbol]['list'][] = $purchase;
