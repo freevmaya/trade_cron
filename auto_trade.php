@@ -163,6 +163,18 @@
         return "TOTAL PROFIT: ".print_r($allprofit, true)."\nBALANCE TO {$currency}: ".sprintf(NFRM, $sender->calcBalance($currency))."\n";
     }
 
+    // Паническая продажа символов
+    function panikSell($sender, $symbol, $purchaseList) {
+        foreach ($purchaseList as $purcashe) {
+
+            //Если есть лимитный ордер на продажу, тогда отменяем его
+            if (isset($purcashe['sale_order'])) $sender->cancelOrder($purcashe['sale_order']);
+
+            $sell_order = sellPurchase($sender, $symbol, $purcashe);
+            echo "-----PANIK SELL {$symbol}-----\n";
+        }
+    }
+
     console::log('START '.$scriptID);
     $senderName = $market_symbol.'Sender';
     $sender = new $senderName(json_decode(file_get_contents(APIKEYPATH.'apikey_'.$market_symbol.'.json'), true));
@@ -225,6 +237,17 @@
             readConfig($config, @$params['config']);
 
         $general        = $config->get('general');
+        if ($general['PANIK']) {
+
+            foreach ($history as $pair=>$item) {
+                if ($istrade && (count($item['list']) > 0)) panikSell($sedner, $pair, $item['list']);
+                $item['list'] = [];
+            }
+
+            echo "END PANIK SELL\n";
+            writeFileData('rade', $history);
+            break;
+        }
         $WAITTIME       = $general['WAITTIME'];
 
 /*
