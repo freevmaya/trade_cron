@@ -73,7 +73,7 @@
     $dbp = new mySQLProvider('localhost', $dbname, $user, $password);
 
     if ($p_symbols) $symbols = explode(',', $p_symbols);
-    else $symbols = json_decode(file_get_contents(PAIRFILEDATA), true);
+//    else $symbols = json_decode(file_get_contents(PAIRFILEDATA), true);
 
     $scriptID = basename(__FILE__).($is_dev?'dev':'');
     $scriptCode = md5(time());
@@ -174,7 +174,16 @@
     $tradeClass     = new Trades();
     $prevPrice      = 0;
     $checkList      = [];
+
+    readConfig($config, @$params['config']);
+    $general        = $config->get('general');
+
+    $crawlerName = $market_symbol.'Crawler';
+    $crawler = new $crawlerName([]);//$symbols);
+    $symbols = $crawler->getTop($general['ASSET'], 20);
+
     $cur_index      = 0;
+    $cur_count      = count($symbols);
 
     $defhistory     = [];
     foreach ($symbols as $symbol) $defhistory[$symbol] = $def_coininfo;
@@ -186,18 +195,11 @@
             if ((count($item['list']) > 0) && (array_search($pair, $symbols) === false)) $symbols[] = $pair;
         }
     }
-    
-    $crawlerName = $market_symbol.'Crawler';
-    $crawler = new $crawlerName($symbols);
-    $cur_count      = count($symbols);
-
-    readConfig($config, @$params['config']);
-    $general        = $config->get('general');
-    echo totalProfit($history, $general['ASSET']);
 
     $prev_time = 0;
     $delta_time = 0;
     $gcandle = null;
+    echo totalProfit($history, $general['ASSET']);
 
 /*
     print_r($sender->exchangeInfo('ONT_BTC'));
@@ -225,7 +227,7 @@
         $general        = $config->get('general');
         $WAITTIME       = $general['WAITTIME'];
 
-
+/*
         $file_time = filectime(PAIRFILEDATA);
         if ($file_time >= $time - $WAITTIME) { // Если недавно изменился файл списка пар, тогда обновляем список
             $read_attempt = 10;
@@ -242,6 +244,7 @@
             print_r($symbols);
             if ($cur_count == 1) sleep($WAITTIME);
         }
+*/        
 
         $symbol         = $symbols[$cur_index];
         $coins          = explode('_', $symbol);

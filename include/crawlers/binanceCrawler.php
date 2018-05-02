@@ -42,6 +42,30 @@ class binanceCrawler extends baseCrawler {
 		return $symbols;
 	}
 
+	public function getTop($rightCyrrency='BTC', $count=20) {
+		$list = $this->api->prevDay();
+		$tmp = [];
+		$baseLen = strlen($rightCyrrency);
+		foreach ($list as $item) {
+			if ((substr($item['symbol'], -$baseLen) == $rightCyrrency) &&
+				($item['priceChangePercent'] > 0.5) && ($item['priceChangePercent'] < 8))
+				$tmp[] = $item;
+		} 
+
+		usort($tmp, function($item1, $item2) {
+			return ($item2['quoteVolume'] - $item1['quoteVolume']);
+		});
+
+		array_splice($tmp, $count);
+		$result = [];
+		foreach ($tmp as $item) {
+			$left = substr($item['symbol'], 0, -$baseLen);
+			$result[] = $left.'_'.$rightCyrrency;
+		}
+		print_r($result);
+		return $result;
+	}
+
 	public function getInfo($symbol) {
 		foreach ($this->info['symbols'] as $item) {
 			if ($item['symbol'] == $symbol) {
