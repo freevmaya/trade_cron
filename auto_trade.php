@@ -193,18 +193,26 @@
     $crawlerName = $market_symbol.'Crawler';
     $crawler = new $crawlerName([]);//$symbols);
 
+    $tradeView = new tradeView();
+
     if (!$symbols) {
-        $tradeView = new tradeView();
-        $topList = $crawler->getTop($general['ASSET'], 25);
         $symbols = [];
-        foreach ($topList as $symbol) {
-            $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
-            if ($data['Recommend.All'] > 0) $symbols[] = $symbol;
-        }
+        $data = $tradeView->recommend('BINANCE', 'BTCUSDT', 240); 
+        if ($data['Recommend.All'] > 0) { // Если хороший прогноз для биткоина, на ближайшие 4 часа
+            $topList = $crawler->getTop($general['ASSET'], 25); // Выбираем лучшие символы
+            foreach ($topList as $symbol) { 
+                $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
+                if ($data['Recommend.All'] > 0) $symbols[] = $symbol; // Если прогноз для символа хороший
+            }
+        } else echo "Bad forecast BTC\n";
     }
 
     $cur_index      = 0;
     $cur_count      = count($symbols);
+    if ($cur_count == 0) {
+        echo "No trade symbols";
+        exit;
+    }
 
     $defhistory     = [];
     foreach ($symbols as $symbol) $defhistory[$symbol] = $def_coininfo;
