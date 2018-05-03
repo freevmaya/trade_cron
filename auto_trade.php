@@ -45,6 +45,8 @@
     include_once(MAINDIR.'include/db/mySQLProvider.php');
     include_once(MAINDIR.'include/console.php');
     include_once(MAINDIR.'include/queue.php');
+    include_once(MAINDIR.'include/restClient.php');
+    include_once(MAINDIR.'include/tradeView.php');
 
     include_once(MAINDIR.'include/glass/trades.php');
     include_once(MAINDIR.'include/glass/glass.php');
@@ -73,13 +75,12 @@
     $dbp = new mySQLProvider('localhost', $dbname, $user, $password);
 
     if ($p_symbols) $symbols = explode(',', $p_symbols);
+    else $symbols = null;
 //    else $symbols = json_decode(file_get_contents(PAIRFILEDATA), true);
 
     $scriptID = basename(__FILE__).($is_dev?'dev':'');
     $scriptCode = md5(time());
     $WAITTIME = WAITTIME;
-
-    startScript($dbp, $scriptID, $scriptCode, $WAITTIME, '', $is_dev);
     $FDBGLogFile = (__FILE__).'.log';
     new console($is_dev);
     
@@ -175,7 +176,6 @@
         }
     }
 
-    console::log('START '.$scriptID);
     $senderName = $market_symbol.'Sender';
     $sender = new $senderName(json_decode(file_get_contents(APIKEYPATH.'apikey_'.$market_symbol.'.json'), true));
 
@@ -192,7 +192,16 @@
 
     $crawlerName = $market_symbol.'Crawler';
     $crawler = new $crawlerName([]);//$symbols);
-    $symbols = $crawler->getTop($general['ASSET'], 20);
+
+    if (!$symbols) {
+        $tradeView = new tradeView();
+        $topList = $crawler->getTop($general['ASSET'], 25);
+        $symbols = [];
+        foreach ($topList as $symbol) {
+            $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
+            if ($data['Recommend.All'] > 0) $symbols[] = $symbol;
+        }
+    }
 
     $cur_index      = 0;
     $cur_count      = count($symbols);
@@ -213,6 +222,9 @@
     $gcandle = null;
     print_r($symbols);
     echo totalProfit($history, $general['ASSET']);
+    
+    startScript($dbp, $scriptID, $scriptCode, $WAITTIME, '', $is_dev);
+    console::log('START '.$scriptID);
 
 /*
     print_r($sender->exchangeInfo('ONT_BTC'));
