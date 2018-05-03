@@ -401,11 +401,12 @@
                                             $history[$symbol]['skip'] = $general['SKIPTIME_CHECK'];
                                             $sender->resetAccount();
                                         } else {
-                                            if ($sender->cancelOrder($purchase['order'])) {
-                                                echo "CANCEL ORDER\n";
-                                                print_r($purchase['order']);
-                                                array_splice($history[$symbol]['list'], $i, 1);
-
+                                            if ($cancelResult = $sender->cancelOrder($purchase['order'])) {
+                                                if (!isset($cancelResult['code'])) {
+                                                    echo "CANCEL ORDER\n";
+                                                    print_r($purchase['order']);
+                                                    array_splice($history[$symbol]['list'], $i, 1);
+                                                }
                                             }
                                         }
                                     }
