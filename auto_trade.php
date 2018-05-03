@@ -222,7 +222,7 @@
     $gcandle = null;
     print_r($symbols);
     echo totalProfit($history, $general['ASSET']);
-    
+
     startScript($dbp, $scriptID, $scriptCode, $WAITTIME, '', $is_dev);
     console::log('START '.$scriptID);
 
@@ -458,6 +458,11 @@
                                         if (!$purchase['test']) {
                                             $vol = $purchase['take_profit'] * $purchase['volume'];
                                             $sender->resetAccount();
+
+                                            // Проверяем рекомендацию о покупке этого символа
+                                            $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
+                                            if ($data['Recommend.All'] > 0) array_splice($symbols, $cur_index, 1); // Если нет рекомендации тога удаляем из списка
+
 //                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
                                         echo totalProfit($history, $general['ASSET']);
