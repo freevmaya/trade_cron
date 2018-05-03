@@ -62,7 +62,6 @@ class binanceCrawler extends baseCrawler {
 			$left = substr($item['symbol'], 0, -$baseLen);
 			$result[] = $left.'_'.$rightCyrrency;
 		}
-		print_r($result);
 		return $result;
 	}
 

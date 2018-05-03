@@ -211,6 +211,7 @@
     $prev_time = 0;
     $delta_time = 0;
     $gcandle = null;
+    print_r($symbols);
     echo totalProfit($history, $general['ASSET']);
 
 /*
