@@ -795,7 +795,7 @@ class API {
             "side" => $side,
             "type" => $type,
             "quantity" => $quantity,
-            "recvWindow" => 60000 
+            "recvWindow" => 120000 
       ];
       
       // someone has preformated there 8 decimal point double already
