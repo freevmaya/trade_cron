@@ -170,8 +170,11 @@ class binanceSender extends baseSender {
 		if ($this->test) return true;
 		$result = false;
 		if (isset($order['symbol'])) {
-			$result = $this->api->cancel($order['symbol'], $order['orderId']);
-        	$this->resetAccount();
+			$cancelResult = $this->api->cancel($order['symbol'], $order['orderId']);
+			if (!isset($cancelResult['code'])) {
+        		$this->resetAccount();
+        		$result = true;
+        	}
     	}
         return $result;
 	}
