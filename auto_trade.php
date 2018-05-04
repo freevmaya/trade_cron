@@ -180,8 +180,6 @@
     $sender = new $senderName(json_decode(file_get_contents(APIKEYPATH.'apikey_'.$market_symbol.'.json'), true));
 
     $account = $sender->getAccount();
-
-    if (!$account || isset($account['code'])) throw new Exception("Error API ".(@$account['code']), 1);
     
     $tradeClass     = new Trades();
     $prevPrice      = 0;

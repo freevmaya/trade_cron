@@ -16,11 +16,13 @@ class binanceSender extends baseSender {
 	}
 
 	public function resetAccount() {
-		$this->account = $this->api->account();
-		if (!isset($this->account['balances'])) {
-			echo "ERROR Account response\n";
-			print_r($this->account);
-		}
+		$account = $this->api->account();
+		if (!isset($account['balances'])) {
+			if ($this->account) {
+				echo "ERROR Account response\n";
+				print_r($account);
+			} else throw new Exception("ERROR Account response ".(@$account['code']), 1);
+		} else $this->account = $account;
 	}
 
 	public function resetPrices() {
