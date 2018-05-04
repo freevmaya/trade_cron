@@ -751,6 +751,7 @@ class API {
 
       if(isset($json['msg']) || !$json) {
          echo "signedRequest error:\n{$output}".PHP_EOL;
+         debug_print_backtrace(0, 5);
          /*
          if (isset($json['code']))
             throw new Exception("Error API {$json['code']}", 1);            
@@ -795,7 +796,7 @@ class API {
             "side" => $side,
             "type" => $type,
             "quantity" => $quantity,
-            "recvWindow" => 120000 
+            "recvWindow" => 200000 
       ];
       
       // someone has preformated there 8 decimal point double already
