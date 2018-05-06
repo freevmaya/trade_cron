@@ -42,30 +42,41 @@ class binanceCrawler extends baseCrawler {
 		return $symbols;
 	}
 
-	public function getTop($rightCyrrency='BTC', $count=20) {
+	public function getTop($c_list=['BTC'], $count=[20], $a_stepSize=[0]) {
 		$list = $this->api->prevDay();
+
 		$tmp = [];
-		$baseLen = strlen($rightCyrrency);
-		foreach ($list as $item) {
-			if ((substr($item['symbol'], -$baseLen) == $rightCyrrency) &&
-				($item['priceChangePercent'] > 0.5) && ($item['priceChangePercent'] < 8))
-				$tmp[] = $item;
-		} 
-
-		usort($tmp, function($item1, $item2) {
-			return ($item2['quoteVolume'] - $item1['quoteVolume']);
-		});
-
-		array_splice($tmp, $count);
 		$result = [];
-		foreach ($tmp as $item) {
-			$left = substr($item['symbol'], 0, -$baseLen);
-			$result[] = $left.'_'.$rightCyrrency;
+		foreach ($c_list as $i=>$rightCyrrency) {
+			$baseLen = strlen($rightCyrrency);
+
+			foreach ($list as $item) {
+				if ((substr($item['symbol'], -$baseLen) == $rightCyrrency) &&
+					($item['priceChangePercent'] > 0.5) && ($item['priceChangePercent'] < 9)) {
+
+					if ($a_stepSize[$i] > 0) {
+			            $info   = $this->getInfo($item['symbol']);
+			            $stepSize = $info['filters']['LOT_SIZE']['stepSize'];
+			            if ($stepSize <= $a_stepSize[$i]) $tmp[] = $item;
+		        	} else $tmp[] = $item;
+				}
+			} 
+
+			usort($tmp, function($item1, $item2) {
+				return ($item2['quoteVolume'] - $item1['quoteVolume']);
+			});
+
+			array_splice($tmp, $count[$i]);
+			foreach ($tmp as $item) {
+				$left = substr($item['symbol'], 0, -$baseLen);
+				$result[] = $left.'_'.$rightCyrrency;
+			}
 		}
 		return $result;
 	}
 
 	public function getInfo($symbol) {
+		if (!$this->info) $this->refreshExchangeInfo();
 		foreach ($this->info['symbols'] as $item) {
 			if ($item['symbol'] == $symbol) {
 				foreach ($item['filters'] as $filter) {
@@ -81,7 +92,7 @@ class binanceCrawler extends baseCrawler {
 	}
 
 	public function getTradedWith($baseCurrencyList) {
-		$this->info = $this->api->exchangeInfo();
+		if (!$this->info) $this->refreshExchangeInfo();
 		$list = [];
 		$result = [];
 		$curs = [];

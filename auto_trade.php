@@ -147,7 +147,7 @@
         }
     }
 
-    function totalProfit($history, $currency="BNB") {
+    function totalProfit($history, $baseList=["BNB"]) {
         GLOBAL $sender;
         $allprofit = [];
 
@@ -160,8 +160,12 @@
         }
 
         $sender->resetPrices();
+        $result = "TOTAL PROFIT: ".print_r($allprofit, true)."\n";
+
+        foreach ($baseList as $currency)
+            $result .= "BALANCE TO {$currency}: ".sprintf(NFRM, $sender->calcBalance($currency))."\n"; 
         
-        return "TOTAL PROFIT: ".print_r($allprofit, true)."\nBALANCE TO {$currency}: ".sprintf(NFRM, $sender->calcBalance($currency))."\n";
+        return $result;
     }
 
     // Паническая продажа символов
@@ -190,14 +194,14 @@
 
     $crawlerName = $market_symbol.'Crawler';
     $crawler = new $crawlerName([]);//$symbols);
-
     $tradeView = new tradeView();
 
     if (!$symbols) {
         $symbols = [];
         $data = $tradeView->recommend('BINANCE', 'BTCUSDT', 240); 
         if ($data['Recommend.All'] > 0) { // Если хороший прогноз для биткоина, на ближайшие 4 часа
-            $topList = $crawler->getTop($general['ASSET'], 25); // Выбираем лучшие символы
+            $topList = $crawler->getTop($general['ASSET'], $general['MAXSYMBOLS'], $general['STEPSIZE']); // Выбираем лучшие символы
+
             foreach ($topList as $symbol) { 
                 $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
                 if ($data['Recommend.All'] > 0) $symbols[] = $symbol; // Если прогноз для символа хороший
