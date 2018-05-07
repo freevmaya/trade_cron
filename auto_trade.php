@@ -193,26 +193,33 @@
     $general        = $config->get('general');
 
     $crawlerName = $market_symbol.'Crawler';
-    $crawler = new $crawlerName([]);//$symbols);
-    $tradeView = new tradeView();
+    $crawler    = new $crawlerName([]);//$symbols);
+    $tradeView  = new tradeView();
+    $gsdata     = $general['GSYMBOL'];
 
     if (!$symbols) {
         $symbols = [];
-        $data = $tradeView->recommend('BINANCE', 'BTCUSDT', 240); 
-        if ($data['Recommend.All'] > 0) { // Если хороший прогноз для биткоина, на ближайшие 4 часа
+        if ($general['CHECKFORECAST']['SYMBOL']) 
+            $data = $tradeView->recommend('BINANCE', $general['CHECKFORECAST']['SYMBOL'], $general['CHECKFORECAST']['PERIOD']); 
+        else $data = null;
+
+        if (!$data || ($data['Recommend.All'] > 0)) { // Если хороший прогноз для биткоина, на ближайшие 4 часа
             $topList = $crawler->getTop($general['ASSET'], $general['MAXSYMBOLS'], $general['STEPSIZE']); // Выбираем лучшие символы
 
             foreach ($topList as $symbol) { 
                 $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
                 if ($data['Recommend.All'] > 0) $symbols[] = $symbol; // Если прогноз для символа хороший
             }
-        } else echo "Bad forecast BTC\n";
+        } else {
+            echo "Bad forecast BTC\n";
+            exit;
+        }
     }
 
     $cur_index      = 0;
     $cur_count      = count($symbols);
     if ($cur_count == 0) {
-        echo "No trade symbols";
+        echo "No trade symbols\n";
         exit;
     }
 
@@ -300,10 +307,9 @@
         $komsa          = floatval($commission[$baseCur]);
         $isecho         = isset($params['echo'])?$params['echo']:$trade_options['ECHO'];
         $sender->test   = $trade_options['MODE'] == 'TEST';
+        $GPriceDirect   = 0;
 
-        if (($cur_index == 0) && ($general['GSYMBOL'])) {
-            $gsdata = $general['GSYMBOL'];
-
+        if (($cur_index == 0) && $gsdata) {
             if (!$gcandle) $gcandle = new Candles($crawler, $gsdata['NAME'], 
                                                 $gsdata['CANDLEINTERVAL'] * 60, $time, 
                                     $time - 60 * $gsdata['CANDLEINTERVAL'] * $gsdata['CANDLECOUNT']);
@@ -529,7 +535,7 @@
                     // Блок покупок
                     // Если тестируем или недостаточно покупок этого символа
                     if (!$skip && $trade_options['CANBUY'] && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
-                        $is_buy = $istrade && ($GPriceDirect >= $general['GSYMBOL']['MINDIRECT']); // Если основная пара, BTCUSD в плюсе 
+                        $is_buy = $istrade && (!$gsdata || ($GPriceDirect >= $general['GSYMBOL']['MINDIRECT'])); // Если основная пара, BTCUSD в плюсе 
                         if ($is_buy) {
                             $buy_volume      = floatval($trade_options['BUYMINVOLS']);
                             $balance         = $sender->balance($baseCur);
@@ -618,7 +624,7 @@
                             } else if ($isecho > 1) echo "Does not comply with the rule of trade\n"; 
                         } else {
                             if ($isecho > 1) {
-                                echo "GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
+                                if ($gsdata) echo "GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
                                 $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
                                 echo "VOLUMES: [".implode(',', $checkList[$symbol]->lastVolumes())."]\n";
                                 echo $data['msg'];
