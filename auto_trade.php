@@ -535,7 +535,7 @@
                     // Блок покупок
                     // Если тестируем или недостаточно покупок этого символа
                     if (!$skip && $trade_options['CANBUY'] && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
-                        $is_buy = $istrade && (!$gsdata || ($GPriceDirect >= $general['GSYMBOL']['MINDIRECT'])); // Если основная пара, BTCUSD в плюсе 
+                        $is_buy = $istrade && (!$gsdata || ($GPriceDirect >= $gsdata['MINDIRECT'])); // Если основная пара, BTCUSD в плюсе 
                         if ($is_buy) {
                             $buy_volume      = floatval($trade_options['BUYMINVOLS']);
                             $balance         = $sender->balance($baseCur);
@@ -624,7 +624,7 @@
                             } else if ($isecho > 1) echo "Does not comply with the rule of trade\n"; 
                         } else {
                             if ($isecho > 1) {
-                                if ($gsdata) echo "GPriceDirect: {$GPriceDirect}<{$general['GSYMBOL']['MINDIRECT']}\n";
+                                if ($gsdata) echo "GPriceDirect: {$GPriceDirect}<{$gsdata['MINDIRECT']}\n";
                                 $data = $checkList[$symbol]->glassCheck($orders[$symbol]);
                                 echo "VOLUMES: [".implode(',', $checkList[$symbol]->lastVolumes())."]\n";
                                 echo $data['msg'];

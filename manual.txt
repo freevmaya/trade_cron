@@ -23,6 +23,87 @@
 
 Конфигурация
 
+"commission": { // Комиссии на бирже
+        "BNB": 0.0005,
+        "BTC": 0.001,
+        "ETH": 0.001,
+        "USDT": 0.001
+    },
+    "general": {
+        "WAITTIME": 5,
+        "SKIPTIME": 300,
+        "SKIPTIME_CHECK": 120,
+        "LASTLOSSWAIT": 14400,
+        "RECOMINTERVAL": 240,
+        "ASSET": ["BTC"],
+        "STEPSIZE": [0.01],
+        "MAXSYMBOLS": [5],
+        "GSYMBOL": { 
+            "NAME": "BTCUSDT",
+            "CANDLEINTERVAL": 15,
+            "CANDLECOUNT": 1,
+            "MINDIRECT": -0.3
+        },
+        "CHECKFORECAST": { // Символ который надо проверять на положительный прогноз, BTC как правило. Если SYMBOL тогда торгуем без проверки
+            "SYMBOL": null,
+            "PERIOD": 240
+        },
+        "PANIK": false // Продавать все!!!
+    },
+    "default_options": {
+        "MAXPURCHASESYMBOL": 2,
+        "USEDEPOSIT": [0.4, 0.8, 1],
+        "REBUYDRAWDOWN": 0.01,
+        "CANDLEINTERVAL": 15,
+        "CANDLECOUNT": 120,
+        "MINTRADECOUNT": 10,
+        "TRADETIME": 60,
+        "EXTRAPOLATE": "AUTO",
+        "MINSPRED": 0.02,
+        "CANBUY": true,
+        "BUYPOWER": 1.2,
+        "SELLPOWER": 1.0,
+        "BUYORDERLIVE": 120,
+        "MANAGER": {
+            "commission": 0.001,
+            "min_percent": 0.003,
+            "take_profit_bb": -0.007,
+            "stop_loss_indent": 0.023,
+            "extra_ask": 15,
+            "extra_bid": 15,
+            "direct_rate": 0.6,
+            "min_buy_direct": 0,
+            "max_left_dist": 0.99,
+            "max_sell_direct": -0.4,
+            "min_right_dist": 0.8,
+            "min_right_wall": 1,
+            "TAKEPROFITORDER": 1,            
+            "STOPLOSSORDER": 0,
+            "EMAINTERVAL": 0,
+            "MINEMASLOPE": -0.014,
+            "MAXBUYVOLUME": 50,
+            "VOLDIRECT": -0.001,
+            "MACD": 0,
+            "buy_macd_direct": 0,
+            "buy_macd_value": 1,
+            "sell_macd_direct": 0,
+            "sell_macd_value": 0
+        },
+        "BB": { // Торговля в канале полосы Боллинджера
+            "EMA": [20, 4], // Насройки канала
+            "D": 2,
+            "BUY_LIMIT": [1, 0.1] // закупка при находении цены от нижнего края полосы Блдж. в пределах крутизны тренда, первый при сильном подъеме, второй при спаде
+        },
+        "SKIPAFTERLOSS": 900, // Пропускать сек. после стоплосса
+        "SKIPIGNORELOSS": 30, 
+        "INGNORELOSS": 1,
+        "BUYMINVOLS": 1,
+        "ECHO": 1,
+        "MODE": "TEST"
+    }
+
+Для пар
+
 "BNB_BTC": {
     "TICK": 30, 
     "CANDLEINTERVAL": 15,
