@@ -153,11 +153,11 @@
 
         if ($history) {
             foreach ($history as $pair=>$item) 
-                if ($pair && (strpos('_', $pair) !== false)) {
-                $ap = explode('_', $pair); $pix = $ap[1];
-                if (!isset($allprofit[$pix])) $allprofit[$pix] = 0;
-                $allprofit[$pix] += $item['profit'];
-            }
+                if ($pair && (strpos($pair, '_') !== false)) {
+                    $ap = explode('_', $pair); $pix = $ap[1];
+                    if (!isset($allprofit[$pix])) $allprofit[$pix] = 0;
+                    $allprofit[$pix] += $item['profit'];
+                }
         }
 
         $sender->resetPrices();
