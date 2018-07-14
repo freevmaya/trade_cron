@@ -1,0 +1,7 @@
+#!/bin/bash
+cd  /home/cron/currency_dev
+mdate="$(date +%d-%m-%Y\ %H:%M:%S)"
+git commit -a -m "$mdate"
+git push origin master
+cd ../currency
+git pull origin master
