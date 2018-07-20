@@ -66,13 +66,13 @@
         "BUYORDERLIVE": 120,
         "MANAGER": {
             "commission": 0.001,
-            "min_percent": 0.003,
-            "take_profit_bb": -0.007,
+            "min_percent": 0.003, // Минимальный процент профита для сделки
+            "take_profit_bb": -0.007, // Если не ноль, цена тейкпрофит расчитывается от верхней граници полосы боллинджера
             "stop_loss_indent": 0.023,
             "extra_ask": 15,
             "extra_bid": 15,
-            "direct_rate": 0.6,
-            "min_buy_direct": 0,
+            "direct_rate": 0.6, // При анализе стакана (trade_direct * (1 - direct_rate)) + (price_direct * direct_rate); 
+            "min_buy_direct": 0, // Минимайльное направление настроения в стакане для покупки
             "max_left_dist": 0.99,
             "max_sell_direct": -0.4,
             "min_right_dist": 0.8,

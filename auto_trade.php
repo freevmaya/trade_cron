@@ -304,6 +304,11 @@
         $coins          = explode('_', $symbol);
         $baseCur        = $coins[1];
         $trade_options  = readOptions($symbol);
+        if ($trade_options['PAUSE'] || (!$symbol)) {
+            sleep($WAITTIME);
+            continue;
+        }
+
         $commission     = $config->get("commission");
         $komsa          = floatval($commission[$baseCur]);
         $isecho         = isset($params['echo'])?$params['echo']:$trade_options['ECHO'];
@@ -477,7 +482,10 @@
 
                                             // Проверяем рекомендацию о покупке этого символа
                                             $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
-                                            if ($data['Recommend.All'] > 0) array_splice($symbols, $cur_index, 1); // Если нет рекомендации тога удаляем из списка
+                                            if ($data['Recommend.All'] > 0) {
+                                                array_splice($symbols, $cur_index, 1); // Если нет рекомендации тога удаляем из списка
+                                                $cur_count = count($symbols);
+                                            }
 
 //                                            $sender->addBalance($baseCur, $vol - $vol * $komsa);
                                         }
