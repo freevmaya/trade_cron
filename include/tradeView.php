@@ -18,10 +18,14 @@ class tradeView extends restClient {
 
 	    $query = '{"symbols":{"tickers":["'.$market.':'.$pair.'"],"query":{"types":[]}},"columns":'.json_encode($colsTmp).'}';
 
-	    $result = $this->httpRequest('scan', "POST", $query);
-
 	    $data = [];
-	    foreach ($columns as $i=>$column) $data[$column] = $result['data'][0]['d'][$i];
+
+	    $result = $this->httpRequest('scan', "POST", $query);
+	    if (isset($result['data']) && isset($result['data'][0])) {
+	    	foreach ($columns as $i=>$column) $data[$column] = $result['data'][0]['d'][$i];
+	    } else {
+	    	echo "ERROR received data tradingview.com from {$pair}\n";
+	    }
 
 	    return $data;
 	}

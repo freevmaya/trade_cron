@@ -45,12 +45,14 @@ class binanceCrawler extends baseCrawler {
 	public function getTop($c_list=['BTC'], $count=[20], $a_stepSize=[0]) {
 		$list = $this->api->prevDay();
 
-		$tmp = [];
 		$result = [];
+
 		foreach ($c_list as $i=>$rightCyrrency) {
+			$tmp = [];
 			$baseLen = strlen($rightCyrrency);
 
 			foreach ($list as $item) {
+
 				if ((substr($item['symbol'], -$baseLen) == $rightCyrrency) &&
 					($item['priceChangePercent'] > 0.5) && ($item['priceChangePercent'] < 9)) {
 

@@ -64,10 +64,11 @@
     $scriptID = basename(__FILE__).($is_dev?'dev':'');
     $scriptCode = md5(time());
     $WAITTIME = WAITTIME;
-
+/*
     startScript($dbp, $scriptID, $scriptCode, $WAITTIME, '', $is_dev);
     $FDBGLogFile = (__FILE__).'.log';
     new console($is_dev);
+*/    
     
     $startTime = strtotime('NOW');
     $crawlerName = $market_symbol.'Crawler';
@@ -78,6 +79,9 @@
     console::log('START '.$scriptID);
 
     $crawler->refreshExchangeInfo();
+    $topList = $crawler->getTop(['ETH', 'BNB'], [10, 10], [0.001, 0]);
+    print_r($topList);
+    /*
 
     $stdK = 0.0023;
 
@@ -97,5 +101,6 @@
     }
 
     console::log('STOP '.$scriptID);
+    */
     $dbp->close();
 ?>

@@ -74,8 +74,12 @@
     $is_dev = $isdea[count($isdea) - 1] == 'dev';
     $dbp = new mySQLProvider('localhost', $dbname, $user, $password);
 
-    if ($p_symbols) $symbols = explode(',', $p_symbols);
-    else $symbols = null;
+    if ($p_symbols) {
+        if (file_exists($p_symbols)) {
+            $symbols = preg_split('/[\s,]+/', file_get_contents($p_symbols));
+        } else $symbols = explode(',', $p_symbols);
+    } else $symbols = null;
+
 //    else $symbols = json_decode(file_get_contents(PAIRFILEDATA), true);
 
     $scriptID = basename(__FILE__).($is_dev?'dev':'');
@@ -198,31 +202,33 @@
     $tradeView  = new tradeView();
     $gsdata     = $general['GSYMBOL'];
 
-    if (!$symbols) {
-        $symbols = [];
-        if ($general['CHECKFORECAST']['SYMBOL']) 
-            $data = $tradeView->recommend('BINANCE', $general['CHECKFORECAST']['SYMBOL'], $general['CHECKFORECAST']['PERIOD']); 
-        else $data = null;
+    // Проверяем прогноз по CHECKFORECAST->SYMBOL 
+    if ($general['CHECKFORECAST']['SYMBOL']) 
+        $data = $tradeView->recommend('BINANCE', $general['CHECKFORECAST']['SYMBOL'], $general['CHECKFORECAST']['PERIOD']); 
+    else $data = null;
 
-        if (!$data || ($data['Recommend.All'] > 0)) { // Если хороший прогноз для биткоина, на ближайшие 4 часа
-            $topList = $crawler->getTop($general['ASSET'], $general['MAXSYMBOLS'], $general['STEPSIZE']); // Выбираем лучшие символы
+    if (!$data || ($data['Recommend.All'] > 0)) { // Если хороший прогноз для биткоина, на ближайшие 4 часа
 
-            foreach ($topList as $symbol) { 
-                $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
-                if ($data['Recommend.All'] > 0) $symbols[] = $symbol; // Если прогноз для символа хороший
-            }
-        } else {
-            echo "Bad forecast BTC\n";
-            exit;
+        $a_symbols = [];
+        $topList = $crawler->getTop($general['ASSET'], $general['MAXSYMBOLS'], $general['STEPSIZE']); // Выбираем лучшие символы
+        
+        foreach ($topList as $symbol) { 
+            $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
+            if ($data && ($data['Recommend.All'] > 0)) $a_symbols[] = $symbol; // Если прогноз для символа хороший
         }
-    }
 
-    $cur_index      = 0;
-    $cur_count      = count($symbols);
-    if ($cur_count == 0) {
-        echo "No trade symbols\n";
+        if (!$symbols) $symbols = $a_symbols;
+        else {
+            $in_symbols = []; 
+            foreach ($symbols as $symbol) 
+                if (in_array($symbol, $a_symbols)) $in_symbols[] = $symbol;
+            $symbols = $in_symbols;
+        }
+    } else {
+        echo "Bad forecast BTC\n";
         exit;
     }
+
 
     $defhistory     = [];
     foreach ($symbols as $symbol) $defhistory[$symbol] = $def_coininfo;
@@ -233,6 +239,13 @@
         foreach ($history as $pair=>$item) {
             if ((count($item['list']) > 0) && (array_search($pair, $symbols) === false)) $symbols[] = $pair;
         }
+    }
+
+    $cur_index      = 0;
+    $cur_count      = count($symbols);
+    if ($cur_count == 0) {
+        echo "No trade symbols\n";
+        exit;
     }
 
     $prev_time = 0;
@@ -542,12 +555,12 @@
 
                     $countPurchase = count($histsymb['list']);
                     // Блок покупок
-                    // Если тестируем или недостаточно покупок этого символа
-                    if (!$skip && $trade_options['CANBUY'] && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']) || !$istrade)) {
+                    // Если недостаточно покупок этого символа
+                    if (!$skip && $trade_options['CANBUY'] && (($countPurchase < $trade_options['MAXPURCHASESYMBOL']))) {
                         $is_buy = $istrade && (!$gsdata || ($GPriceDirect >= $gsdata['MINDIRECT'])); // Если основная пара, BTCUSD в плюсе 
                         if ($is_buy) {
-                            $buy_volume      = floatval($trade_options['BUYMINVOLS']);
-                            $balance         = $sender->balance($baseCur);
+                            $buy_volume      = floatval($trade_options['BUYMINVOLS'][$baseCur]);
+                            $balance         = !$sender->test?$sender->balance($baseCur):$general['TESTBALANCE'][$baseCur];
                             $use_percent     = 1 - $balance/$sender->calcBalance($baseCur); // Процент использования депозита
                             $use_require     = $trade_options['USEDEPOSIT'][$countPurchase];
 
@@ -573,7 +586,7 @@
                                 if (($buyvol = $sender->volumeFromBuy($symbol, $data['price'], $buy_volume, $komsa * 2)) > 0) { 
                                     $require = $buyvol * $data['price'];
 
-                                    if (!$sender->test && ($balance < $require)) {// && ($balance < $trade_options['MANAGER']['reserve'])) {
+                                    if (/*!$sender->test && */($balance < $require)) {// && ($balance < $trade_options['MANAGER']['reserve'])) {
                                         echo "Not enough balance. Require: {$require}, available: {$balance}\n";
                                         $history[$symbol]['skip'] = $general['SKIPTIME'];
                                     } else {
