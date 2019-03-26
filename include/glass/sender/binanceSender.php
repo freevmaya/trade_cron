@@ -99,7 +99,7 @@ class binanceSender extends baseSender {
 	}
 
 	public function volumeFromBuy($pair, $price, $minVolumes, $komsa=0) {
-		if ($minVolumes >= 1) {
+		if ($minVolumes > 0) {
 			$pairA = explode('_', $pair);
 			$info = $this->exchangeInfo($pair);
 			if ($info && ($info['status'] == 'TRADING')) {

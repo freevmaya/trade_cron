@@ -252,6 +252,8 @@
     $prev_time = 0;
     $delta_time = 0;
     $gcandle = null;
+
+    echo "START SYMBOLES:\n";
     print_r($symbols);
     echo totalProfit($history, $general['ASSET']);
 
@@ -587,8 +589,10 @@
                                 if (($buyvol = $sender->volumeFromBuy($symbol, $data['price'], $buy_volume, $komsa * 2)) > 0) { 
                                     $require = $buyvol * $data['price'];
 
+                                    echo "Require: {$require}, available: {$balance}\n";
+
                                     if (/*!$sender->test && */($balance < $require)) {// && ($balance < $trade_options['MANAGER']['reserve'])) {
-                                        echo "Not enough balance. Require: {$require}, available: {$balance}\n";
+                                        echo "Not enough balance.\n";
                                         $history[$symbol]['skip'] = $general['SKIPTIME'];
                                     } else {
 
