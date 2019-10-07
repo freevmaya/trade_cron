@@ -54,7 +54,7 @@ class binanceCrawler extends baseCrawler {
 			foreach ($list as $item) {
 
 				if ((substr($item['symbol'], -$baseLen) == $rightCyrrency) &&
-					($item['priceChangePercent'] > 0.5) && ($item['priceChangePercent'] < 9)) {
+					($item['priceChangePercent'] > 0.5) && ($item['priceChangePercent'] < 5)) {
 
 					if ($a_stepSize[$i] > 0) {
 			            $info   = $this->getInfo($item['symbol']);

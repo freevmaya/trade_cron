@@ -210,20 +210,30 @@
 
     if (!$data || ($data['Recommend.All'] > 0)) { // Если хороший прогноз для биткоина, на ближайшие 4 часа
 
-        $a_symbols = [];
-        $topList = $crawler->getTop($general['ASSET'], $general['MAXSYMBOLS'], $general['STEPSIZE']); // Выбираем лучшие символы
-        
-        foreach ($topList as $symbol) { 
-            $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']);
-            if ($data && ($data['Recommend.All'] > 0)) $a_symbols[] = $symbol; // Если прогноз для символа хороший
-        }
+        // Если RECOMINTERVAL = 0 тогда не проверяем прогноз для символов
+        if ($general['RECOMINTERVAL']) {
 
-        if (!$symbols) $symbols = $a_symbols;
-        else {
-            $in_symbols = []; 
-            foreach ($symbols as $symbol) 
-                if (in_array($symbol, $a_symbols)) $in_symbols[] = $symbol;
-            $symbols = $in_symbols;
+            $a_symbols = [];
+            
+            if ($symbols) $topList = $symbols;
+            else $topList = $crawler->getTop($general['ASSET'], $general['MAXSYMBOLS'], $general['STEPSIZE']); // Выбираем лучшие символы
+
+            foreach ($topList as $symbol) { 
+                $data = $tradeView->recommend('BINANCE', strtoupper(str_replace('_', '', $symbol)), $general['RECOMINTERVAL']); // оптимально RECOMINTERVAL = 240 (мин) т.е. 4 часа 
+                if ($data && ($data['Recommend.All'] >= 0)) $a_symbols[] = $symbol; // Если прогноз для символа хороший
+                else {
+                    echo "Bad recommend $symbol\n";
+                    print_r($data);
+                }
+            }
+
+            if (!$symbols) $symbols = $a_symbols;
+            else {
+                $in_symbols = []; 
+                foreach ($symbols as $symbol) 
+                    if (in_array($symbol, $a_symbols)) $in_symbols[] = $symbol;
+                $symbols = $in_symbols;
+            }
         }
     } else {
         echo "Bad forecast BTC\n";
@@ -252,9 +262,10 @@
     $prev_time = 0;
     $delta_time = 0;
     $gcandle = null;
+    $stime = date('d.m.Y H:i');
 
-    echo "START SYMBOLES:\n";
-    print_r($symbols);
+    echo "START TRADES ($stime):\n";
+    //print_r($symbols);
     echo totalProfit($history, $general['ASSET']);
 
     startScript($dbp, $scriptID, $scriptCode, $WAITTIME, '', $is_dev);
@@ -328,7 +339,7 @@
         $commission     = $config->get("commission");
         $komsa          = floatval($commission[$baseCur]);
         $isecho         = isset($params['echo'])?$params['echo']:$trade_options['ECHO'];
-        $sender->test   = $trade_options['MODE'] == 'TEST';
+        $sender->test   = $trade_options['MODE'][$baseCur] == 'TEST';
         $GPriceDirect   = 0;
 
         if (($cur_index == 0) && $gsdata) {
@@ -589,7 +600,7 @@
                                 if (($buyvol = $sender->volumeFromBuy($symbol, $data['price'], $buy_volume, $komsa * 2)) > 0) { 
                                     $require = $buyvol * $data['price'];
 
-                                    echo "Require: {$require}, available: {$balance}\n";
+                                    echo "Require: {$require}, available: {$balance}. Volume: {$buyvol}, Price: {$data['price']}, Comsa: {$komsa}\n";
 
                                     if (/*!$sender->test && */($balance < $require)) {// && ($balance < $trade_options['MANAGER']['reserve'])) {
                                         echo "Not enough balance.\n";

@@ -103,16 +103,21 @@ class binanceSender extends baseSender {
 			$pairA = explode('_', $pair);
 			$info = $this->exchangeInfo($pair);
 			if ($info && ($info['status'] == 'TRADING')) {
+				//echo print_r($info, true);
+				
 				$lotsize = $info['filters']['LOT_SIZE'];
 				$minnot = $info['filters']['MIN_NOTIONAL']; 
 				$stepSize = floatval($lotsize['stepSize']);
 
-				$volume = floatval($minnot['minNotional']) / $price * $minVolumes;
-				$volume = floor($volume / $stepSize) * $stepSize;
-				if ($komsa) $volume += ceil(($volume * $komsa) / $stepSize) * $stepSize;
+				$volume = (floatval($minnot['minNotional']) / $price) * $minVolumes;
+				$volume = floor(($volume + ($volume * $komsa)) / $stepSize) * $stepSize;
 
+				//echo "ARGUMENTS: {$pair}, {$price}, {$minVolumes}, {$komsa} \n";
+				
 				if (($volume >= floatval($lotsize['minQty'])) && ($volume <= floatval($lotsize['maxQty']))) return $volume;
-				else echo "Require {$lotsize['minQty']} > volume < {$lotsize['maxQty']}\n";//print_r($info['filters']);
+				else {
+					echo "Require {$lotsize['minQty']} > {$volume} < {$lotsize['maxQty']}\n";//print_r($info['filters']);
+				}
 			}
 		}
 		return 0;
